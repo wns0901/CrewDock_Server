@@ -56,9 +56,11 @@ public class User extends BaseEntity {
 
     private String profileImgUrl;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany
+    @Builder.Default
     private List<UserAuth> userAuths = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany
+    @Builder.Default
     private List<ProjectMember> projectMembers = new ArrayList<>();
 }
