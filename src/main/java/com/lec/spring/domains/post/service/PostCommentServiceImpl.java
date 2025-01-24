@@ -1,7 +1,9 @@
 package com.lec.spring.domains.post.service;
 
 import com.lec.spring.domains.post.entity.PostComment;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PostCommentServiceImpl implements PostCommentService {
     @Override
     public PostComment saveComment(PostComment postComment) {
