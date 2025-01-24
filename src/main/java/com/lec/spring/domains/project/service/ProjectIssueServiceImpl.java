@@ -30,8 +30,22 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         projectRepository.findById(projectIssue.getProject().getId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
 
+        // 필수 정보 검증
+        validateProjectIssue(projectIssue);
+
+        // 날짜 지정 확인
+        // 시작 날짜가 마감 날짜보다 전
+        // 마감 날짜가 시작 날짜 당일부터 그 이후까지
+
+
+        // 이슈 작성(저장)
+        return projectIssueRepository.save(projectIssue);
+    }
+
+    // 이슈 정보 검증
+    public void validateProjectIssue(ProjectIssue projectIssue) {
         // 필수 정보 확인
-        if(projectIssue.getIssueName() == null) {
+        if(projectIssue.getIssueName() == null || projectIssue.getIssueName().isEmpty()) {
             throw new IllegalArgumentException("작업명을 작성해주세요.");
         } else if (projectIssue.getManager() == null) {
             throw new IllegalArgumentException("담당자를 지정해주세요.");
@@ -44,12 +58,6 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         } else if(projectIssue.getDeadline() == null) {
             throw new IllegalArgumentException("마감 날짜를 지정해주세요");
         }
-
-
-
-        // 이슈 작성
-        // TODO
-        return null;
     }
 
     // 프로젝트 이슈 목록
