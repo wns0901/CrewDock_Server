@@ -1,4 +1,4 @@
 package com.lec.spring.domains.project.service;
 
-public interface SecessionReasonService {
+public interface ResignationLetterService {
 }

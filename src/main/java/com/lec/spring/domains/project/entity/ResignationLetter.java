@@ -1,27 +1,25 @@
 package com.lec.spring.domains.project.entity;
 
-import com.lec.spring.domains.stack.entity.Stack;
+import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import net.minidev.json.annotate.JsonIgnore;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(callSuper = true)
 @Builder
 @Entity
-@ToString(callSuper = true)
-public class ProjectStacks extends BaseEntity {
+public class ResignationLetter  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false)
-    private Stack stack;
+    @JoinColumn(name = "member_id", nullable = false)
+    private ProjectMember member;
 
-    @Column(name = "project_id")
-    @JsonIgnore
-    @ToString.Exclude
-    private Long projectId;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
 }

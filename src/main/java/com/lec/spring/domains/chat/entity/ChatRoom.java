@@ -1,4 +1,18 @@
 package com.lec.spring.domains.chat.entity;
 
-public class ChatRoom {
+import com.lec.spring.global.common.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+public class ChatRoom  extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Integer userCnt;
 }
