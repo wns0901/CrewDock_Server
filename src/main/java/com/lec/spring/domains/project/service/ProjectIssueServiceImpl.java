@@ -6,6 +6,7 @@ import com.lec.spring.domains.project.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -33,10 +34,14 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         // 필수 정보 검증
         validateProjectIssue(projectIssue);
 
-        // 날짜 지정 확인
-        // 시작 날짜가 마감 날짜보다 전
-        // 마감 날짜가 시작 날짜 당일부터 그 이후까지
+        // 날짜 지정 검증
+        // 시작 날짜가 마감 날짜 이후일 수 없음.
+        if(projectIssue.getStartline().isAfter(projectIssue.getStartline())) {
+            throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후를 선택할 수 없습니다.");
+        }
 
+        // 생성 시간 설정
+        projectIssue.setCreateAt(LocalDateTime.now());
 
         // 이슈 작성(저장)
         return projectIssueRepository.save(projectIssue);
