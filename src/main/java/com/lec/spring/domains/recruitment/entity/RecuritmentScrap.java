@@ -1,4 +1,4 @@
 package com.lec.spring.domains.recruitment.entity;
 
-public class RecuritmentScrap {
+public class RecuritmentScrap{
 }
