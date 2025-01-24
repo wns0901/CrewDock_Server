@@ -1,4 +1,8 @@
 package com.lec.spring.domains.post.repository;
 
-public interface PostRepository {
+import com.lec.spring.domains.post.entity.Post;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PostRepository extends JpaRepository<Post, Long> {
+
 }
