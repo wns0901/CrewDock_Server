@@ -5,7 +5,7 @@ import com.lec.spring.domains.post.entity.Post;
 
 import java.util.List;
 
-public interface PostService {
+public interface PostService extends BasePostService {
     Post getPostDetailByCategory(Category category, Long postId);
 
     List<Post> getPostsByCategory(Category category);

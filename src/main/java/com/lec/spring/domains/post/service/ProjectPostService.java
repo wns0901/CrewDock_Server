@@ -5,7 +5,7 @@ import com.lec.spring.domains.post.entity.Post;
 
 import java.util.List;
 
-public interface ProjectPostService {
+public interface ProjectPostService extends BasePostService {
     Post getPostDetailByDirection(Direction direction, Long postId, Long projectId);
 
     List<Post> getPostsByDirection(Direction direction, Long projectId);
