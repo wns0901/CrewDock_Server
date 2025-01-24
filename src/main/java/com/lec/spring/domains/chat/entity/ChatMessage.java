@@ -1,4 +1,6 @@
 package com.lec.spring.domains.chat.entity;
 
-public class ChatMessage {
+import com.lec.spring.global.common.entity.BaseEntity;
+
+public class ChatMessage extends BaseEntity {
 }
