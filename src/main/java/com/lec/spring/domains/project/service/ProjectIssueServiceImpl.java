@@ -23,8 +23,29 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
     // 이슈 작성
     @Override
     public ProjectIssue save(ProjectIssue projectIssue) {
-        // 현재 팀 정보 확인
-        // TODO
+        // 프로젝트 확인
+        if (projectIssue.getProject() == null || projectIssue.getProject().getId() == null) {
+            throw new IllegalArgumentException("프로젝트 정보가 필요합니다.");
+        }
+        projectRepository.findById(projectIssue.getProject().getId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
+
+        // 필수 정보 확인
+        if(projectIssue.getIssueName() == null) {
+            throw new IllegalArgumentException("작업명을 작성해주세요.");
+        } else if (projectIssue.getManager() == null) {
+            throw new IllegalArgumentException("담당자를 지정해주세요.");
+        } else if(projectIssue.getStatus() == null) {
+            throw new IllegalArgumentException("상태를 선택해주세요.");
+        } else if(projectIssue.getPriority() == null){
+            throw new IllegalArgumentException("우선 순위를 선택해주세요.");
+        } else if(projectIssue.getStartline() == null) {
+            throw new IllegalArgumentException("시작 날짜를 지정해주세요");
+        } else if(projectIssue.getDeadline() == null) {
+            throw new IllegalArgumentException("마감 날짜를 지정해주세요");
+        }
+
+
 
         // 이슈 작성
         // TODO

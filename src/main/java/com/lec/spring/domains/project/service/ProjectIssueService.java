@@ -17,4 +17,5 @@ public interface ProjectIssueService {
 
     // 특정 이슈 삭제하기 (다중 선택 가능)
     int deleteById(Long id);
+
 }
