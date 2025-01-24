@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class PullDTO {
+
+    String sha;
+
     String title;
 
     @JsonProperty("user.login")

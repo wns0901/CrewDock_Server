@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -51,21 +53,43 @@ public class GitService {
                     gitDataDTO.setPulls(data.getT2());
                     gitDataDTO.setIssues(data.getT3());
 
-                    List<CommitDTO> commitList = gitDataDTO.getCommits();
-                    for (CommitDTO commit : commitList) {
-                        for (BranchDTO branch : gitDataDTO.getBranches()){
-                            if (branch.getCommitSha().equals(commit.getSha())){
-                                commit.setBranchName(branch.getName());
-                                break;
-                            }
-                        }
-                    }
+                    connectBranchNamesToCommits(gitDataDTO);
+                    connectBranchNamesToIssues(gitDataDTO);
 
                     return gitDataDTO;
                 });
 
 
+    }
 
+    private void connectBranchNamesToCommits (GitDataDTO gitDataDTO) {
+        List<CommitDTO> commits = gitDataDTO.getCommits();
+        List<BranchDTO> branches = gitDataDTO.getBranches();
+        for (CommitDTO commit : commits) {
+            for (BranchDTO branch : branches) {
+                if (branch.getCommitSha().equals(commit.getSha())){
+                    commit.setBranchName(branch.getName());
+                    break;
+                }
+            }
+        }
+    }
+
+    private void connectBranchNamesToIssues (GitDataDTO gitDataDTO) {
+        List<BranchDTO> branches = gitDataDTO.getBranches();
+        Map<String, String> branchNames = new HashMap<>();
+
+        for (BranchDTO branch : branches) {
+            branchNames.put(branch.getName(), branch.getName());
+        }
+
+        List<IssueDTO> issues = gitDataDTO.getIssues();
+        for (IssueDTO issue : issues) {
+            String connectSha = issue.getSha();
+            if(connectSha != null && branchNames.containsKey(connectSha)){
+                issue.setBranchName(branchNames.get(connectSha));
+            }
+        }
     }
 
 }
