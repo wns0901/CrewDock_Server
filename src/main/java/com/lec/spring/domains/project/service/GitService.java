@@ -21,7 +21,8 @@ public class GitService {
                 .uri("/repos/{owner}/{repo}/commits", owner, repo)
                 .retrieve()
                 .bodyToFlux(CommitDTO.class)
-                .collectList();
+                .collectList()
+                .doOnNext(data -> System.out.println("commit Data: " + data)); // 디버깅 로그
 
 
         // 풀 리퀘스트 데이터 가져오기
@@ -29,21 +30,26 @@ public class GitService {
                 .uri("/repos/{owner}/{repo}/pulls", owner, repo)
                 .retrieve()
                 .bodyToFlux(PullDTO.class)
-                .collectList();
+                .collectList()
+                .doOnNext(data -> System.out.println("pulls Data: " + data)); // 디버깅 로그
+
 
         // 이슈 데이터 가져오기
         Mono<List<IssueDTO>> issues = webClient.get()
                 .uri("/repos/{owner}/{repo}/issues/comments", owner, repo)
                 .retrieve()
                 .bodyToFlux(IssueDTO.class)
-                .collectList();
+                .collectList()
+                .doOnNext(data -> System.out.println("issues Data: " + data)); // 디버깅 로그
 
 
         Mono<List<BranchDTO>> branches = webClient.get()
                 .uri("/repos/{owner}/{repo}/branches",owner,repo)
                 .retrieve()
                 .bodyToFlux(BranchDTO.class)
-                .collectList();
+                .collectList()
+                .doOnNext(data -> System.out.println("Branch Data: " + data)); // 디버깅 로그
+
 
         // 통합 DTO에 데이터 담기
         return Mono.zip(commits,pulls,issues,branches)
@@ -52,6 +58,7 @@ public class GitService {
                     gitDataDTO.setCommits(data.getT1());
                     gitDataDTO.setPulls(data.getT2());
                     gitDataDTO.setIssues(data.getT3());
+                    gitDataDTO.setBranches(data.getT4());
 
                     connectBranchNamesToCommits(gitDataDTO);
                     connectBranchNamesToIssues(gitDataDTO);
@@ -67,7 +74,7 @@ public class GitService {
         List<BranchDTO> branches = gitDataDTO.getBranches();
         for (CommitDTO commit : commits) {
             for (BranchDTO branch : branches) {
-                if (branch.getCommitSha().equals(commit.getSha())){
+                if (branch.getCommitSha() != null && branch.getCommitSha().equals(commit.getSha())){
                     commit.setBranchName(branch.getName());
                     break;
                 }
