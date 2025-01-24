@@ -1,4 +1,7 @@
 package com.lec.spring.domains.recruitment.repository;
 
-public interface RecruitmentAttachmentRepository {
+import com.lec.spring.domains.recruitment.entity.RecruitmentAttachment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RecruitmentAttachmentRepository extends JpaRepository<RecruitmentAttachment, Long> {
 }
