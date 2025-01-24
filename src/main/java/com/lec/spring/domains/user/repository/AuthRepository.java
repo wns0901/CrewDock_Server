@@ -1,4 +1,7 @@
 package com.lec.spring.domains.user.repository;
 
-public interface AuthRepository {
+import com.lec.spring.domains.user.entity.Auth;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AuthRepository extends JpaRepository<Auth, Long> {
 }
