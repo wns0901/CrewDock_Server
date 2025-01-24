@@ -1,4 +1,7 @@
 package com.lec.spring.domains.project.repository;
 
-public interface ProjectMemberRepository {
+import com.lec.spring.domains.project.entity.ProjectMember;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Long> {
 }
