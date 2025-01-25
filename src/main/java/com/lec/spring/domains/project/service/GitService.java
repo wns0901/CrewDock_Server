@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GitService {
     private final WebClient webClient = WebClient.create("https://api.github.com");
-    private final String token = "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";
+    private final String token = "비밀임";
 
     // url 데이터 추출
     public Mono<List<GitDataDTO>> getGitDataFromUrls(List<String> gitUrls) {
