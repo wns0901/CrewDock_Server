@@ -8,17 +8,23 @@ import java.time.LocalDateTime;
 @Data
 public class IssueDTO {
 
-    String sha;
+    String id;
 
     String title;
 
-    @JsonProperty("user.login")
-    String authorName;
 
     @JsonProperty("created_at")
     LocalDateTime createdAt;
 
-    String branchName;
+    User user;  // user 필드를 User 객체로
 
-    boolean isFirstUrl;
+    boolean isFirstUrl = true;
+    public void setIsFirstUrl(boolean isFirstUrl) {
+        this.isFirstUrl = isFirstUrl;
+    }
+
+    @Data
+    public static class User {
+        String login;
+    }
 }

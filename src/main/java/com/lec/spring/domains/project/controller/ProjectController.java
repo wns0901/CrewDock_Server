@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ProjectController {
@@ -18,18 +21,13 @@ public class ProjectController {
     private final GitService gitService;
 
     @GetMapping("/projects/{projectId}/githubs")
-    public Mono<ResponseEntity<GitDataDTO>> getGitData(@PathVariable Long projectId, @RequestParam("gitURL") String gitUrl) {
+    public Mono<ResponseEntity<List<GitDataDTO>>> getGitData(@PathVariable Long projectId,
+                                                             @RequestParam List<String> gitURL) {
 
-        String[] ownerAndRepo;
-        try{
-            ownerAndRepo = GitUtil.extractOwnerAndRepo(gitUrl);
-        } catch (IllegalArgumentException e) {
-            return Mono.just(ResponseEntity.badRequest().body(null));
-        }
-        String owner = ownerAndRepo[0];
-        String repo = ownerAndRepo[1];
-        return gitService.getGitHubData(owner,repo)
-                .map(gitDataDTO -> ResponseEntity.ok().body(gitDataDTO))
+        return gitService.getGitDataFromUrls(gitURL)
+                .map(gitDataDTOList -> ResponseEntity.ok().body(gitDataDTOList))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
+
 }
+

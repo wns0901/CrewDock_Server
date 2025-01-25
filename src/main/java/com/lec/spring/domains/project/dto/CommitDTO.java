@@ -3,6 +3,8 @@ package com.lec.spring.domains.project.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -10,11 +12,13 @@ import java.time.LocalDateTime;
 public class CommitDTO {
     String sha;
 
-    // 중첩된 Commit 객체를 별도의 DTO로 매핑
+    boolean isFirstUrl = true;
+    public void setIsFirstUrl(boolean isFirstUrl) {
+        this.isFirstUrl = isFirstUrl;
+    }
+
     private CommitDetails commit;
 
-    // 기타 필드
-    private String branchName;
 }
 
 @Data
@@ -26,9 +30,6 @@ class CommitDetails {
     // commit.author 필드를 별도 DTO로 처리
     private Author author;
 
-    // 기타 필드
-    @JsonProperty("url")
-    private String url;
 }
 
 @Data
