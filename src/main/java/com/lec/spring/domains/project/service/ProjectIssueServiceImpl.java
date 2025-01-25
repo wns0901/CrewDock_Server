@@ -3,7 +3,6 @@ package com.lec.spring.domains.project.service;
 import com.lec.spring.domains.project.entity.ProjectIssue;
 import com.lec.spring.domains.project.repository.ProjectIssueRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,95 +17,90 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
     public ProjectIssueServiceImpl(ProjectIssueRepository projectIssueRepository, ProjectRepository projectRepository) {
         this.projectIssueRepository = projectIssueRepository;
         this.projectRepository = projectRepository;
-        System.out.println("ProjectIssueService() 생성");
+        System.out.println("ProjectIssueServiceImpl() 생성");
     }
 
     // 이슈 작성
     @Override
-    public ProjectIssue save(ProjectIssue projectIssue) {
+    public ProjectIssue save(Long projectId, ProjectIssue projectIssue) {
         // 프로젝트 확인
-        if (projectIssue.getProject() == null || projectIssue.getProject().getId() == null) {
-            throw new IllegalArgumentException("프로젝트 정보가 필요합니다.");
-        }
-        projectRepository.findById(projectIssue.getProject().getId())
+        var project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
+        projectIssue.setProject(project);
 
         // 필수 정보 검증
         validateProjectIssue(projectIssue);
 
-        // 날짜 지정 검증
-        // 시작 날짜가 마감 날짜 이후일 수 없음.
-        if(projectIssue.getStartline().isAfter(projectIssue.getStartline())) {
-            throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후를 선택할 수 없습니다.");
+        // 시작 날짜와 마감 날짜 검증
+        if (projectIssue.getStartline().isAfter(projectIssue.getDeadline())) {
+            throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후일 수 없습니다.");
         }
 
         // 생성 시간 설정
         projectIssue.setCreateAt(LocalDateTime.now());
 
-        // 이슈 작성(저장)
+        // 이슈 저장
         return projectIssueRepository.save(projectIssue);
     }
 
-    // 이슈 정보 검증
-    public void validateProjectIssue(ProjectIssue projectIssue) {
-        // 필수 정보 확인
-        if(projectIssue.getIssueName() == null || projectIssue.getIssueName().isEmpty()) {
-            throw new IllegalArgumentException("작업명을 작성해주세요.");
-        } else if (projectIssue.getManager() == null) {
-            throw new IllegalArgumentException("담당자를 지정해주세요.");
-        } else if(projectIssue.getStatus() == null) {
-            throw new IllegalArgumentException("상태를 선택해주세요.");
-        } else if(projectIssue.getPriority() == null){
-            throw new IllegalArgumentException("우선 순위를 선택해주세요.");
-        } else if(projectIssue.getStartline() == null) {
-            throw new IllegalArgumentException("시작 날짜를 지정해주세요");
-        } else if(projectIssue.getDeadline() == null) {
-            throw new IllegalArgumentException("마감 날짜를 지정해주세요");
-        }
-    }
-
-    // 프로젝트 이슈 목록
+    // 프로젝트별 이슈 목록
     @Override
-    public List<ProjectIssue> list() {
-        return projectIssueRepository.findAll();
+    public List<ProjectIssue> listByProjectId(Long projectId) {
+        return projectIssueRepository.findByProjectId(projectId);
     }
 
     // 이슈 수정
     @Override
-    public int update(ProjectIssue projectIssue) {
+    public int update(Long projectId, Long issueId, ProjectIssue updatedIssue) {
+        var existingIssue = projectIssueRepository.findById(issueId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이슈입니다."));
 
-        // 이슈 읽어오기
-        ProjectIssue issue = projectIssueRepository.findById(projectIssue.getId()).orElse(null);
+        // 필수 정보 검증
+        validateProjectIssue(updatedIssue);
 
-        // 수정된 내용으로 update
-        if(issue != null) {
-            issue.setIssueName(projectIssue.getIssueName());
-            issue.setStatus(projectIssue.getStatus());
-            issue.setPriority(projectIssue.getPriority());
-            issue.setStartline(projectIssue.getStartline());
-            issue.setDeadline(projectIssue.getDeadline());
+        // 수정된 정보 반영
+        existingIssue.setIssueName(updatedIssue.getIssueName());
+        existingIssue.setStatus(updatedIssue.getStatus());
+        existingIssue.setPriority(updatedIssue.getPriority());
+        existingIssue.setStartline(updatedIssue.getStartline());
+        existingIssue.setDeadline(updatedIssue.getDeadline());
+        existingIssue.setManager(updatedIssue.getManager());
 
-            projectIssueRepository.save(issue);
-        }
+        // 저장
+        projectIssueRepository.save(existingIssue);
         return 1;
     }
 
     // 이슈 삭제
     @Override
-    public int deleteById(Long id) {
-
-        int result = 0;
-
-        // 존재하는 데이터인지 확인
-        ProjectIssue projectIssue = projectIssueRepository.findById(id).orElse(null);
-
-        // 이슈 삭제
-        if(projectIssue != null) {
-            projectIssueRepository.delete(projectIssue);
-            result = 1;
+    public int deleteById(Long issueId) {
+        if (projectIssueRepository.existsById(issueId)) {
+            projectIssueRepository.deleteById(issueId);
+            return 1;
         }
+        return 0;
+    }
 
-        return result;
+    // 이슈 정보 검증
+    private void validateProjectIssue(ProjectIssue projectIssue) {
+        if (projectIssue.getIssueName() == null || projectIssue.getIssueName().isEmpty()) {
+            throw new IllegalArgumentException("작업명을 작성해주세요.");
+        }
+        if (projectIssue.getManager() == null) {
+            throw new IllegalArgumentException("담당자를 지정해주세요.");
+        }
+        if (projectIssue.getStatus() == null) {
+            throw new IllegalArgumentException("상태를 선택해주세요.");
+        }
+        if (projectIssue.getPriority() == null) {
+            throw new IllegalArgumentException("우선 순위를 선택해주세요.");
+        }
+        if (projectIssue.getStartline() == null) {
+            throw new IllegalArgumentException("시작 날짜를 지정해주세요.");
+        }
+        if (projectIssue.getDeadline() == null) {
+            throw new IllegalArgumentException("마감 날짜를 지정해주세요.");
+        }
     }
 
 }
