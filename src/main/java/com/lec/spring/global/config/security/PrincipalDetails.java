@@ -1,6 +1,9 @@
 package com.lec.spring.global.config.security;
 
+import com.lec.spring.domains.project.entity.ProjectMember;
+import com.lec.spring.domains.user.entity.Auth;
 import com.lec.spring.domains.user.entity.User;
+import com.lec.spring.domains.user.entity.UserAuth;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -41,19 +44,45 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        // TODO : 권한 정보를 가져와서 collection 에 추가
+        List<UserAuth> userAuth = user.getUserAuths();
+
+        List<ProjectMember> projectMembers = user.getProjectMembers();
+
+        userAuth.forEach(auth -> collection.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return auth.getAuth().getName();
+            }
+
+            @Override
+            public String toString() {
+                return auth.getAuth().getName();
+            }
+        }));
+
+        projectMembers.forEach(projectMember -> collection.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return "PROJECT_" + projectMember.getProject().getId() + "_" + projectMember.getAuthority().name();
+            }
+
+            @Override
+            public String toString() {
+                return "PROJECT_" + projectMember.getProject().getId() + "_" + projectMember.getAuthority().name();
+            }
+        }));
 
         return collection;
     }
 
     @Override
     public String getPassword() {
-        return "";
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return user.getUsername();
     }
 
     @Override

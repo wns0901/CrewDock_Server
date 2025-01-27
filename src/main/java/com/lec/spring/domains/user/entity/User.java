@@ -8,6 +8,8 @@ import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -32,6 +34,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String nickname;
+
     @Column(nullable = false, length = 15)
     private String phoneNumber;
 
@@ -55,11 +60,25 @@ public class User extends BaseEntity {
 
     private String profileImgUrl;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @JsonIgnore
     @Builder.Default
     private List<UserAuth> userAuths = new ArrayList<>();
 
-    @OneToMany
+    public void addUserAuth(UserAuth... userAuths) {
+        Collections.addAll(this.userAuths, userAuths);
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Builder.Default
+    @ToString.Exclude
+    @JsonIgnore
+    @JoinColumn(name = "user_id")
     private List<ProjectMember> projectMembers = new ArrayList<>();
+
+    public void addProjectMember(ProjectMember... projectMembers) {
+        Collections.addAll(this.projectMembers, projectMembers);
+    }
 }
