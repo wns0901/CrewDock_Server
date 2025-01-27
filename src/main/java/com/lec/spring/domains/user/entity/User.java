@@ -35,16 +35,15 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 15)
     private String phoneNumber;
 
-    @Column(nullable = true)
+    @Column()
     private String githubUrl;
 
-    @Column(nullable = true)
+    @Column()
     private String notionUrl;
 
-    @Column(nullable = true)
+    @Column()
     private String blogUrl;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Position hopePosition;
 
