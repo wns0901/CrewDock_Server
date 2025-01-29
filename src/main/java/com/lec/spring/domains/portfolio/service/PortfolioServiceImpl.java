@@ -17,7 +17,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Override
     public List<Portfolio> getUserPortfolios(Long userId) {
-        return List.of();
+        return portfolioRepository.findByUserId(userId);
     }
 
     @Override

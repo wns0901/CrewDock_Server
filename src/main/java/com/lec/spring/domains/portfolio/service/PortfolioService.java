@@ -5,8 +5,7 @@ import com.lec.spring.domains.portfolio.entity.Portfolio;
 import java.util.List;
 
 public interface PortfolioService {
-    // 유저의 포트폴리오 조회 (row 제한 없음)
-    List<Portfolio> getUserPortfolios(Long userId);
+
     // 특정 유저의 포트폴리오와 스택을 조회
     List<Portfolio> getPortfoliosWithStacks(Long userId);
 
