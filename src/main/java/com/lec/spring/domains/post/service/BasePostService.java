@@ -14,8 +14,4 @@ public interface BasePostService {
     Post updatePost(Post post);
 
     int deletePost(Long postId);
-
-    List<PostAttachment> findByPostId(Long postId);
-
-    List<PostComment> getCommentsByPostId(Long postId);
 }

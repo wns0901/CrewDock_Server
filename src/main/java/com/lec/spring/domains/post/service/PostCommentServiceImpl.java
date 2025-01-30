@@ -1,9 +1,9 @@
 package com.lec.spring.domains.post.service;
 
 import com.lec.spring.domains.post.entity.PostComment;
-import org.springframework.stereotype.Service;
 
-@Service
+import java.util.List;
+
 public class PostCommentServiceImpl implements PostCommentService {
     @Override
     public PostComment saveComment(PostComment postComment) {
@@ -13,6 +13,11 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Override
     public PostComment getCommentById(Long id) {
         return null;
+    }
+
+    @Override
+    public List<PostComment> getCommentsByPostId(Long postId) {
+        return List.of();
     }
 
     @Override
