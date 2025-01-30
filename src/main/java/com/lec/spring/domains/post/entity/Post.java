@@ -25,7 +25,7 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
@@ -45,13 +45,13 @@ public class Post extends BaseEntity {
 
     @ToString.Exclude
     @Builder.Default
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "post_id")
     private List<PostAttachment> attachments = new ArrayList<>();
 
     @ToString.Exclude
     @Builder.Default
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "post_id")
     private List<PostComment> comments = new ArrayList<>();
 }
