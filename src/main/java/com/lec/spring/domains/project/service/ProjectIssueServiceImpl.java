@@ -23,30 +23,24 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
     // 이슈 작성
     @Override
     public ProjectIssue save(Long projectId, ProjectIssue projectIssue) {
-        // 프로젝트 확인
         var project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
         projectIssue.setProject(project);
 
-        // 필수 정보 검증
         validateProjectIssue(projectIssue);
 
-        // 시작 날짜와 마감 날짜 검증
-        if (projectIssue.getStartline().isAfter(projectIssue.getDeadline())) {
+        if (projectIssue.getStartline() != null && projectIssue.getDeadline() != null
+                && projectIssue.getStartline().isAfter(projectIssue.getDeadline())) {
             throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후일 수 없습니다.");
         }
 
-        // 생성 시간 설정
-        projectIssue.setCreateAt(LocalDateTime.now());
-
-        // 이슈 저장
         return projectIssueRepository.save(projectIssue);
     }
 
     // 프로젝트별 이슈 목록
     @Override
     public List<ProjectIssue> listByProjectId(Long projectId) {
-        return projectIssueRepository.findByProjectId(projectId);
+        return projectIssueRepository.findByProjectIdSorted(projectId);
     }
 
     // 이슈 수정
@@ -55,30 +49,43 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         var existingIssue = projectIssueRepository.findById(issueId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이슈입니다."));
 
-        // 필수 정보 검증
-        validateProjectIssue(updatedIssue);
+        if (updatedIssue.getIssueName() != null) {
+            existingIssue.setIssueName(updatedIssue.getIssueName());
+        }
+        if (updatedIssue.getStatus() != null) {
+            existingIssue.setStatus(updatedIssue.getStatus());
+        }
+        if (updatedIssue.getPriority() != null) {
+            existingIssue.setPriority(updatedIssue.getPriority());
+        }
+        if (updatedIssue.getStartline() != null && updatedIssue.getDeadline() != null) {
+            if (updatedIssue.getStartline().isAfter(updatedIssue.getDeadline())) {
+                throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후일 수 없습니다.");
+            }
+            existingIssue.setStartline(updatedIssue.getStartline());
+            existingIssue.setDeadline(updatedIssue.getDeadline());
+        }
+        if (updatedIssue.getManager() != null) {
+            existingIssue.setManager(updatedIssue.getManager());
+        }
 
-        // 수정된 정보 반영
-        existingIssue.setIssueName(updatedIssue.getIssueName());
-        existingIssue.setStatus(updatedIssue.getStatus());
-        existingIssue.setPriority(updatedIssue.getPriority());
-        existingIssue.setStartline(updatedIssue.getStartline());
-        existingIssue.setDeadline(updatedIssue.getDeadline());
-        existingIssue.setManager(updatedIssue.getManager());
-
-        // 저장
-        projectIssueRepository.save(existingIssue);
         return 1;
     }
 
-    // 이슈 삭제
+    // 이슈 삭제 -> 다중 선택 가능
     @Override
-    public int deleteById(Long issueId) {
-        if (projectIssueRepository.existsById(issueId)) {
-            projectIssueRepository.deleteById(issueId);
-            return 1;
+    public int deleteByIds(List<Long> issueIds) {
+        if (issueIds == null || issueIds.isEmpty()) {
+            return 0;
         }
-        return 0;
+
+        long count = projectIssueRepository.countByIdIn(issueIds);
+        if (count == 0) {
+            return 0;
+        }
+
+        projectIssueRepository.deleteAllById(issueIds);
+        return (int) count;
     }
 
     // 이슈 정보 검증

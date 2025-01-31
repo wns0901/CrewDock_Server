@@ -2,6 +2,7 @@ package com.lec.spring.domains.project.controller;
 
 import com.lec.spring.domains.project.entity.ProjectIssue;
 import com.lec.spring.domains.project.service.ProjectIssueService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,13 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/projects")
+@RequiredArgsConstructor
 public class ProjectIssueController {
 
     private final ProjectIssueService projectIssueService;
-    public ProjectIssueController(ProjectIssueService projectIssueService) {
-        System.out.println("ProjectIssueController() 생성");
-        this.projectIssueService = projectIssueService;
-    }
 
     // 이슈 목록 get "/projects/{projectId}/issues"
     @GetMapping("/{projectId}/issues")
@@ -51,17 +49,18 @@ public class ProjectIssueController {
     }
 
     // 이슈 삭제 delete "/projects/{projectId}/issues/{projectIssueId}"
-    @DeleteMapping("/{projectId}/issues/{issueId}")
+    @DeleteMapping("/{projectId}/issues")
     public ResponseEntity<Void> deleteIssue(
             @PathVariable Long projectId,
-            @PathVariable Long issueId) {
-        int rowsDeleted = projectIssueService.deleteById(issueId);
+            @RequestBody List<Long> issueIds) {
+        int rowsDeleted = projectIssueService.deleteByIds(issueIds);
 
         if (rowsDeleted > 0) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
     }
 
 }

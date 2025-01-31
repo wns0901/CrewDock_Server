@@ -16,6 +16,6 @@ public interface ProjectIssueService {
     int update(Long projectId, Long issueId, ProjectIssue updatedIssue);
 
     // 특정 이슈 삭제하기 (다중 선택 가능)
-    int deleteById(Long issueId);
+    int deleteByIds(List<Long> issueIds);
 
 }
