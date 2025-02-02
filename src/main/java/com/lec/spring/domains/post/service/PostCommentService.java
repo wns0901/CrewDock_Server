@@ -7,11 +7,13 @@ import java.util.List;
 public interface PostCommentService {
     PostComment saveComment(PostComment postComment);
 
-    PostComment getCommentById(Long id);
+    PostComment saveChildComment(PostComment postComment, Long parentsId);
+
+    PostComment getCommentById(Long commentId);
 
     List<PostComment> getCommentsByPostId(Long postId);
 
-    PostComment updateFixedStatus(Long id, Boolean isFixed);
+    PostComment updateFixedStatus(Long commentId, Boolean isFixed);
 
-    PostComment updateDeletedStatus(Long id, Boolean isDeleted);
+    void deleteCommentById(Long parentsId, Long commentId);
 }

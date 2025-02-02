@@ -9,11 +9,11 @@ import java.util.Map;
 public interface PostAttachmentService {
     PostAttachment findById(Long attachmentId);
 
-    PostAttachment uploadPostAttachment(Map<Long, MultipartFile> files, Long PostId);
+    PostAttachment uploadPostAttachment(MultipartFile file, Long postId, Long projectId);
 
     List<PostAttachment> getPostAttachmentByPostId(Long postId);
 
     PostAttachment updatePostAttachment(PostAttachment postAttachment, Long postId);
 
-    PostAttachment deletePostAttachment(Long attachmentId);
+    void deletePostAttachment(Long attachmentId);
 }
