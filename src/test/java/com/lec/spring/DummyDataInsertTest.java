@@ -46,9 +46,6 @@ import java.util.stream.IntStream;
 public class DummyDataInsertTest {
 
     @Autowired
-    EntityManager em;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -153,8 +150,8 @@ public class DummyDataInsertTest {
             int finalJ = j;
             userStacks.addAll(IntStream.range(0, users.size())
                     .mapToObj(i ->UserStacks.builder()
-                            .user(users.get(i))
-                            .stack(stackEntities.get(finalJ))
+                            .user(users.get(finalJ))
+                            .stack(stackEntities.get(i))
                             .build())
                     .toList());
         }
@@ -375,7 +372,6 @@ public class DummyDataInsertTest {
             );
         });
 
-//        em.flush();
     }
 
 }

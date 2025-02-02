@@ -6,6 +6,8 @@ import com.lec.spring.global.common.entity.Position;
 import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,7 +62,7 @@ public class User extends BaseEntity {
 
     private String profileImgUrl;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     @JsonIgnore
@@ -71,7 +73,7 @@ public class User extends BaseEntity {
         Collections.addAll(this.userAuths, userAuths);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @Builder.Default
     @ToString.Exclude
     @JsonIgnore
@@ -81,4 +83,11 @@ public class User extends BaseEntity {
     public void addProjectMember(ProjectMember... projectMembers) {
         Collections.addAll(this.projectMembers, projectMembers);
     }
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @Builder.Default
+    @ToString.Exclude
+    @JsonIgnore
+    @JoinColumn(name = "user_id")
+    private List<UserStacks> userStacks = new ArrayList<>();
 }
