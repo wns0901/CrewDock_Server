@@ -30,31 +30,4 @@ public class QPortfolioStackRepositoryImpl implements QPortfolioStackRepository 
                 .execute();
     }
 
-    @Override
-    @Transactional
-    public void savePortfolioStacks(Long portfolioId, List<Long> stackIds) {
-        List<PortfolioStack> portfolioStacks = stackIds.stream()
-                .map(stackId -> PortfolioStack.builder()
-                        .portfolio(portfolioId)  // ✅ 저장할 Portfolio ID
-                        .stack(Stack.builder().id(stackId).build())  // ✅ Stack 엔터티 매핑
-                        .build()
-                ).collect(Collectors.toList());
-
-        // ✅ EntityManager 사용하여 저장 (순환 참조 방지)
-        for (PortfolioStack portfolioStack : portfolioStacks) {
-            entityManager.persist(portfolioStack);
-        }
-    }
-
-    @Override
-    public List<PortfolioStack> findByStackName(String stackName) {
-        QPortfolioStack portfolioStack = QPortfolioStack.portfolioStack;
-        QStack stack = QStack.stack;
-
-        return queryFactory
-                .selectFrom(portfolioStack)
-                .join(portfolioStack.stack, stack)
-                .where(stack.name.eq(stackName))
-                .fetch();
-    }
 }

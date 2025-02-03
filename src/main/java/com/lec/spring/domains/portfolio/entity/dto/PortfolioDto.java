@@ -27,7 +27,7 @@ public class PortfolioDto {
     public PortfolioDto(Portfolio portfolio) {
         this.id = portfolio.getId();
         this.title = portfolio.getTitle();
-        this.content = portfolio.getContent();
+        this.content = portfolio.getContent() != null ? portfolio.getContent() : "";
         this.userName = portfolio.getUser().getName();
         this.user = portfolio.getUser();
         this.portfolioStacks = portfolio.getPortfolioStack() != null

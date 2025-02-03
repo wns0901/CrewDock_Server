@@ -43,20 +43,6 @@ public class QPortfolioRepositoryImpl implements QPortfolioRepository {
                 .fetch();
     }
 
-    @Override
-    public List<Portfolio> findByUserIdWithQueryDSL(Long userId) {
-        QPortfolio portfolio = QPortfolio.portfolio;
-        return queryFactory.selectFrom(portfolio)
-                .where(portfolio.user.id.eq(userId))
-                .fetch();
-    }
-
-    @Override
-    @Transactional
-    public Portfolio savePortfolio(Portfolio portfolio) {
-        entityManager.persist(portfolio);
-        return portfolio;
-    }
 
     @Override
     @Transactional

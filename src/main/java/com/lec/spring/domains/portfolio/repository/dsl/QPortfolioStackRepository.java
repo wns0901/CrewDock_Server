@@ -7,7 +7,4 @@ import java.util.Optional;
 
 public interface QPortfolioStackRepository {
     void deleteByPortfolioId(Long portfolioId);
-    void savePortfolioStacks(Long portfolioId, List<Long> stackIds);
-    List<PortfolioStack> findByStackName(String stackName);
-
 }

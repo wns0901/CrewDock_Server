@@ -38,7 +38,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     public PortfolioDto createPortfolio(PortfolioDto portfolioDto) {
         Portfolio portfolio = Portfolio.builder()
                 .title(portfolioDto.getTitle())
-                .content(portfolioDto.getContent())
+                .content(portfolioDto.getContent()!= null ? portfolioDto.getContent() : "")
                 .user(portfolioDto.getUser())
                 .portfolioStack(new ArrayList<>())
                 .build();
@@ -47,7 +47,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         if (portfolioDto.getPortfolioStacks() != null && !portfolioDto.getPortfolioStacks().isEmpty()) {
             List<PortfolioStack> savedStacks = portfolioStackService.createPortfolioStacks(savedPortfolio, portfolioDto.getPortfolioStacks());
-            savedPortfolio.getPortfolioStack().addAll(savedStacks);  // ✅ Portfolio 객체에도 추가
+            savedPortfolio.getPortfolioStack().addAll(savedStacks);
         }
 
         return new PortfolioDto(savedPortfolio);
@@ -60,7 +60,7 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .orElseThrow(() -> new RuntimeException("포트폴리오를 찾을 수 없음: " + portfolioId));
 
         portfolio.setTitle(portfolioDto.getTitle());
-        portfolio.setContent(portfolioDto.getContent());
+        portfolio.setContent(portfolioDto.getContent()!= null ? portfolioDto.getContent() : "");
 
         final Portfolio savedPortfolio = portfolioRepository.save(portfolio);
 
@@ -68,9 +68,9 @@ public class PortfolioServiceImpl implements PortfolioService {
 
 
         if (portfolioDto.getPortfolioStacks() != null && !portfolioDto.getPortfolioStacks().isEmpty()) {
-            List<PortfolioStackDto> stackDtos = portfolioDto.getPortfolioStacks(); // ✅ 선언 추가
+            List<PortfolioStackDto> stackDtos = portfolioDto.getPortfolioStacks();
             List<PortfolioStack> updatedStacks = portfolioStackService.updatePortfolioStacks(savedPortfolio, stackDtos);
-            savedPortfolio.getPortfolioStack().addAll(updatedStacks);  // ✅ Portfolio 객체에도 추가
+            savedPortfolio.getPortfolioStack().addAll(updatedStacks);
         }
 
         return new PortfolioDto(savedPortfolio);
