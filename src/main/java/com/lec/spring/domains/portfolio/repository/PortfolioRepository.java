@@ -1,10 +1,14 @@
 package com.lec.spring.domains.portfolio.repository;
 
 import com.lec.spring.domains.portfolio.entity.Portfolio;
+import com.lec.spring.domains.portfolio.repository.dsl.QPortfolioRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
-    List<Portfolio> findByUserId(Long userId);
+@Repository
+public interface PortfolioRepository extends JpaRepository<Portfolio, Long>, QPortfolioRepository {
+
+
 }
