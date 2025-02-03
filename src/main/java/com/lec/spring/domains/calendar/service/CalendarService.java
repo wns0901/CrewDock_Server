@@ -6,10 +6,10 @@ import java.util.List;
 
 public interface CalendarService {
     // 공휴일 + 개인 일정 + 본인이 속한 모든 팀 일정
-    List<Calendar> getUserCalendar(Long userId, int year, int month);
+    List<Calendar> getUserCalendar(Long userId);
 
     // 공휴일 + 해당 팀 일정
-    List<Calendar> getProjectCalendar(Long projectId, int year, int month);
+    List<Calendar> getProjectCalendar(Long projectId);
 
     // 개인 일정 추가 >> 마이페이지 일정에서만 가능
     Calendar addPersonalEvent(Calendar calendar);

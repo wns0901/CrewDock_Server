@@ -15,28 +15,25 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Calendar> findUserCalendar(Long userId, int year, int month) {
+    public List<Calendar> findUserCalendar(Long userId) {
         QCalendar calendar = QCalendar.calendar;
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
         return queryFactory
                 .selectFrom(calendar)
                 .where(calendar.user.id.eq(userId)
-                        .and(calendar.startDate.between(startDate, endDate)))
+                        .or(calendar.isPublicHoliday.isTrue())  // 공휴일 포함
+                        .or(calendar.project.members.any().id.eq(userId))) // 팀 일정 포함
                 .fetch();
     }
 
     @Override
-    public List<Calendar> findProjectCalendar(Long projectId, int year, int month) {
+    public List<Calendar> findProjectCalendar(Long projectId) {
         QCalendar calendar = QCalendar.calendar;
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
         return queryFactory
                 .selectFrom(calendar)
                 .where(calendar.project.id.eq(projectId)
-                        .and(calendar.startDate.between(startDate, endDate)))
+                        .or(calendar.isPublicHoliday.isTrue())) // 공휴일 포함
                 .fetch();
     }
 }

@@ -16,76 +16,62 @@ import java.util.List;
 public class CalendarController {
 
     private final CalendarService calendarService;
-    private final HolidaysService holidaysService;
 
-    // 개인 + 팀 일정 리스트 조회 (공휴일 포함)
+    // 개인 일정 + 팀 일정 + 공휴일 조회
     @GetMapping
-    public ResponseEntity<List<Calendar>> getUserCalendar(@RequestParam Long userId,
-                                                          @RequestParam int year,
-                                                          @RequestParam int month) {
-        List<Calendar> userCalendar = calendarService.getUserCalendar(userId, year, month);
-        // 공휴일 리스트도 추가하여 반환
-        List<HolidaysDTO> holidays = holidayService.getHolidays(year);
-
-        // 공휴일 추가 및 캘린더 리스트 반환
+    public ResponseEntity<List<Calendar>> getUserCalendar(@RequestParam Long userId) {
+        List<Calendar> userCalendar = calendarService.getUserCalendar(userId);
         return ResponseEntity.ok(userCalendar);
     }
 
-    // 개인 일정 등록
+    // 팀 프로젝트 일정 + 공휴일 조회
+    @GetMapping("/project")
+    public ResponseEntity<List<Calendar>> getProjectCalendar(@RequestParam Long projectId) {
+        List<Calendar> projectCalendar = calendarService.getProjectCalendar(projectId);
+        return ResponseEntity.ok(projectCalendar);
+    }
+
+    // 개인 일정 추가
     @PostMapping
-    public ResponseEntity<Calendar> addUserCalendar(@RequestParam Long userId,
-                                                    @RequestBody Calendar calendar) {
-        Calendar createdCalendar = calendarService.addUserCalendar(userId, calendar);
+    public ResponseEntity<Calendar> addPersonalEvent(@RequestBody Calendar calendar) {
+        Calendar createdCalendar = calendarService.addPersonalEvent(calendar);
         return ResponseEntity.ok(createdCalendar);
     }
 
     // 개인 일정 수정
-    @PatchMapping
-    public ResponseEntity<Calendar> updateUserCalendar(@RequestBody Calendar calendar) {
-        Calendar updatedCalendar = calendarService.updateUserCalendar(calendar);
+    @PatchMapping("/{calendarId}")
+    public ResponseEntity<Calendar> updatePersonalEvent(@PathVariable Long calendarId,
+                                                        @RequestBody Calendar calendar) {
+        Calendar updatedCalendar = calendarService.updatePersonalEvent(calendarId, calendar);
         return ResponseEntity.ok(updatedCalendar);
     }
 
     // 개인 일정 삭제
-    @DeleteMapping
-    public ResponseEntity<Void> deleteUserCalendar(@RequestParam Long userId,
-                                                   @RequestParam Long calendarId) {
-        calendarService.deleteUserCalendar(userId, calendarId);
+    @DeleteMapping("/{calendarId}")
+    public ResponseEntity<Void> deletePersonalEvent(@PathVariable Long calendarId) {
+        calendarService.deletePersonalEvent(calendarId);
         return ResponseEntity.noContent().build();
     }
 
-    // 프로젝트 일정 리스트 조회 (공휴일 포함)
-    @GetMapping("/project")
-    public ResponseEntity<List<Calendar>> getProjectCalendar(@RequestParam Long projectId,
-                                                             @RequestParam int year,
-                                                             @RequestParam int month) {
-        List<Calendar> projectCalendar = calendarService.getProjectCalendar(projectId, year, month);
-        List<HolidaysDTO> holidays = holidayService.getHolidays(year);
-
-        // 공휴일 추가 및 프로젝트 일정 리스트 반환
-        return ResponseEntity.ok(projectCalendar);
-    }
-
-    // 프로젝트 일정 등록
+    // 팀 일정 추가
     @PostMapping("/project")
-    public ResponseEntity<Calendar> addProjectCalendar(@RequestParam Long projectId,
-                                                       @RequestBody Calendar calendar) {
-        Calendar createdCalendar = calendarService.addProjectCalendar(projectId, calendar);
+    public ResponseEntity<Calendar> addProjectEvent(@RequestBody Calendar calendar) {
+        Calendar createdCalendar = calendarService.addProjectEvent(calendar);
         return ResponseEntity.ok(createdCalendar);
     }
 
-    // 프로젝트 일정 수정
-    @PatchMapping("/project")
-    public ResponseEntity<Calendar> updateProjectCalendar(@RequestBody Calendar calendar) {
-        Calendar updatedCalendar = calendarService.updateProjectCalendar(calendar);
+    // 팀 일정 수정
+    @PatchMapping("/project/{calendarId}")
+    public ResponseEntity<Calendar> updateProjectEvent(@PathVariable Long calendarId,
+                                                       @RequestBody Calendar calendar) {
+        Calendar updatedCalendar = calendarService.updateProjectEvent(calendarId, calendar);
         return ResponseEntity.ok(updatedCalendar);
     }
 
-    // 프로젝트 일정 삭제
-    @DeleteMapping("/project")
-    public ResponseEntity<Void> deleteProjectCalendar(@RequestParam Long projectId,
-                                                      @RequestParam Long calendarId) {
-        calendarService.deleteProjectCalendar(projectId, calendarId);
+    // 팀 일정 삭제
+    @DeleteMapping("/project/{calendarId}")
+    public ResponseEntity<Void> deleteProjectEvent(@PathVariable Long calendarId) {
+        calendarService.deleteProjectEvent(calendarId);
         return ResponseEntity.noContent().build();
     }
 }
