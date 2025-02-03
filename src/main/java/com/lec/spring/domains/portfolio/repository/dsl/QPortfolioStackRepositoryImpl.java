@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QPortfolioStackRepositoryImpl implements QPortfolioStackRepository {
     private final JPAQueryFactory queryFactory;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional

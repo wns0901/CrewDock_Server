@@ -29,7 +29,7 @@ public class QPortfolioRepositoryImpl implements QPortfolioRepository {
         return queryFactory
                 .selectFrom(portfolio)
                 .leftJoin(portfolio.portfolioStack, portfolioStack).fetchJoin()
-                .leftJoin(portfolioStack.stack, stack).fetchJoin()  // ✅ 스택까지 가져옴
+                .leftJoin(portfolioStack.stack, stack).fetchJoin()
                 .where(portfolio.user.id.eq(userId))
                 .fetch();
     }

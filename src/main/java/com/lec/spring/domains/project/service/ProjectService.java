@@ -1,15 +1,15 @@
 package com.lec.spring.domains.project.service;
 
-import com.lec.spring.domains.project.entity.Project;
+import com.lec.spring.domains.project.dto.ProjectDTO;
 
-import java.util.Calendar;
 import java.util.List;
 
 public interface ProjectService {
 
-    List<Project> findById(Long id);
 
-    Project update(Project project);
+    List<ProjectDTO> getUserProjectsWithLimitAndStacks(Long userId, int row);
 
-    Calendar findCalenderById(Long id);
+    List<ProjectDTO> getUserProjectsWithStacks(Long userId);
+
+    List<ProjectDTO> getUserRecruitmentProjects(Long userId);
 }

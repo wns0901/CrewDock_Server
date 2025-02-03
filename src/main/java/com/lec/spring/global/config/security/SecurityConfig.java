@@ -15,7 +15,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/portfolios/**").permitAll()
+                        .requestMatchers("/portfolios/**", "projects/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(withDefaults());
