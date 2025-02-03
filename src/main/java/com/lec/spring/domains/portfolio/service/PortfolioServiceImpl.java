@@ -5,11 +5,8 @@ import com.lec.spring.domains.portfolio.entity.PortfolioStack;
 import com.lec.spring.domains.portfolio.entity.dto.PortfolioDto;
 import com.lec.spring.domains.portfolio.entity.dto.PortfolioStackDto;
 import com.lec.spring.domains.portfolio.repository.PortfolioRepository;
-import com.lec.spring.domains.portfolio.repository.PortfolioStackRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,8 +66,11 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         portfolioStackService.deleteByPortfolioId(savedPortfolio.getId());
 
+
         if (portfolioDto.getPortfolioStacks() != null && !portfolioDto.getPortfolioStacks().isEmpty()) {
-            portfolioStackService.createPortfolioStacks(savedPortfolio, portfolioDto.getPortfolioStacks());
+            List<PortfolioStackDto> stackDtos = portfolioDto.getPortfolioStacks(); // ✅ 선언 추가
+            List<PortfolioStack> updatedStacks = portfolioStackService.updatePortfolioStacks(savedPortfolio, stackDtos);
+            savedPortfolio.getPortfolioStack().addAll(updatedStacks);  // ✅ Portfolio 객체에도 추가
         }
 
         return new PortfolioDto(savedPortfolio);

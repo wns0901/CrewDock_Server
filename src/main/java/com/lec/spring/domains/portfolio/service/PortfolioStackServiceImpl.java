@@ -6,6 +6,7 @@ import com.lec.spring.domains.portfolio.entity.dto.PortfolioStackDto;
 import com.lec.spring.domains.portfolio.repository.PortfolioStackRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 
+import com.lec.spring.domains.stack.repository.StackRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class PortfolioStackServiceImpl implements PortfolioStackService {
 
     private final PortfolioStackRepository portfolioStackRepository;
+    private final StackRepository stackRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -33,31 +36,48 @@ public class PortfolioStackServiceImpl implements PortfolioStackService {
     @Override
     @Transactional
     public List<PortfolioStack> createPortfolioStacks(Portfolio portfolio, List<PortfolioStackDto> stackDtos) {
-        List<PortfolioStack> portfolioStacks = stackDtos.stream().map(stackDto -> {
-            // ✅ 기존 스택 확인
-            List<PortfolioStack> existingStacks = portfolioStackRepository.findByStackName(stackDto.getStackName());
+        List<PortfolioStack> portfolioStacks = stackDtos.stream()
+                .map(stackDto -> {
 
-            Stack stack;
-            if (existingStacks.isEmpty()) {
-                // ✅ 새로운 스택 생성 및 저장
-                stack = new Stack();
-                stack.setName(stackDto.getStackName());
-                entityManager.persist(stack);  // ✅ persist() 후 flush() 필요
-                entityManager.flush();  // ✅ 영속성 컨텍스트 반영
-            } else {
-                stack = existingStacks.get(0).getStack();  // ✅ 기존 스택 재사용
-            }
+                    Stack stack = stackRepository.findByName(stackDto.getStackName())
+                            .orElseThrow(() -> new RuntimeException("존재하지 않는 스택입니다: " + stackDto.getStackName()));
 
-            // ✅ PortfolioStack 생성
-            return PortfolioStack.builder()
-                    .portfolio(portfolio.getId())  // ✅ Portfolio ID 연결
-                    .stack(stack)  // ✅ Stack 연결
-                    .build();
-        }).collect(Collectors.toList());
 
-        // ✅ DB에 저장
-        portfolioStackRepository.saveAll(portfolioStacks);  // 🔥 이 코드 추가!
-        return portfolioStacks;
+                    return PortfolioStack.builder()
+                            .portfolio(portfolio.getId())
+                            .stack(stack)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return portfolioStackRepository.saveAll(portfolioStacks);
     }
 
+    @Override
+    public List<PortfolioStack> updatePortfolioStacks(Portfolio portfolio, List<PortfolioStackDto> stackDtos) {
+        if (stackDtos == null || stackDtos.isEmpty()) {
+            return List.of(); // 빈 리스트 반환
+        }
+
+        // ✅ 기존 스택 삭제
+        portfolioStackRepository.deleteByPortfolioId(portfolio.getId());
+
+        // ✅ 새 스택 추가
+        List<PortfolioStack> newPortfolioStacks = stackDtos.stream()
+                .map(dto -> {
+                    // ✅ 기존 Stack 조회 (StackRepository 활용)
+                    Stack stack = stackRepository.findByName(dto.getStackName())
+                            .orElseThrow(() -> new RuntimeException("존재하지 않는 스택입니다: " + dto.getStackName()));
+
+                    // ✅ PortfolioStack 생성
+                    return PortfolioStack.builder()
+                            .portfolio(portfolio.getId())  // ✅ Portfolio 객체 그대로 사용
+                            .stack(stack)  // ✅ Stack 객체 그대로 사용
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return portfolioStackRepository.saveAll(newPortfolioStacks);
+    }
 }
+

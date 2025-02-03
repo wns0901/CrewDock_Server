@@ -9,5 +9,5 @@ import java.util.List;
 public interface PortfolioStackService {
     void deleteByPortfolioId(Long portfolioId);
     List<PortfolioStack> createPortfolioStacks(Portfolio portfolio, List<PortfolioStackDto> stackDtos);
-
+    List<PortfolioStack> updatePortfolioStacks(Portfolio savedPortfolio, List<PortfolioStackDto> portfolioStacks);
 }
