@@ -1,54 +1,70 @@
 package com.lec.spring.domains.recruitment.service;
 
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
-import org.springframework.ui.Model;
-import org.springframework.web.multipart.MultipartFile;
+import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public class RecruitmentPostServiceImpl implements RecruitmentPostService {
-    @Override
-    public List<RecruitmentPost> RecruitmentPostMainPage(Integer page, Model model) {
-        // 어떻게 페이징+필터링 하지
 
-        return List.of();
+    private final RecruitmentPostRepository recruitmentPostRepository;
+
+    public RecruitmentPostServiceImpl(RecruitmentPostRepository recruitmentPostRepository) {
+        this.recruitmentPostRepository = recruitmentPostRepository;
     }
 
-    // 음ㅁㅁ 고민
+    // Paging
+    @Override
+    public Page<RecruitmentPost> findAll(Pageable pageable) {
+        return recruitmentPostRepository.findAll(pageable);
+    }
+
+    // 필터옵션
+
+
+
+    // Read(상세 글 보여주기)
     @Override
     public RecruitmentPost detailRecruitmentPost(Long id) {
-        RecruitmentPost recruitmentPost = new RecruitmentPost();
-        id = recruitmentPost.getId();
-        return null;
+        return recruitmentPostRepository.findById(id)
+                .orElseThrow();
     }
 
-    // 모집글 페이징
-    @Override
-    public List<RecruitmentPost> RecruitmentPostlist(Integer page, Model model) {
-        // 스위치문 사용하기(근데 필터링이 기술 스택, 포지션, 진행 방식, 지역이네)
-        return List.of();
-    }
-
+    // Create
     @Override
     public RecruitmentPost writeRecruitmentPost(RecruitmentPost recruitmentPost) {
-        // 입력 받아야할 값들(제목, 소개, 내용 작성)
-        /*
-        * 기본 정보를 작성하거나 Select 할 수 있으며,
-        * 프로젝트 생성 시에 작성된 기본 정보인 진행기간, 기술스택, 프로젝트명이 그대로 나온다
-        * 프로젝트 시작시 작성되어 있던 프로젝트 명을 보여줌. (수정은 프로젝트 설정에서 가능)
-         * 모집글 제목 및 소개 및 내용 작성 영역
-         */
+        // 입력 들어가야할 값
+        //모집분야/진행기간/모집마감일/지역/진행방식/모집인원/기술스택/프로젝트명
+        //제목/프로젝트 소개 및 내용
+
+        RecruitmentPost Post = new RecruitmentPost();
+        recruitmentPostRepository.save(recruitmentPost);
+
+        //검증
+
+        return Post;
+    }
+
+    // Update
+    @Override
+    public RecruitmentPost updateRecruitmentPost(Long id,RecruitmentPost recruitmentPost) {
+        //원래 있는거 확인하고 id값 가져오고 없으면 에러 띄우기
+        RecruitmentPost Post = null;
+        recruitmentPostRepository.save(recruitmentPost);
+        //검증
 
         return null;
     }
 
+    // Delete
     @Override
-    public RecruitmentPost updateRecruitmentPost(RecruitmentPost recruitmentPost, MultipartFile file) {
-        return null;
-    }
-
-    @Override
-    public int delete(Long id) {
-        return 0;
+    public int deleteRecruitmentPost(Long id) {
+        if (!recruitmentPostRepository.existsById(id)) {
+            throw new EntityNotFoundException("해당 모집글을 찾을 수 없습니다. id: " + id);
+        }
+        recruitmentPostRepository.deleteById(id);
+        return 1; // 성공 시 1 반환
     }
 }
