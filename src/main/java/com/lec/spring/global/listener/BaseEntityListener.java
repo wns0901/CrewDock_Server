@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 public class BaseEntityListener {
     @PrePersist
     void prePersist(Object o) { // 반드시 Object 매개변수 필요 (해당 event 가 발행한 entity)
-        System.out.println(">> MyEntityListener#prePersist() 호출");
         if (o instanceof Auditable) {
             ((Auditable) o).setCreatedAt(LocalDateTime.now());
         }
