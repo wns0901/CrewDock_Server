@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class PullDTO {
 
-    String sha;
+    String id;
 
     String title;
 
@@ -21,8 +21,15 @@ public class PullDTO {
     @JsonProperty("created_at")
     LocalDateTime createdAt;
 
+    User user;
+
     boolean isFirstUrl = true;
     public void setIsFirstUrl(boolean isFirstUrl) {
         this.isFirstUrl = isFirstUrl;
+    }
+
+    @Data
+    public static class User {
+        String login;
     }
 }
