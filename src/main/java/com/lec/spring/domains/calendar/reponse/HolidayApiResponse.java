@@ -10,8 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static net.minidev.asm.ConvertDate.convertToDate;
-
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HolidayApiResponse {
@@ -34,19 +32,6 @@ public class HolidayApiResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Items {
         private List<Item> item;
-
-        public List<HolidaysDTO> toHolidaysDTOList() {
-            return item.stream()
-                    .map(i -> new HolidaysDTO(i.getDateName(), convertToDate(i.getLocdate())))
-                    .collect(Collectors.toList());
-        }
-
-        // YYYYMMDD 형식의 int 값을 LocalDate로 변환하는 메서드
-        private LocalDate convertToDate(Integer locdate) {
-            if (locdate == null) return null;
-            String dateStr = locdate.toString();
-            return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
-        }
     }
 
     @Data

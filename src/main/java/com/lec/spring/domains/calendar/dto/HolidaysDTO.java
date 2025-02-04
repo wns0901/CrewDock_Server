@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 // 공휴일 api 호출에 필요한 DTO
 public class HolidaysDTO {
+    private String dateKind; // 공휴일 종류
     private String dateName;  // 공휴일 이름 (예: 설날, 크리스마스)
     private LocalDate locdate;  // YYYYMMDD 형식의 날짜
 

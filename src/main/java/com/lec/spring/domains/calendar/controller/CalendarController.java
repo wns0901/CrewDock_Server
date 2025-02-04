@@ -1,9 +1,8 @@
 package com.lec.spring.domains.calendar.controller;
 
-import com.lec.spring.domains.calendar.dto.HolidaysDTO;
 import com.lec.spring.domains.calendar.entity.Calendar;
 import com.lec.spring.domains.calendar.service.CalendarService;
-import com.lec.spring.domains.calendar.service.HolidaysService;
+import com.lec.spring.domains.project.entity.Project;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +17,7 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     // 개인 일정 + 팀 일정 + 공휴일 조회
+    // /calenders?[userId]
     @GetMapping
     public ResponseEntity<List<Calendar>> getUserCalendar(@RequestParam Long userId) {
         List<Calendar> userCalendar = calendarService.getUserCalendar(userId);
@@ -25,6 +25,7 @@ public class CalendarController {
     }
 
     // 팀 프로젝트 일정 + 공휴일 조회
+    // /calendars/project?[projectId]
     @GetMapping("/project")
     public ResponseEntity<List<Calendar>> getProjectCalendar(@RequestParam Long projectId) {
         List<Calendar> projectCalendar = calendarService.getProjectCalendar(projectId);
@@ -32,13 +33,15 @@ public class CalendarController {
     }
 
     // 개인 일정 추가
+    // /calenders?[userId]
     @PostMapping
-    public ResponseEntity<Calendar> addPersonalEvent(@RequestBody Calendar calendar) {
-        Calendar createdCalendar = calendarService.addPersonalEvent(calendar);
+    public ResponseEntity<Calendar> addPersonalEvent(@RequestParam Long userId, @RequestBody Calendar calendar) {
+        Calendar createdCalendar = calendarService.addPersonalEvent(userId, calendar);
         return ResponseEntity.ok(createdCalendar);
     }
 
     // 개인 일정 수정
+    // /calenders
     @PatchMapping("/{calendarId}")
     public ResponseEntity<Calendar> updatePersonalEvent(@PathVariable Long calendarId,
                                                         @RequestBody Calendar calendar) {
@@ -47,20 +50,23 @@ public class CalendarController {
     }
 
     // 개인 일정 삭제
-    @DeleteMapping("/{calendarId}")
-    public ResponseEntity<Void> deletePersonalEvent(@PathVariable Long calendarId) {
-        calendarService.deletePersonalEvent(calendarId);
+    // /calenders?{userId}&{calendarId}
+    @DeleteMapping
+    public ResponseEntity<Void> deletePersonalEvent(@RequestParam Long userId, @RequestParam Long calendarId) {
+        calendarService.deletePersonalEvent(userId, calendarId);
         return ResponseEntity.noContent().build();
     }
 
     // 팀 일정 추가
+    // /calendars/project?[projectId]
     @PostMapping("/project")
-    public ResponseEntity<Calendar> addProjectEvent(@RequestBody Calendar calendar) {
-        Calendar createdCalendar = calendarService.addProjectEvent(calendar);
+    public ResponseEntity<Calendar> addProjectEvent(@RequestParam Project projectId, @RequestBody Calendar calendar) {
+        Calendar createdCalendar = calendarService.addProjectEvent(projectId, calendar);
         return ResponseEntity.ok(createdCalendar);
     }
 
     // 팀 일정 수정
+    // /calendars/project
     @PatchMapping("/project/{calendarId}")
     public ResponseEntity<Calendar> updateProjectEvent(@PathVariable Long calendarId,
                                                        @RequestBody Calendar calendar) {
@@ -69,9 +75,10 @@ public class CalendarController {
     }
 
     // 팀 일정 삭제
-    @DeleteMapping("/project/{calendarId}")
-    public ResponseEntity<Void> deleteProjectEvent(@PathVariable Long calendarId) {
-        calendarService.deleteProjectEvent(calendarId);
+    // /calendars/project?[projectId]&[calendarId]
+    @DeleteMapping("/project")
+    public ResponseEntity<Void> deleteProjectEvent(@RequestParam Long projectId, @RequestParam Long calendarId) {
+        calendarService.deleteProjectEvent(projectId, calendarId);
         return ResponseEntity.noContent().build();
     }
 }

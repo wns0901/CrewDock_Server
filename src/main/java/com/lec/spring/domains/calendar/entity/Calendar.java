@@ -30,7 +30,7 @@ public class Calendar extends BaseEntity {
     private Project project;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String contnet;
+    private String content;
 
     @Column(columnDefinition = "TIME DEFAULT '00:00:00'")
     @ColumnDefault(value = "false")
