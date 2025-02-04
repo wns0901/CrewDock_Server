@@ -26,7 +26,7 @@ public class ProjectPostController {
     }
 
     @GetMapping("/{postId}")
-    public Post getProjectPost(@PathVariable("projectId") Long projectId, @PathVariable("postId") Long postId) {
+    public Post getProjectPostDetail(@PathVariable("projectId") Long projectId, @PathVariable("postId") Long postId) {
         return projectPostService.getProjectPostDetail(projectId, postId);
     }
 
