@@ -7,6 +7,9 @@ import com.lec.spring.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,17 +20,22 @@ public class RecruitmentComment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private RecruitmentPost post;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    // 부모
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parents_id")
     private RecruitmentComment comment;
+
+    // 자식
+    @OneToMany(mappedBy = "comment")
+    private List<RecruitmentComment> comments = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;

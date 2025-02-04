@@ -65,6 +65,6 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
             throw new EntityNotFoundException("해당 모집글을 찾을 수 없습니다. id: " + id);
         }
         recruitmentPostRepository.deleteById(id);
-        return 1; // 성공 시 1 반환
+        return 1;
     }
 }
