@@ -6,5 +6,5 @@ import org.springframework.http.ResponseEntity;
 public interface ChatMessageService {
     ChatMessage save(Long roomId,ChatMessage chatMessage);
 
-    ResponseEntity<?> findAllByRoomId(Long roomId);
+    ResponseEntity<?> findAllByRoomId(Long roomId, String nickname);
 }

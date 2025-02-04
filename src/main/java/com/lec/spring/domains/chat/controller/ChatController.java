@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -28,7 +29,7 @@ public class ChatController {
 
     @GetMapping("/chat-message/{roomId}")
     @ResponseBody
-    public ResponseEntity<?> findAllByRoomId(@PathVariable Long roomId) {
-        return chatMessageService.findAllByRoomId(roomId);
+    public ResponseEntity<?> findAllByRoomId(@PathVariable Long roomId, @RequestParam String nickname) {
+        return chatMessageService.findAllByRoomId(roomId, nickname);
     }
 }
