@@ -22,6 +22,7 @@ public class ProjectMember extends BaseEntity {
     private Long userId;
 
     @ManyToOne(optional = false)
+    @JsonIgnore
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
