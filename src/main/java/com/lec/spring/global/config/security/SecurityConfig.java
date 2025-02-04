@@ -21,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -75,20 +76,16 @@ public class SecurityConfig {
 
         // CORS 설정
         http
-                .cors(corsConfigurer
-                        -> corsConfigurer.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(corsAllowedOrigins);
-                        config.setAllowedMethods(List.of("*"));
-                        config.setAllowCredentials(true);
-                        config.setMaxAge(3600L);
-                        config.setAllowedHeaders(List.of("*"));
-                        config.setExposedHeaders(List.of("Authorization"));
-
-                        return config;
-                    }
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    // ✅ 방법 1: 구체적인 오리진 지정
+//                    config.setAllowedOrigins(corsAllowedOrigins);
+                    // ✅ 방법 2: 패턴 사용
+                    config.setAllowedOriginPatterns(List.of("*"));
+                    config.setAllowedMethods(List.of("*"));
+                    config.setAllowCredentials(true);
+                    config.setAllowedHeaders(List.of("*"));
+                    return config;
                 }));
 
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
