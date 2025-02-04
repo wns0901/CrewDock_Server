@@ -12,6 +12,7 @@ import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ProjectMemberRepository projectMemberRepository;
 
     @Override
+    @Transactional
     public ChatRoom createChatRoom(Long userId, String projectName) {
         try {
             ChatRoom chatRoom = new ChatRoom(null, 1);
@@ -56,38 +58,74 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     @Override
+    @Transactional
     public ChatRoom createChatRoom(CreateChatRoomReqDTO createChatRoomReqDTO) {
-        ChatRoom chatRoom = new ChatRoom(null, 2);
+        try {
+            ChatRoom chatRoom = new ChatRoom(null, 2);
 
-        chatRoomRepository.save(chatRoom);
+            chatRoomRepository.save(chatRoom);
 
-        if (chatRoom.getId() == null) throw new IllegalArgumentException("Chat room not created");
+            if (chatRoom.getId() == null) throw new IllegalArgumentException("Chat room not created");
 
-        User sender = userRepository.findById(createChatRoomReqDTO.getSenderId()).orElse(null);
+            User sender = userRepository.findById(createChatRoomReqDTO.getSenderId())
+                    .orElseThrow(() -> new IllegalArgumentException("Sender not found"));
 
-        User receiver = userRepository.findById(createChatRoomReqDTO.getReceiverId()).orElse(null);
+            User receiver = userRepository.findById(createChatRoomReqDTO.getReceiverId())
+                    .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
 
-        ChatRoomUser chatRoomSenderUser = ChatRoomUser.builder()
-                .user(sender)
-                .chatRoom(chatRoom)
-                .roomName(receiver.getNickname() + "님과의 채팅")
-                .build();
+            ChatRoomUser chatRoomSenderUser = ChatRoomUser.builder()
+                    .user(sender)
+                    .chatRoom(chatRoom)
+                    .roomName(receiver.getNickname() + "님과의 채팅")
+                    .build();
 
-        ChatRoomUser chatRoomReceiverUser = ChatRoomUser.builder()
-                .user(receiver)
-                .chatRoom(chatRoom)
-                .roomName(sender.getNickname() + "님과의 채팅")
-                .build();
+            ChatRoomUser chatRoomReceiverUser = ChatRoomUser.builder()
+                    .user(receiver)
+                    .chatRoom(chatRoom)
+                    .roomName(sender.getNickname() + "님과의 채팅")
+                    .build();
 
-        chatRoomUserRepository.saveAll(List.of(chatRoomSenderUser, chatRoomReceiverUser));
+            chatRoomUserRepository.saveAll(List.of(chatRoomSenderUser, chatRoomReceiverUser));
 
-        return chatRoom;
+            if (chatRoomSenderUser.getId() == null || chatRoomReceiverUser.getId() == null) {
+                throw new IllegalArgumentException("Chat room user not created");
+            }
+
+            return chatRoom;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     @Override
-    public ChatRoomUser inviteUser(Project project, Long userId) {
-//        ProjectMember ch projectMemberRepository.findProjectCaptain(project.getId());
+    @Transactional
+    public ChatRoomUser inviteUser(Project project, User receiver) {
+        try {
+            ProjectMember projectCaptain = projectMemberRepository.findProjectCaptain(project.getId());
 
-        return null;
+            User Captain = userRepository.findById(projectCaptain.getUserId()).orElseThrow(() -> new IllegalArgumentException("Captain not found"));
+
+            ChatRoom chatRoom = chatRoomUserRepository.findByUser(Captain).getChatRoom();
+
+            ChatRoomUser invitedChatRoomUser = ChatRoomUser.builder()
+                    .user(receiver)
+                    .chatRoom(chatRoom)
+                    .roomName(project.getName() + " 채팅방")
+                    .build();
+
+            chatRoomUserRepository.save(invitedChatRoomUser);
+
+            if (invitedChatRoomUser.getId() == null) throw new IllegalArgumentException("Chat room user not created");
+
+            chatRoom.setUserCnt(chatRoom.getUserCnt() + 1);
+
+            chatRoomRepository.save(chatRoom);
+
+            return invitedChatRoomUser;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }

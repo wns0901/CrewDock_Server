@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ChatRoomController {
 
-    private final ChatRoomService chatMessageService;
+    private final ChatRoomService chatRoomService;
 
     @PostMapping("/chat-room")
     @ResponseBody
     public ResponseEntity<?> StartPersonalChat(@RequestBody CreateChatRoomReqDTO createChatRoomReqDTO) {
         try {
-            ChatRoom chatRoom = chatMessageService.createChatRoom(createChatRoomReqDTO);
+            ChatRoom chatRoom = chatRoomService.createChatRoom(createChatRoomReqDTO);
 
             if (chatRoom == null) return ResponseEntity.badRequest().body("Chat room can't create");
 
