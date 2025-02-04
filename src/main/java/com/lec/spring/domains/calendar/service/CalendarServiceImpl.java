@@ -1,5 +1,7 @@
 package com.lec.spring.domains.calendar.service;
 
+import com.lec.spring.domains.calendar.dto.CalendarDTO;
+import com.lec.spring.domains.calendar.dto.HolidaysDTO;
 import com.lec.spring.domains.calendar.entity.Calendar;
 import com.lec.spring.domains.calendar.repository.CalendarRepository;
 import com.lec.spring.domains.project.entity.Project;
@@ -29,9 +31,26 @@ public class CalendarServiceImpl implements CalendarService {
     // 팀은 여러개 가능. 하지만 팀 일정 해당 페이지에서 수정 및 삭제 불가
     @Override
     @Transactional(readOnly = true)
-    public List<Calendar> getUserCalendar(Long userId) {
-        List<Calendar> userCalendar = calendarRepository.findUserCalendar(userId);
-        userCalendar.addAll(convertHolidaysToCalendars()); // 캘린더에 공휴일 추가
+    public List<CalendarDTO> getUserCalendar(Long userId) {
+        // 일반 일정 조회
+        List<CalendarDTO> userCalendar = calendarRepository.findUserCalendar(userId).stream()
+                .map(calendar -> new CalendarDTO(
+                        calendar.getId(),
+                        calendar.getUserId(),
+                        calendar.getProjectId(),
+                        calendar.getContent(),
+                        calendar.getStartDate(),
+                        calendar.getEndDate(),
+                        calendar.getStartTime(),
+                        calendar.getEndTime(),
+                        false // 공휴일 여부는 기본 false로 설정
+                ))
+                .collect(Collectors.toList());
+
+        // 공휴일 추가
+        List<CalendarDTO> holidays = convertHolidaysToCalendarDTOs(holidaysService.getHolidaysForCurrentMonth());
+        userCalendar.addAll(holidays); // 공휴일 추가
+
         return userCalendar;
     }
 
@@ -39,9 +58,25 @@ public class CalendarServiceImpl implements CalendarService {
     // 개인적인 일정들은 여기에 보이지 않음. 해당 팀에서 작성한 것만 보임
     @Override
     @Transactional(readOnly = true)
-    public List<Calendar> getProjectCalendar(Long projectId) {
-        List<Calendar> projectCalendar = calendarRepository.findProjectCalendar(projectId);
-        projectCalendar.addAll(convertHolidaysToCalendars());
+    public List<CalendarDTO> getProjectCalendar(Long userId, Long projectId) {
+        // 프로젝트 일정 조회
+        List<CalendarDTO> projectCalendar = calendarRepository.findProjectCalendar(userId, projectId).stream()
+                .map(calendar -> new CalendarDTO(
+                        calendar.getId(),
+                        calendar.getUserId(),
+                        calendar.getProjectId(),
+                        calendar.getContent(),
+                        calendar.getStartDate(),
+                        calendar.getEndDate(),
+                        calendar.getStartTime(),
+                        calendar.getEndTime(),
+                        false // 공휴일 여부는 기본 false로 설정
+                ))
+                .collect(Collectors.toList());
+
+        // 공휴일 추가
+        List<CalendarDTO> holidays = convertHolidaysToCalendarDTOs(holidaysService.getHolidaysForCurrentMonth());
+        projectCalendar.addAll(holidays); // 공휴일 추가
 
         return projectCalendar;
     }
@@ -124,14 +159,20 @@ public class CalendarServiceImpl implements CalendarService {
         return 0;
     }
 
-    // 공휴일 데이터를 Calendar 엔티티로 변환
-    private List<Calendar> convertHolidaysToCalendars() {
-        return holidaysService.getHolidaysForCurrentMonth().stream()
-                .map(holiday -> Calendar.builder()
-                        .content(holiday.getDateName()) // 공휴일 이름
-                        .startDate(holiday.getLocdate()) // 공휴일 날짜
-                        .endDate(holiday.getLocdate()) // 공휴일 날짜 (단일 날짜 이벤트)
-                        .build())
+    // 공휴일 데이터를 CalendarDTO로 변환
+    private List<CalendarDTO> convertHolidaysToCalendarDTOs(List<HolidaysDTO> holidaysForCurrentMonth) {
+        return holidaysForCurrentMonth.stream()
+                .map(holiday -> new CalendarDTO(
+                        null,    // ID는 null, 공휴일 데이터에는 없으므로
+                        null,       // userId는 필요 없음
+                        null,       // projectId는 필요 없음
+                        holiday.getDateName(),  // 공휴일 이름
+                        holiday.getLocdate(),   // 시작일 = 공휴일 날짜
+                        holiday.getLocdate(),   // 종료일 = 공휴일 날짜
+                        null,   // 시작 시간은 null
+                        null,   // 종료 시간은 null
+                        true    // 공휴일 여부를 true로 표시
+                ))
                 .collect(Collectors.toList());
     }
 }

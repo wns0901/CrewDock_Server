@@ -1,7 +1,7 @@
 package com.lec.spring.domains.calendar.repository.dsl;
 
+import com.lec.spring.domains.calendar.dto.CalendarDTO;
 import com.lec.spring.domains.calendar.dto.HolidaysDTO;
-import com.lec.spring.domains.calendar.entity.Calendar;
 import com.lec.spring.domains.calendar.entity.QCalendar;
 import com.lec.spring.domains.calendar.service.HolidaysService;
 import com.lec.spring.domains.project.entity.QProjectMember;
@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,31 +21,59 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
     private final HolidaysService holidaysService;
 
     @Override
-    public List<Calendar> findUserCalendar(Long userId) {
+    public List<CalendarDTO> findUserCalendar(Long userId) {
         QCalendar calendar = QCalendar.calendar;
-        QProjectMember projectMember = QProjectMember.projectMember;
 
         // 공휴일 데이터 조회 (API 호출)
         List<HolidaysDTO> holidays = holidaysService.getHolidaysForCurrentMonth();
 
-        // 일반 일정 데이터 조회 (QueryDSL)
-        List<Calendar> userCalendars = queryFactory
-                .selectFrom(calendar)
+        // 개인 일정 및 팀 일정 데이터 조회 (QueryDSL)
+        List<CalendarDTO> userCalendars = queryFactory
+                .select(
+                        calendar.id,
+                        calendar.user.id.as("userId"),
+                        calendar.project.id.as("projectId"),
+                        calendar.content,
+                        calendar.startDate,
+                        calendar.endDate,
+                        calendar.startTime,
+                        calendar.endTime
+                )
+                .from(calendar)
                 .where(calendar.user.id.eq(userId)
                         .or(calendar.project.id.in(
-                                queryFactory.select(projectMember.project.id) // ✅ 사용자가 속한 프로젝트 조회
-                                        .from(projectMember)
-                                        .where(projectMember.userId.eq(userId))
+                                queryFactory.select(QProjectMember.projectMember.userId) // 사용자가 속한 프로젝트 조회
+                                        .from(QProjectMember.projectMember)
+                                        .where(QProjectMember.projectMember.userId.eq(userId))
                         )))
-                .fetch();
+                .fetch()
+                .stream()
+                .map(tuple -> new CalendarDTO(
+                        tuple.get(0, Long.class), // ID
+                        tuple.get(1, Long.class), // userId
+                        tuple.get(2, Long.class), // projectId
+                        tuple.get(3, String.class), // content
+                        tuple.get(4, LocalDate.class), // startDate
+                        tuple.get(5, LocalDate.class), // endDate
+                        tuple.get(6, LocalTime.class), // startTime
+                        tuple.get(7, LocalTime.class), // endTime
+                        false // 일반 일정은 공휴일 여부가 false
+                ))
+                .collect(Collectors.toList());
 
         // 공휴일 데이터를 일정 리스트에 추가
         holidays.forEach(holiday -> {
-            Calendar holidayCalendar = Calendar.builder()
-                    .content(holiday.getDateName()) // 공휴일 이름 저장
-                    .startDate(holiday.getLocdate())
-                    .endDate(holiday.getLocdate())
-                    .build();
+            CalendarDTO holidayCalendar = new CalendarDTO(
+                    null, // ID는 null, 공휴일 데이터에는 없으므로
+                    userId, // 공휴일은 사용자와 연관이 있으므로 userId를 전달
+                    null, // 프로젝트 ID는 필요 없음
+                    holiday.getDateName(), // 공휴일 이름
+                    holiday.getLocdate(), // 시작일 = 공휴일 날짜
+                    holiday.getLocdate(), // 종료일 = 공휴일 날짜
+                    null, // 시작 시간은 null
+                    null, // 종료 시간은 null
+                    true // 공휴일 여부를 true로 표시
+            );
             userCalendars.add(holidayCalendar);
         });
 
@@ -51,25 +81,54 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
     }
 
     @Override
-    public List<Calendar> findProjectCalendar(Long projectId) {
+    public List<CalendarDTO> findProjectCalendar(Long userId, Long projectId) {
         QCalendar calendar = QCalendar.calendar;
 
         // 공휴일 데이터 조회 (API 호출)
         List<HolidaysDTO> holidays = holidaysService.getHolidaysForCurrentMonth();
 
-        // 프로젝트 일정 조회
-        List<Calendar> projectCalendars = queryFactory
-                .selectFrom(calendar)
+        // 프로젝트 일정 조회 (QueryDSL)
+        List<CalendarDTO> projectCalendars = queryFactory
+                .select(
+                        calendar.id,
+                        calendar.user.id.as("userId"),
+                        calendar.project.id.as("projectId"),
+                        calendar.content,
+                        calendar.startDate,
+                        calendar.endDate,
+                        calendar.startTime,
+                        calendar.endTime
+                )
+                .from(calendar)
                 .where(calendar.project.id.eq(projectId))
-                .fetch();
+                .fetch()
+                .stream()
+                .map(tuple -> new CalendarDTO(
+                        tuple.get(0, Long.class), // ID
+                        tuple.get(1, Long.class), // userId
+                        tuple.get(2, Long.class), // projectId
+                        tuple.get(3, String.class), // content
+                        tuple.get(4, LocalDate.class), // startDate
+                        tuple.get(5, LocalDate.class), // endDate
+                        tuple.get(6, LocalTime.class), // startTime
+                        tuple.get(7, LocalTime.class), // endTime
+                        false // 프로젝트 일정은 공휴일 여부가 false
+                ))
+                .collect(Collectors.toList());
 
         // 공휴일 데이터를 일정 리스트에 추가
         holidays.forEach(holiday -> {
-            Calendar holidayCalendar = Calendar.builder()
-                    .content(holiday.getDateName())
-                    .startDate(holiday.getLocdate())
-                    .endDate(holiday.getLocdate())
-                    .build();
+            CalendarDTO holidayCalendar = new CalendarDTO(
+                    null, // ID는 null, 공휴일 데이터에는 없으므로
+                    userId, // 팀 일정이므로 userId 포함
+                    projectId, // 프로젝트 ID 사용
+                    holiday.getDateName(), // 공휴일 이름
+                    holiday.getLocdate(), // 시작일 = 공휴일 날짜
+                    holiday.getLocdate(), // 종료일 = 공휴일 날짜
+                    null, // 시작 시간은 null
+                    null, // 종료 시간은 null
+                    true // 공휴일 여부를 true로 표시
+            );
             projectCalendars.add(holidayCalendar);
         });
 

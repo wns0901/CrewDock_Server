@@ -1,5 +1,6 @@
 package com.lec.spring.domains.calendar.controller;
 
+import com.lec.spring.domains.calendar.dto.CalendarDTO;
 import com.lec.spring.domains.calendar.entity.Calendar;
 import com.lec.spring.domains.calendar.service.CalendarService;
 import com.lec.spring.domains.project.entity.Project;
@@ -19,16 +20,16 @@ public class CalendarController {
     // 개인 일정 + 팀 일정 + 공휴일 조회
     // /calenders?[userId]
     @GetMapping
-    public ResponseEntity<List<Calendar>> getUserCalendar(@RequestParam Long userId) {
-        List<Calendar> userCalendar = calendarService.getUserCalendar(userId);
+    public ResponseEntity<List<CalendarDTO>> getUserCalendar(@RequestParam Long userId) {
+        List<CalendarDTO> userCalendar = calendarService.getUserCalendar(userId);
         return ResponseEntity.ok(userCalendar);
     }
 
     // 팀 프로젝트 일정 + 공휴일 조회
     // /calendars/project?[projectId]
     @GetMapping("/project")
-    public ResponseEntity<List<Calendar>> getProjectCalendar(@RequestParam Long projectId) {
-        List<Calendar> projectCalendar = calendarService.getProjectCalendar(projectId);
+    public ResponseEntity<List<CalendarDTO>> getProjectCalendar(Long userId, @RequestParam Long projectId) {
+        List<CalendarDTO> projectCalendar = calendarService.getProjectCalendar(userId, projectId);
         return ResponseEntity.ok(projectCalendar);
     }
 

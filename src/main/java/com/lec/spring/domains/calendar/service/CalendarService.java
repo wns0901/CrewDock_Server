@@ -1,5 +1,6 @@
 package com.lec.spring.domains.calendar.service;
 
+import com.lec.spring.domains.calendar.dto.CalendarDTO;
 import com.lec.spring.domains.calendar.entity.Calendar;
 import com.lec.spring.domains.project.entity.Project;
 
@@ -7,10 +8,10 @@ import java.util.List;
 
 public interface CalendarService {
     // 공휴일 + 개인 일정 + 본인이 속한 모든 팀 일정
-    List<Calendar> getUserCalendar(Long userId);
+    List<CalendarDTO> getUserCalendar(Long userId);
 
     // 공휴일 + 해당 팀 일정
-    List<Calendar> getProjectCalendar(Long projectId);
+    List<CalendarDTO> getProjectCalendar(Long userId, Long projectId);
 
     // 개인 일정 추가 >> 마이페이지 일정에서만 가능
     Calendar addPersonalEvent(Long userId, Calendar calendar);
