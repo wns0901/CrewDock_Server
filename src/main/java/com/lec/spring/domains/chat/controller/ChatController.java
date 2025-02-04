@@ -26,7 +26,7 @@ public class ChatController {
         return chatMessageService.save(roomId, chatMessage);
     }
 
-    @GetMapping("/chat/{roomId}")
+    @GetMapping("/chat-message/{roomId}")
     @ResponseBody
     public ResponseEntity<?> findAllByRoomId(@PathVariable Long roomId) {
         return chatMessageService.findAllByRoomId(roomId);
