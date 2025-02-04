@@ -17,9 +17,10 @@ public class RecruitmentCommentServiceImpl implements RecruitmentCommentService 
         // 검증할 것
         // 작성 유무, 로그인 유무, 부모 유무
 
-        // 자식 리스트가 없고 부모가 없다면 부모
-        // 부모가 있다면 자식 리스트에 넣어라.
+        // 부모 id가 없다면 부모
+        // 부모가 있다면 자식 리스트에 넣는다.
 
+        //
         RecruitmentComment createdComment = new RecruitmentComment();
 
         return createdComment;
