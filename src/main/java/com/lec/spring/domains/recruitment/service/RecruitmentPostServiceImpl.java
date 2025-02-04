@@ -40,6 +40,8 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         //제목/프로젝트 소개 및 내용
 
         RecruitmentPost Post = new RecruitmentPost();
+
+        
         recruitmentPostRepository.save(recruitmentPost);
 
         //검증

@@ -26,6 +26,17 @@ public class RecruitmentPostController {
 
     }
 
+    // 메인페이지에 띄울 모집글 리스트(필터)
+    @GetMapping("/recruitments?[...]")
+    public void recruitments(){
+
+    }
+
+    // 모집글 상세 글(댓글, 첨부파일 포함)
+    @GetMapping("/recruitments/{recruitmentsId}")
+    public void detailRecruitmentPost(RecruitmentPost recruitmentPost) {
+    }
+
     // 모집글 등록
     @PostMapping("/recruitments")
     public void writeRecruitmentPost(RecruitmentPost recruitmentPost) {
@@ -37,4 +48,7 @@ public class RecruitmentPostController {
 
     }
 
+    @DeleteMapping("/recruitments/{recruitmentsId}")
+    public void deleteRecruitmentPost(RecruitmentPost recruitmentPost) {
+    }
 }
