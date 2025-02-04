@@ -5,10 +5,7 @@ import com.lec.spring.domains.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,8 +20,6 @@ public class ProjectController {
     public ResponseEntity<List<ProjectDTO>> getUserProjects(
             @RequestParam("userId") Long userId,
             @RequestParam(value = "row", required = false, defaultValue = "0") int row) {
-
-
 
         List<ProjectDTO> projects = (row > 0) ?
                 projectService.getUserProjectsWithLimitAndStacks(userId, row) :
@@ -41,5 +36,10 @@ public class ProjectController {
 
         List<ProjectDTO> projects = projectService.getUserRecruitmentProjects(userId);
         return ResponseEntity.ok(projects);
+    }
+
+    @PostMapping
+    public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDTO) {
+
     }
 }
