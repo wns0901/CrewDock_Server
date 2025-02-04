@@ -57,16 +57,6 @@ tasks.named('test') {
 // Q타입 엔티티가 생성될 경로
 def querydslSrcDir = 'src/main/generated'
 
-// querydsl QClass 파일 생성 위치를 지정
-tasks.withType(JavaCompile) {
-    options.generatedSourceOutputDirectory = file(querydslSrcDir)
-}
-
-// java source set 에 querydsl QClass 위치 추가
-sourceSets {
-    main.java.srcDirs += "$projectDir/build/generated"
-}
-
 // clean 시 Q타입 삭제
 clean {
     delete file(querydslSrcDir)

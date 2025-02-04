@@ -28,9 +28,10 @@ public class CalendarServiceImpl implements CalendarService {
     @Override
     @Transactional(readOnly = true)
     public List<Calendar> getUserCalendar(Long userId) {
-        List<Calendar> userCalendar = calendarRepository.findUserCalendar(userId);
-        userCalendar.addAll(convertHolidaysToCalendars()); // 캘린더에 공휴일 추가
-        return userCalendar;
+//        List<Calendar> userCalendar = calendarRepository.findUserCalendar(userId);
+//        userCalendar.addAll(convertHolidaysToCalendars()); // 캘린더에 공휴일 추가
+//        return userCalendar;
+        return null;
     }
 
     // 팀 일정 페이지에서 공휴일 + 해당 팀 일정 보여주기
@@ -38,10 +39,11 @@ public class CalendarServiceImpl implements CalendarService {
     @Override
     @Transactional(readOnly = true)
     public List<Calendar> getProjectCalendar(Long projectId) {
-        List<Calendar> projectCalendar = calendarRepository.findProjectCalendar(projectId);
-        projectCalendar.addAll(convertHolidaysToCalendars());
-
-        return projectCalendar;
+//        List<Calendar> projectCalendar = calendarRepository.findProjectCalendar(projectId);
+//        projectCalendar.addAll(convertHolidaysToCalendars());
+//
+//        return projectCalendar;
+        return null;
     }
 
     // 개인 일정 페이지에서 개인 일정 추가
