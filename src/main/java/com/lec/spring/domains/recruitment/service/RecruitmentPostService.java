@@ -10,26 +10,21 @@ import java.util.List;
 
 public interface RecruitmentPostService {
 
-    // Paging
+    // 모집글 전체 조회 (페이징 적용)
     Page<RecruitmentPost> findAll(Pageable pageable);
 
-    // 필터옵션
+    // 유저가 만든 모집글 목록 조회
+    List<RecruitmentPost> myRecruitmentPost(Long userId);
 
-    // 리스트형식
+    // 특정 모집글 상세 조회
+    RecruitmentPost detailRecruitmentPost(Long id);
 
-    // 유저가 만든 프로젝트 목록
-    List<RecruitmentPost> myRecruitmentPost(Long id, User userId);
-
-    // Read(상세 글 보여주기)
-    RecruitmentPost detailRecruitmentPost(Long id, Project period);
-
-    // 모집글 적기
-    RecruitmentPost writeRecruitmentPost (RecruitmentPost recruitmentPost);
+    // 모집글 등록
+    RecruitmentPost writeRecruitmentPost(RecruitmentPost recruitmentPost);
 
     // 모집글 수정
-    RecruitmentPost updateRecruitmentPost (Long id,RecruitmentPost recruitmentPost);
+    RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPost recruitmentPost);
 
     // 모집글 삭제
-    int deleteRecruitmentPost (Long id);
-
+    void deleteRecruitmentPost(Long id);
 }
