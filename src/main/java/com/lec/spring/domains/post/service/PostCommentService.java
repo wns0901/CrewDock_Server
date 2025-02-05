@@ -3,17 +3,16 @@ package com.lec.spring.domains.post.service;
 import com.lec.spring.domains.post.entity.PostComment;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PostCommentService {
     PostComment saveComment(PostComment postComment);
-
-    long getCommentsCount(Long postId);
 
     PostComment saveChildComment(PostComment postComment, Long parentsId);
 
     PostComment getCommentById(Long commentId);
 
-    List<PostComment> getCommentsByPostId(Long postId);
+    Map<String, Object> getCommentsByPostId(Long postId);
 
     PostComment updateFixedStatus(Long commentId, Boolean isFixed);
 

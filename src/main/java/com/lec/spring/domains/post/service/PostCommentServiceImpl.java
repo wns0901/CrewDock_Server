@@ -4,7 +4,9 @@ import com.lec.spring.domains.post.entity.PostComment;
 import com.lec.spring.domains.post.repository.PostCommentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PostCommentServiceImpl implements PostCommentService {
@@ -17,11 +19,6 @@ public class PostCommentServiceImpl implements PostCommentService {
     @Override
     public PostComment saveComment(PostComment postComment) {
         return postCommentRepository.save(postComment);
-    }
-
-    @Override
-    public long getCommentsCount(Long postId) {
-        return postCommentRepository.countCommentsByPostId(postId);
     }
 
     @Override
@@ -38,8 +35,15 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Override
-    public List<PostComment> getCommentsByPostId(Long postId) {
-        return postCommentRepository.findCommentsByPostId(postId);
+    public Map<String, Object> getCommentsByPostId(Long postId) {
+        List<PostComment> comments = postCommentRepository.findCommentsByPostId(postId);
+        long count = postCommentRepository.countCommentsByPostId(postId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("comments", comments);
+        result.put("count", count);
+
+        return result;
     }
 
     @Override
