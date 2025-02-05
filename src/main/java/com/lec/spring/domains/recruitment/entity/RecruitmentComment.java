@@ -38,6 +38,4 @@ public class RecruitmentComment extends BaseEntity {
     @Column(name = "is_deleted")
     private Boolean deleted;
 
-    @Column(name = "is_fixed")
-    private Boolean fixed;
 }

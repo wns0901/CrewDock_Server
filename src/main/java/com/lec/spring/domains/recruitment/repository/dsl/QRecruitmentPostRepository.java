@@ -20,5 +20,5 @@ public interface QRecruitmentPostRepository {
     List<RecruitmentPost> filterPosts(List<Stack> stacks, /*list<RecruitedField> recruitedFields,*/ List<ProceedMethod> proceedMethods, List<Region> regions);
 
     // 내가 만든 것들만 필터링 해오기
-    List<RecruitmentPost> myPosts(User user, Project project);
+//    List<RecruitmentPost> myPosts(User user, Project project);
 }

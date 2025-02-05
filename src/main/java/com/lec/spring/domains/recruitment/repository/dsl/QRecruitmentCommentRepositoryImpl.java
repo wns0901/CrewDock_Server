@@ -30,7 +30,6 @@ public class QRecruitmentCommentRepositoryImpl implements QRecruitmentCommentRep
                 .orderBy(comment.id.asc()) // 댓글 ID 기준 정렬 (오래된 댓글 먼저)
                 .fetch();
 
-        // 음 그럼 난 이제 어떻게 출력해야하는거지
         return commentList; // 조회한 댓글 리스트 반환
     }
 }

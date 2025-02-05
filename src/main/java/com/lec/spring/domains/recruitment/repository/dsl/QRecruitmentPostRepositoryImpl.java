@@ -59,15 +59,15 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
         return (regions == null || regions.isEmpty()) ? null : QRecruitmentPost.recruitmentPost.region.in(regions);
     }
 
-    @Override
-    public List<RecruitmentPost> myPosts(User user, Project project) {
-        QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
-
-        // post userId,projectId가 있음
-        // 확인할려면
-        //내가 생성한 프로젝트들만 가져오기
-
-//        user.getId() && project.getId()
-        return null;
-    }
+//    @Override
+//    public List<RecruitmentPost> myPosts(User user, Project project) {
+//        QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
+//
+//        // post userId,projectId가 있음
+//        // 확인할려면
+//        //내가 생성한 프로젝트들만 가져오기
+//
+////        user.getId() && project.getId()
+//        return null;
+//    }
 }

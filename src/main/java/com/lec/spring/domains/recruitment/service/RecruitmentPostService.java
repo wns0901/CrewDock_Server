@@ -15,16 +15,13 @@ public interface RecruitmentPostService {
 
     // 필터옵션
 
-    // Read(상세 글 보여주기)
-    RecruitmentPost detailRecruitmentPost(Long id, Project period);
+    // 리스트형식
 
-    // 내 프로젝트 가져오기
-    // 리스트형식으로 가져옴
+    // 유저가 만든 프로젝트 목록
     List<RecruitmentPost> myRecruitmentPost(Long id, User userId);
 
-    // 프로젝트 선택하기
-
-    // 선택한 프로젝트 가져오기
+    // Read(상세 글 보여주기)
+    RecruitmentPost detailRecruitmentPost(Long id, Project period);
 
     // 모집글 적기
     RecruitmentPost writeRecruitmentPost (RecruitmentPost recruitmentPost);

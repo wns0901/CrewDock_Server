@@ -48,6 +48,7 @@ public class RecruitmentPostController {
 
     }
 
+    // 모집글 삭제
     @DeleteMapping("/recruitments/{recruitmentsId}")
     public void deleteRecruitmentPost(RecruitmentPost recruitmentPost) {
     }
