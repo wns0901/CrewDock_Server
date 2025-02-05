@@ -1,9 +1,7 @@
 package com.lec.spring.domains.recruitment.controller;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import com.lec.spring.domains.recruitment.entity.RecruitmentComment;
+import org.springframework.web.bind.annotation.*;
 
 public class RecruitmentCommentController {
 
@@ -15,11 +13,13 @@ public class RecruitmentCommentController {
 
     // 댓글 작성
     @PostMapping("/recruitments/{recruitmentsId}/comments")
-    public void createcomment(@PathVariable Long recruitmentsId){
-
+    public void createcomment(@RequestBody RecruitmentComment recruitmentComment) {
+        // 작성 잘되나
     }
 
     // 댓글 삭제
     @DeleteMapping ("/recruitments/{recruitmentsId}/comments/{commentId}")
-    public void deletecomment(@PathVariable Long recruitmentsId, @PathVariable Long commentId){}
+    public void deletecomment(@PathVariable Long recruitmentsId, Long commentId){
+
+    }
 }

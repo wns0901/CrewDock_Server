@@ -9,15 +9,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class RecruitmentPostController {
 
-/*
-/recruitments?[page]	        get	QS{page(defalut=1)}		                            메인페이지에 띄울 모집글 리스트
-/recruitments?[….]	            get	QS{stack, proccedMethod, recruitedFiled, region}필터	메인페이지에 띄울 모집글 리스트
-/recruitments/{recruitmentsId}	get			                                            모집글 상세 글(댓글, 첨부파일 포함)
-/recruitments	                post	json body		                                모집글 등록
-/recruitments	                patch	json body		                                모집글 수정
-/recruitments/{recruitmentsId}	delete			                                        모집글 삭제
-* */
-
     private RecruitmentPostService recruitmentPostService;
 
     // 메인페이지에 띄울 모집글 리스트(페이징)
@@ -28,18 +19,20 @@ public class RecruitmentPostController {
 
     // 메인페이지에 띄울 모집글 리스트(필터)
     @GetMapping("/recruitments?[...]")
-    public void recruitments(){
+    public void recruitments(@RequestParam(value = "filterPosts") String filterPosts){
 
     }
 
     // 모집글 상세 글(댓글, 첨부파일 포함)
     @GetMapping("/recruitments/{recruitmentsId}")
     public void detailRecruitmentPost(@PathVariable Long id, RecruitmentPost recruitmentPost) {
+
     }
 
     // 모집글 등록
     @PostMapping("/recruitments")
     public void writeRecruitmentPost(RecruitmentPost recruitmentPost) {
+
     }
 
     // 모집글 수정
@@ -51,5 +44,6 @@ public class RecruitmentPostController {
     // 모집글 삭제
     @DeleteMapping("/recruitments/{recruitmentsId}")
     public void deleteRecruitmentPost(RecruitmentPost recruitmentPost) {
+
     }
 }
