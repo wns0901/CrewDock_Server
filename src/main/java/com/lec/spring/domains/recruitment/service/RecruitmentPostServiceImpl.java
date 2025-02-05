@@ -1,10 +1,14 @@
 package com.lec.spring.domains.recruitment.service;
 
+import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
+import com.lec.spring.domains.user.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 
 public class RecruitmentPostServiceImpl implements RecruitmentPostService {
@@ -21,15 +25,21 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         return recruitmentPostRepository.findAll(pageable);
     }
 
+
     // 필터옵션
 
 
 
     // Read(상세 글 보여주기)
     @Override
-    public RecruitmentPost detailRecruitmentPost(Long id) {
+    public RecruitmentPost detailRecruitmentPost(Long id, Project period) {
         return recruitmentPostRepository.findById(id)
                 .orElseThrow();
+    }
+
+    @Override
+    public List<RecruitmentPost> myRecruitmentPost(Long id, User user) {
+        return List.of();
     }
 
     // Create
@@ -41,7 +51,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
 
         RecruitmentPost Post = new RecruitmentPost();
 
-        
+
         recruitmentPostRepository.save(recruitmentPost);
 
         //검증

@@ -34,7 +34,7 @@ public class RecruitmentPostController {
 
     // 모집글 상세 글(댓글, 첨부파일 포함)
     @GetMapping("/recruitments/{recruitmentsId}")
-    public void detailRecruitmentPost(RecruitmentPost recruitmentPost) {
+    public void detailRecruitmentPost(@PathVariable Long id, RecruitmentPost recruitmentPost) {
     }
 
     // 모집글 등록

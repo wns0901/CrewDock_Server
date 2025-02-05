@@ -28,14 +28,9 @@ public class RecruitmentComment extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // 부모
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parents_id")
     private RecruitmentComment comment;
-
-    // 자식
-    @OneToMany(mappedBy = "comment")
-    private List<RecruitmentComment> comments = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
