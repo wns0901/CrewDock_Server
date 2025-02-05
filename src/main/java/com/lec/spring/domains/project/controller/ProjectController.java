@@ -20,23 +20,22 @@ public class ProjectController {
 
     @GetMapping("/members")
     public ResponseEntity<List<ProjectDTO>> getUserProjects(
-            @RequestParam("userId") Long userId,
             @RequestParam(value = "row", required = false, defaultValue = "0") int row) {
 
         List<ProjectDTO> projects = (row > 0) ?
-                projectService.getUserProjectsWithLimitAndStacks(userId, row) :
-                projectService.getUserProjectsWithStacks(userId);
+                projectService.getUserProjectsWithLimitAndStacks(row) :
+                projectService.getUserProjectsWithStacks();
 
         return ResponseEntity.ok(projects);
     }
 
 
+
     @GetMapping("/members/recruitments")
-    public ResponseEntity<List<ProjectDTO>> getUserRecruitmentProjects(
-            @RequestParam("userId") Long userId) {
+    public ResponseEntity<List<ProjectDTO>> getUserRecruitmentProjects() {
 
 
-        List<ProjectDTO> projects = projectService.getUserRecruitmentProjects(userId);
+        List<ProjectDTO> projects = projectService.getUserRecruitmentProjects();
         return ResponseEntity.ok(projects);
     }
 

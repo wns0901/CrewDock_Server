@@ -7,11 +7,11 @@ import java.util.List;
 public interface ProjectService {
 
 
-    List<ProjectDTO> getUserProjectsWithLimitAndStacks(Long userId, int row);
+    List<ProjectDTO> getUserProjectsWithLimitAndStacks( int row);
 
-    List<ProjectDTO> getUserProjectsWithStacks(Long userId);
+    List<ProjectDTO> getUserProjectsWithStacks();
 
-    List<ProjectDTO> getUserRecruitmentProjects(Long userId);
+    List<ProjectDTO> getUserRecruitmentProjects();
 
     ProjectDTO createProject(ProjectDTO projectDTO);
 }

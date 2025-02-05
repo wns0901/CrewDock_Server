@@ -8,6 +8,8 @@ import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.project.repository.ProjectStacksRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
+import com.lec.spring.domains.user.entity.User;
+import com.lec.spring.domains.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,24 +27,34 @@ public class ProjectServiceImpl implements ProjectService {
     private final StackRepository stackRepository;
     private final ProjectStacksRepository projectStacksRepository;
     private final ProjectMemberRepository projectMemberRepository;
+    private final UserRepository userRepository;
 
 
-    public List<ProjectDTO> getUserProjectsWithStacks(Long userId) {
-        return projectRepository.findProjectsByUserIdAndAuthorityWithStacksQueryDSL(userId)
+    @Override
+    public List<ProjectDTO> getUserProjectsWithStacks() {
+        Long loggedInUserId = getLoggedInUserId();
+
+        return projectRepository.findProjectsByUserIdAndAuthorityWithStacksQueryDSL(loggedInUserId)
                 .stream().map(ProjectDTO::fromEntity).collect(Collectors.toList());
     }
 
-    // CREW, CAPTAIN 권한을 가진 프로젝트 반환 (row 제한 있음)
-    public List<ProjectDTO> getUserProjectsWithLimitAndStacks(Long userId, int row) {
-        List<Project> projects = projectRepository.findProjectsByUserIdAndAuthorities(userId,  row);
-        return projects.stream().map(ProjectDTO::fromEntity).collect(Collectors.toList());
+    @Override
+    public List<ProjectDTO> getUserProjectsWithLimitAndStacks(int row) {
+        Long loggedInUserId = getLoggedInUserId(); // ✅ 현재 로그인한 사용자 ID 가져오기
+
+        return projectRepository.findProjectsByUserIdAndAuthorities(loggedInUserId, row)
+                .stream().map(ProjectDTO::fromEntity).collect(Collectors.toList());
     }
 
     // CREW, WAITING 권한을 가진 프로젝트 반환
     @Override
-    public List<ProjectDTO> getUserRecruitmentProjects(Long userId) {
-        return projectRepository.findRecruitmentProjectsByUserId(userId)
-                .stream().map(ProjectDTO::fromEntity).collect(Collectors.toList());
+    public List<ProjectDTO> getUserRecruitmentProjects() {
+        Long loggedInUserId = getLoggedInUserId();
+
+        return projectRepository.findRecruitmentProjectsByUserId(loggedInUserId)
+                .stream()
+                .map(ProjectDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -58,7 +70,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         // stackIds로 스택 정보 조회 (ProjectDTO에서 stackIds를 가져옴)
         List<Long> stackIds = projectDTO.getStacks().stream()
-                .map(ProjectStacksDTO::getId) // ProjectStacksDTO에서 stackId를 추출
+                .map(ProjectStacksDTO::getProjectId) // ProjectStacksDTO에서 stackId를 추출
                 .collect(Collectors.toList());
 
         // stackIds로 Stack 엔티티들 조회
@@ -80,7 +92,30 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectMemberRepository.save(projectMember);  // ProjectMember 저장
 
-        // 저장된 프로젝트를 다시 DTO로 변환하여 반환
+
         return ProjectDTO.fromEntity(savedProject);
     }
+
+
+    private Long getLoggedInUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() ||
+                authentication.getPrincipal().equals("anonymousUser")) {
+            throw new RuntimeException("사용자가 인증되지 않았습니다.");
+        }
+
+
+        String username = authentication.getName();
+
+
+        if (!userRepository.existsByUsername(username)) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다: " + username);
+        }
+
+
+        User user = userRepository.findByUsername(username);
+        return user.getId();
+    }
+
 }
