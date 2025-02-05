@@ -40,4 +40,13 @@ public class ResignationLetterController {
         ResignationLetter resignationLetter = resignationLetterServiceImpl.getResignationLetter(resignationId);
         return ResponseEntity.ok(resignationLetter);
     }
+
+    @DeleteMapping("/{projectId}/resignations/{resignationId}")
+    public ResponseEntity<Void> deleteResignationLetter(
+            @PathVariable Long projectId,
+            @PathVariable Long resignationId
+    ){
+        resignationLetterServiceImpl.deleteResignationLetter(resignationId);
+        return ResponseEntity.noContent().build();
+    }
 }

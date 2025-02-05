@@ -43,4 +43,11 @@ public class ResignationLetterServiceImpl implements ResignationLetterService {
                 .orElseThrow(() -> new IllegalArgumentException("id 오류"));
     }
 
+    public void deleteResignationLetter(Long resignationId) {
+        if (!resignationLetterRepository.existsById(resignationId)) {
+            throw new IllegalArgumentException("존재하지 않는 탈퇴 신청입니다.");
+        }
+        resignationLetterRepository.deleteById(resignationId);
+    }
+
 }
