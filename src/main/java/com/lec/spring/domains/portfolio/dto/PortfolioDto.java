@@ -1,10 +1,7 @@
-package com.lec.spring.domains.portfolio.entity.dto;
+package com.lec.spring.domains.portfolio.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lec.spring.domains.portfolio.entity.Portfolio;
-import com.lec.spring.domains.portfolio.entity.PortfolioStack;
-import com.lec.spring.domains.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,8 +16,8 @@ public class PortfolioDto {
     private String title;
     private String content;
     private String userName;
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private User user;
+
+    private PortfolioUserDto user;
 
     private List<PortfolioStackDto> portfolioStacks = new ArrayList<>();
 
@@ -29,7 +26,7 @@ public class PortfolioDto {
         this.title = portfolio.getTitle();
         this.content = portfolio.getContent() != null ? portfolio.getContent() : "";
         this.userName = portfolio.getUser().getName();
-        this.user = portfolio.getUser();
+        this.user = new PortfolioUserDto(portfolio.getUser());
         this.portfolioStacks = portfolio.getPortfolioStack() != null
                 ? portfolio.getPortfolioStack().stream()
                 .map(PortfolioStackDto::new)

@@ -1,4 +1,4 @@
-package com.lec.spring.domains.portfolio.entity.dto;
+package com.lec.spring.domains.portfolio.dto;
 
 import com.lec.spring.domains.portfolio.entity.PortfolioStack;
 import com.lec.spring.domains.stack.entity.Stack;

@@ -2,7 +2,7 @@ package com.lec.spring.domains.portfolio.service;
 
 import com.lec.spring.domains.portfolio.entity.Portfolio;
 import com.lec.spring.domains.portfolio.entity.PortfolioStack;
-import com.lec.spring.domains.portfolio.entity.dto.PortfolioStackDto;
+import com.lec.spring.domains.portfolio.dto.PortfolioStackDto;
 import com.lec.spring.domains.portfolio.repository.PortfolioStackRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
