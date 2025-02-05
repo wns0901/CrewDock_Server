@@ -20,6 +20,11 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Override
+    public long getCommentsCount(Long postId) {
+        return postCommentRepository.countCommentsByPostId(postId);
+    }
+
+    @Override
     public PostComment saveChildComment(PostComment postComment, Long parentsId) {
         PostComment parentComment = postCommentRepository.findById(parentsId).get();
         postComment.setParentComment(parentComment);

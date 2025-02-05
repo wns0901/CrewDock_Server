@@ -23,6 +23,14 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
     }
 
     @Override
+    public long countCommentsByPostId(Long postId) {
+        return queryFactory
+                .selectFrom(qPostComment)
+                .where(qPostComment.postId.eq(postId))
+                .fetchCount();
+    }
+
+    @Override
     public List<PostComment> findCommentsByPostId(Long postId) {
         return queryFactory
                 .selectFrom(qPostComment)

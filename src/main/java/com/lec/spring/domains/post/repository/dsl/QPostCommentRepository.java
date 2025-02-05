@@ -7,6 +7,8 @@ import java.util.List;
 public interface QPostCommentRepository {
     PostComment findByCommentId(Long commentId);
 
+    long countCommentsByPostId(Long postId);
+
     List<PostComment> findCommentsByPostId(Long postId);
 
     void updateFixedStatus(Long commentId, boolean isFixed);

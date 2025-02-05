@@ -7,6 +7,8 @@ import java.util.List;
 public interface PostCommentService {
     PostComment saveComment(PostComment postComment);
 
+    long getCommentsCount(Long postId);
+
     PostComment saveChildComment(PostComment postComment, Long parentsId);
 
     PostComment getCommentById(Long commentId);
