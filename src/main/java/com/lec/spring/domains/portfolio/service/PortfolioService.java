@@ -1,6 +1,8 @@
 package com.lec.spring.domains.portfolio.service;
 
 import com.lec.spring.domains.portfolio.dto.PortfolioDto;
+import com.lec.spring.domains.project.entity.Project;
+import com.lec.spring.domains.stack.entity.Stack;
 
 import java.util.List;
 
@@ -21,5 +23,7 @@ public interface PortfolioService {
     // 유저 포트폴리오 삭제
     void deletePortfolio(Long portfolioId);
 
+    // 포트폴리오 생성 메소드
+    void createPortfolioForProject(Project project, Long userId, List<Stack> stacks);
 
 }

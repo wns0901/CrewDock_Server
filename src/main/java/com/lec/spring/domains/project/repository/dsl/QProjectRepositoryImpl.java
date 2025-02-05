@@ -28,158 +28,51 @@ public class QProjectRepositoryImpl implements QProjectRepository {
     private final QRecruitmentPost recruitmentPost = QRecruitmentPost.recruitmentPost;
 
 
-    public List<Project> findProjectsByUserIdAndAuthorityWithStacksQueryDSL(Long userId) {
-        // 현재 로그인한 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String roles = authentication.getAuthorities().stream()
-                .map(grantedAuthority -> grantedAuthority.getAuthority())
-                .collect(Collectors.joining(","));
-
-        // PROJECT_로 시작하는 권한 필터링
-        List<String> authorities = Arrays.stream(roles.split(","))
-                .filter(r -> r.startsWith("PROJECT_"))
-                .collect(Collectors.toList());
-
-        List<Long> projectIds = new ArrayList<>();
-        List<ProjectMemberAuthirity> projectAuthorities = new ArrayList<>();
-
-        for (String auth : authorities) {
-            String[] parts = auth.split("_");
-            if (parts.length < 3) continue;
-
-            try {
-                Long projectId = Long.parseLong(parts[1]);
-                String roleName = parts[2];
-
-                projectIds.add(projectId);
-                projectAuthorities.add(ProjectMemberAuthirity.valueOf(roleName));
-            } catch (NumberFormatException e) {
-                System.err.println("잘못된 권한 포맷: " + auth);
-            }
+    @Override
+    public List<Project> findProjectsByUserIdAndAuthorities(Long userId, List<Long> projectIds, List<ProjectMemberAuthirity> authorities, int row) {
+        if (authorities.isEmpty() || projectIds.isEmpty()) {
+            return List.of();
         }
 
-        // CREW 또는 CAPTAIN 권한만 필터링
-        List<ProjectMemberAuthirity> filteredAuthorities = projectAuthorities.stream()
-                .filter(auth -> auth == ProjectMemberAuthirity.CAPTAIN || auth == ProjectMemberAuthirity.CREW)
-                .collect(Collectors.toList());
+        long totalProjects = queryFactory
+                .select(project.countDistinct())  // ✅ 중복 제거한 개수 확인
+                .from(project)
+                .join(projectMember).on(projectMember.project.eq(project))
+                .where(
+                        projectMember.userId.eq(userId)
+                                .and(projectMember.project.id.in(projectIds))
+                                .and(projectMember.authority.in(authorities))
+                )
+                .fetchOne();
 
-        // 필터링된 권한이 없으면 아무것도 조회하지 않음
-        if (filteredAuthorities.isEmpty()) {
-            return new ArrayList<>();
-        }
+        System.out.println("필터링 후 총 프로젝트 개수: " + totalProjects);
 
-        // QueryDSL
-        return queryFactory
-                .selectFrom(project)
+        List<Project> results = queryFactory
+                .selectDistinct(project)  // ✅ 중복된 프로젝트를 제거
+                .from(project)
                 .join(projectMember).on(projectMember.project.eq(project))
                 .leftJoin(projectStacks).on(projectStacks.projectId.eq(project.id))
                 .leftJoin(stack).on(stack.id.eq(projectStacks.stack.id))
                 .where(
                         projectMember.userId.eq(userId)
                                 .and(projectMember.project.id.in(projectIds))
-                                .and(projectMember.authority.in(filteredAuthorities))
+                                .and(projectMember.authority.in(authorities))
                 )
+                .orderBy(project.startDate.desc()) // 최신 프로젝트부터 정렬
+                .limit(row > 0 ? row : Long.MAX_VALUE) // row 값이 0이면 전체 조회
                 .fetch();
+
+        System.out.println("최종 반환된 프로젝트 개수: " + results.size());
+        return results;
     }
 
 
 
-
-
-    public List<Project> findProjectsByUserIdAndAuthorities(Long userId, int row) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String roles = authentication.getAuthorities().stream()
-                .map(grantedAuthority -> grantedAuthority.getAuthority())
-                .collect(Collectors.joining(","));
-
-        List<String> authorities = Arrays.stream(roles.split(","))
-                .filter(r -> r.startsWith("PROJECT_"))
-                .collect(Collectors.toList());
-
-        List<Long> projectIds = new ArrayList<>();
-        List<ProjectMemberAuthirity> projectAuthorities = new ArrayList<>();
-
-        for (String auth : authorities) {
-            String[] parts = auth.split("_");
-            if (parts.length < 3) continue;
-
-            try {
-                Long projectId = Long.parseLong(parts[1]);
-                String roleName = parts[2];
-
-                projectIds.add(projectId);
-                projectAuthorities.add(ProjectMemberAuthirity.valueOf(roleName));
-            } catch (NumberFormatException e) {
-                System.err.println("잘못된 권한 포맷: " + auth);
-            }
-        }
-
-        // CREW 또는 CAPTAIN만 필터링
-        List<ProjectMemberAuthirity> authorityList = projectAuthorities.stream()
-                .filter(auth -> auth == ProjectMemberAuthirity.CAPTAIN || auth == ProjectMemberAuthirity.CREW)
-                .collect(Collectors.toList());
-
-        // 필터링된 권한이 없으면 아무것도 조회하지 않음
-        if (authorityList.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // QueryDSL
-        return queryFactory
-                .selectFrom(project)
-                .join(projectMember).on(projectMember.project.eq(project))
-                .leftJoin(projectStacks).on(projectStacks.projectId.eq(project.id))
-                .leftJoin(stack).on(stack.id.eq(projectStacks.stack.id))
-                .where(
-                        projectMember.userId.eq(userId)
-                                .and(projectMember.project.id.in(projectIds))
-                                .and(projectMember.authority.in(authorityList))
-                )
-                .limit(row)
-                .fetch();
-    }
 
 
 
     @Override
     public List<Project> findRecruitmentProjectsByUserId(Long userId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String roles = authentication.getAuthorities().stream()
-                .map(grantedAuthority -> grantedAuthority.getAuthority())
-                .collect(Collectors.joining(","));
-
-
-        List<String> authorities = Arrays.stream(roles.split(","))
-                .filter(r -> r.startsWith("PROJECT_"))
-                .collect(Collectors.toList());
-
-        List<Long> projectIds = new ArrayList<>();
-        List<ProjectMemberAuthirity> projectAuthorities = new ArrayList<>();
-
-        for (String auth : authorities) {
-            String[] parts = auth.split("_");
-            if (parts.length < 3) continue;
-
-            try {
-                Long projectId = Long.parseLong(parts[1]);
-                String role = parts[2];
-                projectIds.add(projectId);
-                projectAuthorities.add(ProjectMemberAuthirity.valueOf(role));
-            } catch (NumberFormatException e) {
-                System.err.println("잘못된 권한 포맷: " + auth);
-            }
-        }
-
-
-        List<ProjectMemberAuthirity> filteredAuthorities = projectAuthorities.stream()
-                .filter(auth -> auth == ProjectMemberAuthirity.CREW || auth == ProjectMemberAuthirity.WAITING)
-                .collect(Collectors.toList());
-
-        if (filteredAuthorities.isEmpty()) {
-            return new ArrayList<>();  // ✅ 빈 리스트 반환
-        }
-
-
         return queryFactory
                 .selectFrom(project)
                 .join(projectMember).on(projectMember.project.eq(project))
@@ -188,14 +81,8 @@ public class QProjectRepositoryImpl implements QProjectRepository {
                 .leftJoin(recruitmentPost).on(recruitmentPost.project.id.eq(project.id))
                 .where(
                         projectMember.userId.eq(userId)
-                                .and(projectMember.project.id.in(projectIds))
-                                .and(projectMember.authority.in(filteredAuthorities))
+                                .and(projectMember.authority.in(ProjectMemberAuthirity.CREW, ProjectMemberAuthirity.WAITING))
                 )
                 .fetch();
     }
-
-
-
-
-
 }

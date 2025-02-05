@@ -1,7 +1,7 @@
 package com.lec.spring.domains.project.controller;
 
+import com.lec.spring.domains.project.dto.ProjectCreatDTO;
 import com.lec.spring.domains.project.dto.ProjectDTO;
-import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,6 @@ public class ProjectController {
     }
 
 
-
     @GetMapping("/members/recruitments")
     public ResponseEntity<List<ProjectDTO>> getUserRecruitmentProjects() {
 
@@ -39,9 +38,11 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
-    @PostMapping
-    public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDTO) {
-        ProjectDTO createdProject = projectService.createProject(projectDTO);
+    @PostMapping("/{userId}")
+    public ResponseEntity<ProjectDTO> createProject(
+            @PathVariable Long userId,
+            @RequestBody ProjectCreatDTO projectCreatDTO) {
+        ProjectDTO createdProject = projectService.createProject(userId, projectCreatDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
 
