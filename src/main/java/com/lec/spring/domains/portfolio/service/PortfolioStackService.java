@@ -2,7 +2,7 @@ package com.lec.spring.domains.portfolio.service;
 
 import com.lec.spring.domains.portfolio.entity.Portfolio;
 import com.lec.spring.domains.portfolio.entity.PortfolioStack;
-import com.lec.spring.domains.portfolio.entity.dto.PortfolioStackDto;
+import com.lec.spring.domains.portfolio.dto.PortfolioStackDto;
 
 import java.util.List;
 

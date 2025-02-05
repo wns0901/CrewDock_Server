@@ -2,10 +2,12 @@ package com.lec.spring.domains.portfolio.service;
 
 import com.lec.spring.domains.portfolio.entity.Portfolio;
 import com.lec.spring.domains.portfolio.entity.PortfolioStack;
-import com.lec.spring.domains.portfolio.entity.dto.PortfolioDto;
-import com.lec.spring.domains.portfolio.entity.dto.PortfolioStackDto;
+import com.lec.spring.domains.portfolio.dto.PortfolioDto;
+import com.lec.spring.domains.portfolio.dto.PortfolioStackDto;
 import com.lec.spring.domains.portfolio.repository.PortfolioRepository;
-import com.lec.spring.domains.stack.entity.Stack;
+import com.lec.spring.domains.user.entity.User;
+import com.lec.spring.domains.user.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final PortfolioStackService portfolioStackService;
+    private final UserRepository userRepository;
 
     @Override
     public List<PortfolioDto> getPortfoliosWithStacks(Long userId) {
@@ -36,10 +39,15 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     @Transactional
     public PortfolioDto createPortfolio(PortfolioDto portfolioDto) {
+
+        User user = userRepository.findById(portfolioDto.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다: " + portfolioDto.getUser().getId()));
+
+
         Portfolio portfolio = Portfolio.builder()
                 .title(portfolioDto.getTitle())
                 .content(portfolioDto.getContent()!= null ? portfolioDto.getContent() : "")
-                .user(portfolioDto.getUser())
+                .user(user)
                 .portfolioStack(new ArrayList<>())
                 .build();
 
