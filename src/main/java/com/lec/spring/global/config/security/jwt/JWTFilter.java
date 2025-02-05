@@ -3,11 +3,13 @@ package com.lec.spring.global.config.security.jwt;
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.entity.ProjectMember;
 import com.lec.spring.domains.project.entity.ProjectMemberAuthirity;
+import com.lec.spring.domains.project.repository.ProjectMemberRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.user.entity.Auth;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.entity.UserAuth;
 import com.lec.spring.domains.user.repository.AuthRepository;
+import com.lec.spring.domains.user.repository.UserRepository;
 import com.lec.spring.global.config.security.PrincipalDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,6 +32,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
     private final AuthRepository authRepository;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -69,8 +72,10 @@ public class JWTFilter extends OncePerRequestFilter {
                String authName = roleName.split("_")[2];
                Project project = projectRepository.findById(projectId).orElse(null);
 
+               User user = userRepository.findById(id).orElse(null);
+
                projectMembers.add(ProjectMember.builder()
-                       .userId(id)
+                       .user(user)
                        .project(project)
                        .authority(ProjectMemberAuthirity.valueOf(authName))
                        .build());

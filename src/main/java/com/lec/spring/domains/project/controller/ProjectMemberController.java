@@ -49,7 +49,7 @@ public class ProjectMemberController {
             @RequestBody Map<String, Object> request) {
 
         Long userId = Long.valueOf(String.valueOf(request.get("userId")));  // userId 추출
-        String authorityStr = String.valueOf(request.get("authirity"));  // authority 추출
+        String authorityStr = String.valueOf(request.get("authority"));  // authority 추출
         ProjectMemberAuthirity authority = ProjectMemberAuthirity.valueOf(authorityStr);  // Enum 변환
 
         projectMemberServiceImpl.updateMemberAuthority(projectId, userId, authority);

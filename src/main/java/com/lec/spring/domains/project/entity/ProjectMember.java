@@ -1,5 +1,7 @@
 package com.lec.spring.domains.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.global.common.entity.BaseEntity;
 import com.lec.spring.global.common.entity.Position;
@@ -19,6 +21,7 @@ public class ProjectMember extends BaseEntity {
     private Long id;
 
     @ManyToOne(optional = false)
+    @JsonIgnoreProperties({"password", "userAuths", "userStacks", "projectMembers"})
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -36,4 +39,14 @@ public class ProjectMember extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Position position;
+
+    @JsonProperty("user_info")
+    public User getUserInfo() {
+        return User.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .profileImgUrl(user.getProfileImgUrl())
+                .build();
+    }
 }
