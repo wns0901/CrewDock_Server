@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,8 @@ public class ProjectDTO {
     private String designUrl;
     private String imgUrl;
     private String introduction;
-    private List<ProjectStacksDTO> stacks;
+    private List<ProjectStacksDTO> stacks = new ArrayList<>();
+
 
     public static ProjectDTO fromEntity(Project project) {
         ProjectDTO dto = new ProjectDTO();
@@ -38,10 +40,28 @@ public class ProjectDTO {
         dto.setDesignUrl(project.getDesignUrl());
         dto.setImgUrl(project.getImgUrl());
         dto.setIntroduction(project.getIntroduction());
+
         // ProjectStacksDTO로 변환된 데이터 포함
-        dto.setStacks(project.getStacks().stream()
-                .map(ProjectStacksDTO::new)
-                .collect(Collectors.toList()));
+        dto.setStacks(project.getStacks() != null
+                ? project.getStacks().stream()
+                .map(ProjectStacksDTO::new)  // ProjectStacks 엔티티에서 ProjectStacksDTO로 변환
+                .collect(Collectors.toList())
+                : new ArrayList<>());
+
         return dto;
     }
+
+
+
+    public static Project toEntity(ProjectDTO projectDTO) {
+        Project project = Project.builder()
+                .name(projectDTO.getName())
+                .period(projectDTO.getPeriod())
+                .startDate(projectDTO.getStartDate())
+                .status(projectDTO.getStatus())
+                .build();
+
+        return project;
+    }
+
 }

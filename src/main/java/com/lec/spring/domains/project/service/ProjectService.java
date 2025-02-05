@@ -12,4 +12,6 @@ public interface ProjectService {
     List<ProjectDTO> getUserProjectsWithStacks(Long userId);
 
     List<ProjectDTO> getUserRecruitmentProjects(Long userId);
+
+    ProjectDTO createProject(ProjectDTO projectDTO);
 }
