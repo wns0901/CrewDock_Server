@@ -1,11 +1,9 @@
 package com.lec.spring.domains.project.controller;
 
-import com.lec.spring.domains.project.entity.Project;
-import com.lec.spring.domains.project.entity.ProjectMember;
+import com.lec.spring.domains.project.dto.ProjectMemberDTO;
 import com.lec.spring.domains.project.entity.ProjectMemberAuthirity;
 import com.lec.spring.domains.project.entity.ProjectMemberStatus;
 import com.lec.spring.domains.project.service.ProjectMemberServiceImpl;
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +20,10 @@ public class ProjectMemberController {
 
     // 멤버 조회
     @GetMapping("/{projectId}/members")
-    public ResponseEntity<List<ProjectMember>> getProjectMembers(@PathVariable Long projectId) {
-        List<Tuple> tuples = projectMemberServiceImpl.findMembersByProjectId(projectId);
+    public ResponseEntity<List<ProjectMemberDTO>> getProjectMembers(@PathVariable Long projectId) {
+        // 프로젝트 ID로 멤버 리스트 조회 (이미 ProjectMemberDTO 형태로 반환됨)
+        List<ProjectMemberDTO> members = projectMemberServiceImpl.findMembersByProjectId(projectId);
 
-        List<ProjectMember> members = tuples.stream()
-                .map(tuple -> {
-                    ProjectMember projectMember = tuple.get(0, ProjectMember.class);  // ProjectMember 추출
-                    String userName = tuple.get(1, String.class);  // User name 추출
-                    return projectMember;
-                })
-                .collect(Collectors.toList());
         return ResponseEntity.ok(members);
     }
 

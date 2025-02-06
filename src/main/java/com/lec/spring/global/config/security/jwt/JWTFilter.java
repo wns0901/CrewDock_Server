@@ -75,7 +75,7 @@ public class JWTFilter extends OncePerRequestFilter {
                User user = userRepository.findById(id).orElse(null);
 
                projectMembers.add(ProjectMember.builder()
-                       .user(user)
+                       .userId(id)
                        .project(project)
                        .authority(ProjectMemberAuthirity.valueOf(authName))
                        .build());
