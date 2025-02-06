@@ -13,10 +13,13 @@ import com.lec.spring.domains.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +33,31 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    // 페이징
+    // 페이징 (16개씩)
     @Override
-    public Page<RecruitmentPost> findAll(Pageable pageable) {
+    public Page<RecruitmentPost> findAll(int page) {
+        Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
         return postRepository.findAll(pageable);
+    }
+
+    // 필터링 페이지
+    @Override
+    public Page<RecruitmentPost> findByFilters(String stack, String position, String proceedMethod, String region, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return postRepository.findByFilters(stack, position, proceedMethod, region, pageable);
+    }
+
+    @Override
+    public Page<RecruitmentPost> findClosingRecruitments(int page) {
+        LocalDate today = LocalDate.now();
+        LocalDate closingDate = today.plusDays(3);
+
+        Pageable pageable = PageRequest.of(page - 1, 20, Sort.by(
+                Sort.Order.asc("deadline"),  // 마감일 오름차순
+                Sort.Order.asc("recruitedNumber") // 잔여 모집 인원 적은 순
+        ));
+
+        return postRepository.findClosingRecruitments(closingDate, pageable);
     }
 
     // 내가 적은 모집글 확인하기
@@ -94,22 +118,21 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
 
     // 모집 신청
     @Transactional
-    public void applyToProject(Long postId, Long userId) {
-        RecruitmentPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
+    public void applyToProject(Long projectId, Long userId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트가 존재하지 않습니다."));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
         // 중복 지원 방지
-        if (projectMemberRepository.existsByProjectAndUser(post.getProject(), user)) {
-            throw new IllegalStateException("이미 지원한 모집글입니다.");
+        if (projectMemberRepository.existsByProjectAndUser(project, user)) {
+            throw new IllegalStateException("이미 신청한 프로젝트입니다.");
         }
 
         // 프로젝트 멤버 신청 (authority: WAITING, status: REQUEST)
-        Project project = post.getProject();
         ProjectMember projectMember = ProjectMember.builder()
-                .project(project)
+                .project(project)  // 프로젝트 ID 반영
                 .user(user)
                 .authority(ProjectMemberAuthirity.WAITING)  // 대기 상태
                 .status(ProjectMemberStatus.REQUEST)        // 요청 상태
@@ -118,6 +141,5 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
 
         projectMemberRepository.save(projectMember);
     }
-
 
 }

@@ -11,9 +11,15 @@ import java.util.List;
 public interface RecruitmentPostService {
 
     // 모집글 전체 조회 (페이징 적용)
-    Page<RecruitmentPost> findAll(Pageable pageable);
+    Page<RecruitmentPost> findAll(int page);
 
-    // 유저가 만든 모집글 목록 조회
+    // 필터 옵션 모집글 조회(페이징)
+    Page<RecruitmentPost> findByFilters(String stack, String position, String proceedMethod, String region, int page);
+
+    // 마감 기한 3일전
+    Page<RecruitmentPost> findClosingRecruitments(int page);
+
+    // 캡틴이 만든 모집글 목록 조회
     List<RecruitmentPost> myRecruitmentPost(Long userId);
 
     // 특정 모집글 상세 조회

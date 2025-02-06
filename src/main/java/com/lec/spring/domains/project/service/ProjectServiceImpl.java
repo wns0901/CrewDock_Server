@@ -2,14 +2,19 @@ package com.lec.spring.domains.project.service;
 
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.repository.ProjectRepository;
+import com.lec.spring.domains.user.entity.User;
+import com.lec.spring.domains.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Project getProject(Long projectId) {
@@ -39,6 +44,13 @@ public class ProjectServiceImpl implements ProjectService {
         if (updatedProject.getStacks() != null && !updatedProject.getStacks().isEmpty())  project.setStacks(updatedProject.getStacks());
         projectRepository.save(project);
 
-
     }
+
+    public List<Project> getCaptainProjects(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+        return projectRepository.findAllByCaptainUser(user);
+    }
+
 }
