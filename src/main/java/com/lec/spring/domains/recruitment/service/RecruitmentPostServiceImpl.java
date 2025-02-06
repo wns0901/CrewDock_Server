@@ -133,7 +133,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         // 프로젝트 멤버 신청 (authority: WAITING, status: REQUEST)
         ProjectMember projectMember = ProjectMember.builder()
                 .project(project)  // 프로젝트 ID 반영
-                .userId(user)
+                .userId(userId)
                 .authority(ProjectMemberAuthirity.WAITING)  // 대기 상태
                 .status(ProjectMemberStatus.REQUEST)        // 요청 상태
                 .position(user.getHopePosition())           // 희망 포지션
