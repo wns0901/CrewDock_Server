@@ -3,6 +3,7 @@ package com.lec.spring.global.config.security.jwt;
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.entity.ProjectMember;
 import com.lec.spring.domains.project.entity.ProjectMemberAuthirity;
+import com.lec.spring.domains.project.repository.ProjectMemberRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.user.entity.Auth;
 import com.lec.spring.domains.user.entity.User;
@@ -24,8 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.lec.spring.domains.user.entity.QUser.user;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -73,11 +72,10 @@ public class JWTFilter extends OncePerRequestFilter {
                String authName = roleName.split("_")[2];
                Project project = projectRepository.findById(projectId).orElse(null);
 
-               User user = userRepository.findById(id)
-                       .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+               User user = userRepository.findById(id).orElse(null);
 
                projectMembers.add(ProjectMember.builder()
-                       .userId(user)
+                       .userId(id)
                        .project(project)
                        .authority(ProjectMemberAuthirity.valueOf(authName))
                        .build());
