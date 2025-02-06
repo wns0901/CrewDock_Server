@@ -73,9 +73,11 @@ public class JWTFilter extends OncePerRequestFilter {
                String authName = roleName.split("_")[2];
                Project project = projectRepository.findById(projectId).orElse(null);
 
-                User user = userRepository.findById(id).orElse(null);
+               User user = userRepository.findById(id)
+                       .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
                projectMembers.add(ProjectMember.builder()
-                       .user(user)
+                       .userId(user)
                        .project(project)
                        .authority(ProjectMemberAuthirity.valueOf(authName))
                        .build());

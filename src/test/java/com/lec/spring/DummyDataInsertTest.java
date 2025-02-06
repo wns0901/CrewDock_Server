@@ -232,7 +232,7 @@ public class DummyDataInsertTest {
         // 6. 프로젝트 모집글 생성
         IntStream.range(1, 21).forEach(i ->
                 recruitmentPostRepository.save(RecruitmentPost.builder()
-                        .user(users.get(i % users.size()))
+                        .userId(users.get(i % users.size()))
                         .project(project1)
                         .title("프로젝트 A 개발자 모집 " + i)
                         .content("백엔드/프론트엔드/디자이너 중 1명 모집")
@@ -329,7 +329,7 @@ public class DummyDataInsertTest {
 
         // 모집글 삽입
         recruitmentPostRepository.save(RecruitmentPost.builder()
-                .user(users.get(0))
+                .userId(users.get(0))
                 .project(project1)
                 .title("프로젝트 A 개발자 모집")
                 .content("백엔드 개발자 1명 모집")
@@ -341,7 +341,7 @@ public class DummyDataInsertTest {
                 .build());
 
         recruitmentPostRepository.save(RecruitmentPost.builder()
-                .user(users.get(1))
+                .userId(users.get(1))
                 .project(project2)
                 .title("프로젝트 B 디자이너 모집")
                 .content("UI/UX 디자이너 1명 모집")

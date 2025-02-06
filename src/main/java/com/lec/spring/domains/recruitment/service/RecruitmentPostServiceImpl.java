@@ -33,14 +33,14 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    // 페이징 (16개씩)
+    // 전체 페이징 (16개씩)
     @Override
     public Page<RecruitmentPost> findAll(int page) {
         Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
         return postRepository.findAll(pageable);
     }
 
-    // 필터링 페이지
+    // 전체 필터링 페이지
     @Override
     public Page<RecruitmentPost> findByFilters(String stack, String position, String proceedMethod, String region, int page) {
         Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -77,14 +77,14 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     @Override
     public RecruitmentPost writeRecruitmentPost(RecruitmentPost post) {
         // 쓰기 권한(로그인)이 되어있는지 확인
-        User user = userRepository.findById(post.getUser().getId())
+        User user = userRepository.findById(post.getUserId().getId())
                 .orElseThrow(() -> new EntityNotFoundException("로그인이 되어있지 않습니다"));
 
         // 프로젝트가 있는지 확인
         Project project = projectRepository.findById(post.getProject().getId())
                 .orElseThrow(() -> new EntityNotFoundException("프로젝트가 없습니다"));
 
-        post.setUser(user);
+        post.setUserId(user);
         post.setProject(project);
 
         return postRepository.save(post);
@@ -133,7 +133,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         // 프로젝트 멤버 신청 (authority: WAITING, status: REQUEST)
         ProjectMember projectMember = ProjectMember.builder()
                 .project(project)  // 프로젝트 ID 반영
-                .user(user)
+                .userId(user)
                 .authority(ProjectMemberAuthirity.WAITING)  // 대기 상태
                 .status(ProjectMemberStatus.REQUEST)        // 요청 상태
                 .position(user.getHopePosition())           // 희망 포지션

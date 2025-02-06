@@ -21,7 +21,7 @@ public class RecruitmentPost extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User userId;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)

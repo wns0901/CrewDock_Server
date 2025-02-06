@@ -6,9 +6,11 @@ import com.lec.spring.domains.recruitment.repository.RecruitmentCommentRepositor
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.recruitment.repository.dsl.QRecruitmentCommentRepositoryImpl;
 import com.lec.spring.domains.user.entity.User;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class RecruitmentCommentServiceImpl implements RecruitmentCommentService {
 
     private final RecruitmentCommentRepository recruitmentCommentRepository;

@@ -7,10 +7,12 @@ import com.lec.spring.domains.recruitment.repository.RecruitmentScrapRepository;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service
 public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
     private final RecruitmentScrapRepository recruitmentScrapRepository;
     private final RecruitmentPostRepository recruitmentPostRepository;
@@ -35,7 +37,7 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
         }
 
         RecruitmentScrap scrap = RecruitmentScrap.builder().
-                user(user).
+                userId(user).
                 recruitment(post).
                 build();
         recruitmentScrapRepository.save(scrap);

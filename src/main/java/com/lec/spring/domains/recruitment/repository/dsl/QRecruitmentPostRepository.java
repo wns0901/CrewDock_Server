@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface QRecruitmentPostRepository {
 
-    Optional<RecruitmentPost> findByIdWithUserAndProject(Long id);
+    Optional<RecruitmentPost> findByIdWithUserAndProject(Long userId);
 
     Page<RecruitmentPost> findByFilters(String stack, String position, String proceedMethod, String region, Pageable pageable);
 

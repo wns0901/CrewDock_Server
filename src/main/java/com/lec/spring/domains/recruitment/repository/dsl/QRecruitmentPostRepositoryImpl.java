@@ -3,6 +3,7 @@ package com.lec.spring.domains.recruitment.repository.dsl;
 import com.lec.spring.domains.recruitment.entity.QRecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.Region;
+import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,26 +17,32 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static com.lec.spring.domains.user.entity.QUser.user;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Repository
 @RequiredArgsConstructor
 public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final RecruitmentPostRepository recruitmentPostRepository;
 
-    //
+    // 모집글을 조회하면 글작성자와 프로젝트를 조회
     @Override
-    public Optional<RecruitmentPost> findByIdWithUserAndProject(Long id) {
+    public Optional<RecruitmentPost> findByIdWithUserAndProject(Long postId) {
         QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
 
         RecruitmentPost result = queryFactory
                 .selectFrom(post)
                 .leftJoin(post.user).fetchJoin()
                 .leftJoin(post.project).fetchJoin()
-                .where(post.id.eq(id))
+                .where(post.id.eq(postId))
                 .fetchOne();
 
         return Optional.ofNullable(result);
     }
+
+
 
     // 필터
     @Override

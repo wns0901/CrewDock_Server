@@ -1,10 +1,7 @@
 package com.lec.spring.domains.recruitment.service;
 
-import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
-import com.lec.spring.domains.user.entity.User;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
