@@ -70,13 +70,6 @@ public class RecruitmentPostController {
         recruitmentPostService.deleteRecruitmentPost(id);
     }
 
-    // 캡틴의 모든 프로젝트 목록 조회
-    @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getCaptainProjects(@RequestParam Long userId) {
-        return ResponseEntity.ok(projectService.getCaptainProjects(userId));
-    }
-
-
     // 프로젝트 신청 (json body)
     @PostMapping("/projects/{projectId}/members")
     public ResponseEntity<String> applyToProject(
@@ -88,6 +81,12 @@ public class RecruitmentPostController {
         recruitmentPostServiceImpl.applyToProject(projectId, userId); // 프로젝트 ID 먼저 받도록 변경
 
         return ResponseEntity.ok("프로젝트 신청이 완료되었습니다.");
+    }
+
+    // 캡틴의 모든 프로젝트 목록 조회
+    @GetMapping("/projects")
+    public ResponseEntity<List<Project>> getCaptainProjects(@RequestParam Long userId) {
+        return ResponseEntity.ok(projectService.getCaptainProjects(userId));
     }
 
 
