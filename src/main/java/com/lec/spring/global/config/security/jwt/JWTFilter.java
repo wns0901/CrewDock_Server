@@ -8,6 +8,7 @@ import com.lec.spring.domains.user.entity.Auth;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.entity.UserAuth;
 import com.lec.spring.domains.user.repository.AuthRepository;
+import com.lec.spring.domains.user.repository.UserRepository;
 import com.lec.spring.global.config.security.PrincipalDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,12 +25,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.lec.spring.domains.user.entity.QUser.user;
+
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final AuthRepository authRepository;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -69,8 +73,9 @@ public class JWTFilter extends OncePerRequestFilter {
                String authName = roleName.split("_")[2];
                Project project = projectRepository.findById(projectId).orElse(null);
 
+                User user = userRepository.findById(id).orElse(null);
                projectMembers.add(ProjectMember.builder()
-                       .userId(id)
+                       .user(user)
                        .project(project)
                        .authority(ProjectMemberAuthirity.valueOf(authName))
                        .build());
