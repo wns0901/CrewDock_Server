@@ -30,7 +30,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    //
+    // 페이징
     @Override
     public Page<RecruitmentPost> findAll(Pageable pageable) {
         return postRepository.findAll(pageable);
@@ -106,7 +106,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
             throw new IllegalStateException("이미 지원한 모집글입니다.");
         }
 
-        // 프로젝트 멤버 신청 (authority: APPLICANT, status: PENDING)
+        // 프로젝트 멤버 신청 (authority: WAITING, status: REQUEST)
         Project project = post.getProject();
         ProjectMember projectMember = ProjectMember.builder()
                 .project(project)

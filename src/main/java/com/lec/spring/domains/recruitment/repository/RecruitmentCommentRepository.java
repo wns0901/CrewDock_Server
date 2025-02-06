@@ -9,8 +9,4 @@ import java.util.List;
 
 public interface RecruitmentCommentRepository extends JpaRepository<RecruitmentComment, Long> {
 
-//     // 특정 댓글의 부모 댓글의 확인
-//    @Query(value = """
-//                select b from RecruitmentComment""")
-//    List<RecruitmentComment> findByParentsId(@Param("parents_id")RecruitmentComment comment);
 }

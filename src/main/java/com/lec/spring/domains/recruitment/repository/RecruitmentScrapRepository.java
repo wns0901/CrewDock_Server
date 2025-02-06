@@ -10,10 +10,9 @@ import java.util.List;
 public interface RecruitmentScrapRepository extends JpaRepository<RecruitmentScrap, Long> {
 
     //유저랑 모집글이 있는지 확인
-    boolean existsByUserAndRecruitmentPost(User user, RecruitmentPost recruitmentPost);
+    boolean existsByUserAndRecruitment(User user, RecruitmentPost recruitment);
 
-    // 스크랩 지우기
-    void deleteByUserAndRecruitmentPost(User user, RecruitmentPost recruitmentPost);
+    void deleteByUserAndRecruitment(User user, RecruitmentPost recruitment);
 
     // 스크랩 출력하기
     List<RecruitmentScrap> findByUser(User user);
