@@ -1,12 +1,14 @@
 package com.lec.spring.domains.project.service;
 
+import com.lec.spring.domains.project.dto.ProjectIssueDTO;
 import com.lec.spring.domains.project.entity.ProjectIssue;
+import com.lec.spring.domains.project.entity.ProjectIssuePriority;
+import com.lec.spring.domains.project.entity.ProjectIssueStatus;
 import com.lec.spring.domains.project.repository.ProjectIssueRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -37,12 +39,16 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
             projectIssue.setManager(projectIssue.getWriter());
         }
 
+        // 상태와 우선순위 변환
+        projectIssue.setStatus(convertStatus(String.valueOf(projectIssue.getStatus())));
+        projectIssue.setPriority(convertPriority(String.valueOf(projectIssue.getPriority())));
+
         return projectIssueRepository.save(projectIssue);
     }
 
     // 프로젝트별 이슈 목록
     @Override
-    public List<ProjectIssue> listByProjectId(Long projectId) {
+    public List<ProjectIssueDTO> listByProjectId(Long projectId) {
         return projectIssueRepository.findByProjectIdSorted(projectId);
     }
 
@@ -56,10 +62,10 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
             existingIssue.setIssueName(updatedIssue.getIssueName());
         }
         if (updatedIssue.getStatus() != null) {
-            existingIssue.setStatus(updatedIssue.getStatus());
+            existingIssue.setStatus(convertStatus(String.valueOf(updatedIssue.getStatus()))); // 상태 변환
         }
         if (updatedIssue.getPriority() != null) {
-            existingIssue.setPriority(updatedIssue.getPriority());
+            existingIssue.setPriority(convertPriority(String.valueOf(updatedIssue.getPriority()))); // 우선순위 변환
         }
         if (updatedIssue.getStartline() != null && updatedIssue.getDeadline() != null) {
             if (updatedIssue.getStartline().isAfter(updatedIssue.getDeadline())) {
@@ -110,6 +116,34 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         }
         if (projectIssue.getDeadline() == null) {
             throw new IllegalArgumentException("마감 날짜를 지정해주세요.");
+        }
+    }
+
+    // 상태 변환
+    private ProjectIssueStatus convertStatus(String status) {
+        switch (status) {
+            case "진행중":
+                return ProjectIssueStatus.INPROGRESS;
+            case "완료":
+                return ProjectIssueStatus.COMPLETE;
+            case "시작 안함":
+                return ProjectIssueStatus.YET;
+            default:
+                throw new IllegalArgumentException("잘못된 상태 값입니다.");
+        }
+    }
+
+    // 우선순위 변환 (우선순위가 문자열로 들어온 경우 처리)
+    private ProjectIssuePriority convertPriority(String priority) {
+        switch (priority) {
+            case "높음":
+                return ProjectIssuePriority.HIGH;
+            case "중간":
+                return ProjectIssuePriority.MIDDLE;
+            case "낮음":
+                return ProjectIssuePriority.LOW;
+            default:
+                throw new IllegalArgumentException("잘못된 우선순위 값입니다.");
         }
     }
 

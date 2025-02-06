@@ -1,15 +1,17 @@
 package com.lec.spring.domains.project.repository.dsl;
 
-import com.lec.spring.domains.project.entity.ProjectIssue;
+import com.lec.spring.domains.project.dto.ProjectIssueDTO;
 import com.lec.spring.domains.project.entity.ProjectIssuePriority;
 import com.lec.spring.domains.project.entity.ProjectIssueStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.lec.spring.domains.project.entity.QProjectIssue.projectIssue;
+import static com.lec.spring.domains.user.entity.QUser.user;
 
 @Repository
 public class QProjectIssueRepositoryImpl implements QProjectIssueRepository {
@@ -21,17 +23,46 @@ public class QProjectIssueRepositoryImpl implements QProjectIssueRepository {
     }
 
     @Override
-    public List<ProjectIssue> findByProjectIdSorted(Long projectId) {
+    public List<ProjectIssueDTO> findByProjectIdSorted(Long projectId) {
         return queryFactory
-                .selectFrom(projectIssue)
+                .select(
+                        projectIssue.id,
+                        projectIssue.issueName,
+                        projectIssue.status,
+                        projectIssue.priority,
+                        projectIssue.deadline,
+                        projectIssue.startline,
+                        projectIssue.createAt,
+                        projectIssue.writer.id,
+                        projectIssue.manager.id,
+                        projectIssue.manager.name,
+                        projectIssue.project.id
+                )
+                .from(projectIssue)
                 .where(projectIssue.project.id.eq(projectId))
                 .orderBy(
-                        projectIssue.deadline.asc(),  // 1. 마감일이 가까운 순
-                        getPriorityOrder(),           // 2. 우선순위 높은 순
-                        getStatusOrder()              // 3. 진행중 > 시작안함 > 완료
+                        projectIssue.deadline.asc(),
+                        getPriorityOrder(),
+                        getStatusOrder()
                 )
-                .fetch();
+                .fetch()
+                .stream()
+                .map(result -> new ProjectIssueDTO(
+                        result.get(0, Long.class),
+                        result.get(1, String.class),
+                        result.get(2, ProjectIssueStatus.class),
+                        result.get(3, ProjectIssuePriority.class),
+                        result.get(4, LocalDate.class),
+                        result.get(5, LocalDate.class),
+                        result.get(6, LocalDateTime.class),
+                        result.get(7, Long.class),
+                        result.get(8, Long.class),
+                        result.get(9, String.class),
+                        result.get(10, Long.class)
+                ))
+                .toList();
     }
+
 
     // 우선순위 정렬 (HIGH > MIDDLE > LOW)
     private com.querydsl.core.types.OrderSpecifier<Integer> getPriorityOrder() {

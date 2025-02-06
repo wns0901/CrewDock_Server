@@ -1,5 +1,6 @@
 package com.lec.spring.domains.project.controller;
 
+import com.lec.spring.domains.project.dto.ProjectIssueDTO;
 import com.lec.spring.domains.project.entity.ProjectIssue;
 import com.lec.spring.domains.project.service.ProjectIssueService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,8 @@ public class ProjectIssueController {
 
     // 이슈 목록 get "/projects/{projectId}/issues"
     @GetMapping("/{projectId}/issues")
-    public ResponseEntity<List<ProjectIssue>> getIssues(@PathVariable Long projectId) {
-        List<ProjectIssue> issues = projectIssueService.listByProjectId(projectId);
+    public ResponseEntity<List<ProjectIssueDTO>> getIssues(@PathVariable Long projectId) {
+        List<ProjectIssueDTO> issues = projectIssueService.listByProjectId(projectId);
         return ResponseEntity.ok(issues);
     }
 
