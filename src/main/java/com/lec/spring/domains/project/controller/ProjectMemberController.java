@@ -44,15 +44,22 @@ public class ProjectMemberController {
 
     // 권한 변경
     @PatchMapping("/{projectId}/members")
-    public ResponseEntity<Void> changeMemberAuthority(
+    public ResponseEntity<Void> changeMemberAuthorityAndStatus(
             @PathVariable Long projectId,
             @RequestBody Map<String, Object> request) {
 
-        Long userId = Long.valueOf(String.valueOf(request.get("userId")));  // userId 추출
-        String authorityStr = String.valueOf(request.get("authority"));  // authority 추출
-        ProjectMemberAuthirity authority = ProjectMemberAuthirity.valueOf(authorityStr);  // Enum 변환
+        Long userId = Long.valueOf(String.valueOf(request.get("userId")));
+        String authorityStr = (String) request.get("authority");
+        String statusStr = (String) request.get("status");
 
-        projectMemberServiceImpl.updateMemberAuthority(projectId, userId, authority);
+        ProjectMemberAuthirity authority = (authorityStr != null) ? ProjectMemberAuthirity.valueOf(authorityStr) : null;
+        ProjectMemberStatus status = (statusStr != null) ? ProjectMemberStatus.valueOf(statusStr) : null;
+
+        // 둘 중 하나라도 값이 있으면 업데이트 수행
+        if (authority != null || status != null) {
+            projectMemberServiceImpl.updateMemberAuthorityAndStatus(projectId, userId, authority, status);
+        }
+
         return ResponseEntity.noContent().build();
     }
 }

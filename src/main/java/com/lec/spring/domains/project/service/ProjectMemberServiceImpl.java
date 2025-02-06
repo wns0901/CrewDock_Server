@@ -43,15 +43,35 @@ public class ProjectMemberServiceImpl {
                 .execute();
     }
     @Transactional
-    public void updateMemberAuthority(Long projectId, Long userId, ProjectMemberAuthirity authority) {
+    public void updateMemberAuthorityAndStatus(Long projectId, Long userId,
+                                               ProjectMemberAuthirity newAuthority, ProjectMemberStatus newStatus) {
         QProjectMember projectMember = QProjectMember.projectMember;
-        long updatesuccess = queryFactory.update(projectMember)
-                .set(projectMember.authority, authority)
+
+        // 현재 사용자 데이터 조회
+        ProjectMember existingMember = queryFactory
+                .selectFrom(projectMember)
+                .where(projectMember.project.id.eq(projectId)
+                        .and(projectMember.user.id.eq(userId)))
+                .fetchOne();
+
+        if (existingMember == null) {
+            throw new EntityNotFoundException("존재하지 않는 멤버입니다.");
+        }
+
+        // 전달된 값이 있으면 업데이트, 없으면 기존 값 유지
+        ProjectMemberAuthirity updatedAuthority = (newAuthority != null) ? newAuthority : existingMember.getAuthority();
+        ProjectMemberStatus updatedStatus = (newStatus != null) ? newStatus : existingMember.getStatus();
+
+        // QueryDSL을 사용하여 authority, status 업데이트
+        long updateSuccess = queryFactory.update(projectMember)
+                .set(projectMember.authority, updatedAuthority)
+                .set(projectMember.status, updatedStatus)
                 .where(projectMember.project.id.eq(projectId)
                         .and(projectMember.user.id.eq(userId)))
                 .execute();
-        if (updatesuccess == 0) {
-            throw new EntityNotFoundException("존재하지 않은 멤버임");
+
+        if (updateSuccess == 0) {
+            throw new EntityNotFoundException("업데이트에 실패했습니다.");
         }
     }
 }
