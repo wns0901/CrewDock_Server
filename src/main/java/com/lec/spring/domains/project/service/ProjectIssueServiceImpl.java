@@ -3,22 +3,18 @@ package com.lec.spring.domains.project.service;
 import com.lec.spring.domains.project.entity.ProjectIssue;
 import com.lec.spring.domains.project.repository.ProjectIssueRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ProjectIssueServiceImpl implements ProjectIssueService {
 
     private final ProjectIssueRepository projectIssueRepository;
     private final ProjectRepository projectRepository;
-
-    public ProjectIssueServiceImpl(ProjectIssueRepository projectIssueRepository, ProjectRepository projectRepository) {
-        this.projectIssueRepository = projectIssueRepository;
-        this.projectRepository = projectRepository;
-        System.out.println("ProjectIssueServiceImpl() 생성");
-    }
 
     // 이슈 작성
     @Override
@@ -27,11 +23,18 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
         projectIssue.setProject(project);
 
+        // 내용 검증
         validateProjectIssue(projectIssue);
 
+        // 시작 날짜가 마감 날짜 이후일 경우 예외 처리
         if (projectIssue.getStartline() != null && projectIssue.getDeadline() != null
                 && projectIssue.getStartline().isAfter(projectIssue.getDeadline())) {
             throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후일 수 없습니다.");
+        }
+
+        // 담당자가 지정되지 않은 경우, 작성자를 기본 담당자로 설정
+        if (projectIssue.getManager() == null) {
+            projectIssue.setManager(projectIssue.getWriter());
         }
 
         return projectIssueRepository.save(projectIssue);
