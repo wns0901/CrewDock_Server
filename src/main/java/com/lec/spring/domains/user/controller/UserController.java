@@ -49,6 +49,11 @@ public class UserController {
         return userService.checkAuthNum(authNum, email);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable Long id) {
+        return userService.getUser(id);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid RegisterDTO userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -57,7 +62,7 @@ public class UserController {
         return userService.register(userDto);
     }
 
-    @PatchMapping("/modify/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<?> modifyUser(@PathVariable Long id, @RequestBody ModifyDTO modifyDTO) {
         return userService.modifyUser(id, modifyDTO);
     }

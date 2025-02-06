@@ -4,6 +4,7 @@ import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
 import com.lec.spring.domains.user.dto.ModifyDTO;
 import com.lec.spring.domains.user.dto.RegisterDTO;
+import com.lec.spring.domains.user.dto.UserResponseDTO;
 import com.lec.spring.domains.user.entity.Auth;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.entity.UserAuth;
@@ -195,6 +196,16 @@ public class UserServiceImpl implements UserService {
 
         return ResponseEntity.ok().body("회원 탈퇴에 성공했습니다.");
     }
+
+    @Override
+    public ResponseEntity<?> getUser(Long id) {
+        UserResponseDTO userResponse = userRepository.getUserWithStacks(id);
+        if (userResponse == null) {
+            return ResponseEntity.badRequest().body("존재하지 않는 회원입니다.");
+        }
+        return ResponseEntity.ok().body(userResponse);
+    }
+
 
     private boolean validateEmailFormat(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";

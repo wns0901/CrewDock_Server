@@ -19,4 +19,6 @@ public interface UserService {
     ResponseEntity<?> modifyUser(Long id, ModifyDTO modifyDTO);
 
     ResponseEntity<?> deleteUser (Long id);
+
+    ResponseEntity<?> getUser(Long id);
 }
