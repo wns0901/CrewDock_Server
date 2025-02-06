@@ -2,6 +2,7 @@ package com.lec.spring.domains.user.service;
 
 import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
+import com.lec.spring.domains.user.dto.ModifyDTO;
 import com.lec.spring.domains.user.dto.RegisterDTO;
 import com.lec.spring.domains.user.entity.Auth;
 import com.lec.spring.domains.user.entity.User;
@@ -120,6 +121,60 @@ public class UserServiceImpl implements UserService {
         }
 
         return new ResponseEntity<>("인증 실패", HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> modifyUser(Long id, ModifyDTO modifyDTO) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("존재하지 않는 회원입니다.");
+        }
+
+        if (modifyDTO.getNickname() != null && !modifyDTO.getNickname().equals(user.getNickname())) {
+            ResponseEntity<?> nicknameCheck = isExistsByNickname(modifyDTO.getNickname());
+            if (nicknameCheck.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                return nicknameCheck;
+            }
+            user.setNickname(modifyDTO.getNickname());
+        }
+
+        updateUserFields(user, modifyDTO);
+        updateUserStacks(user, modifyDTO.getStackIds());
+
+        userRepository.save(user);
+        return ResponseEntity.ok().body("회원 정보 수정이 완료되었습니다.");
+    }
+
+
+    private boolean isNicknameChangedAndDuplicate(User user, String newNickname) {
+        return newNickname != null && !newNickname.equals(user.getNickname()) && userRepository.existsByNickname(newNickname);
+    }
+
+
+    private void updateUserFields(User user, ModifyDTO modifyDTO) {
+        if (modifyDTO.getNickname() != null) user.setNickname(modifyDTO.getNickname());
+        if (modifyDTO.getProfileImgUrl() != null) user.setProfileImgUrl(modifyDTO.getProfileImgUrl());
+        if (modifyDTO.getPhoneNumber() != null) user.setPhoneNumber(modifyDTO.getPhoneNumber());
+        if (modifyDTO.getPassword() != null) user.setPassword(modifyDTO.getPassword());
+        if (modifyDTO.getGithubUrl() != null) user.setGithubUrl(modifyDTO.getGithubUrl());
+        if (modifyDTO.getNotionUrl() != null) user.setNotionUrl(modifyDTO.getNotionUrl());
+        if (modifyDTO.getBlogUrl() != null) user.setBlogUrl(modifyDTO.getBlogUrl());
+        if (modifyDTO.getHopePosition() != null) user.setHopePosition(modifyDTO.getHopePosition());
+    }
+
+
+    private void updateUserStacks(User user, List<Long> stackIds) {
+        if (stackIds == null) return;
+
+        List<Stack> stacks = stackRepository.findAllById(stackIds);
+        userStacksRepository.deleteAllByUser(user);
+
+        List<UserStacks> userStacks = stacks.stream()
+                .map(stack -> UserStacks.builder().user(user).stack(stack).build())
+                .toList();
+
+        userStacksRepository.saveAll(userStacks);
     }
 
     @Override
