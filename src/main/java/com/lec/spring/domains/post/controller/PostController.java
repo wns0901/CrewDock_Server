@@ -7,6 +7,7 @@ import com.lec.spring.domains.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("/")
-    public ResponseEntity<Page<PostDTO>> getPosts(@RequestParam Category category, Pageable pageable) {
+    @GetMapping
+    public ResponseEntity<Page<PostDTO>> getPosts(
+            @RequestParam(defaultValue = "FREEDOM") Category category,
+            @PageableDefault(page = 1) Pageable pageable
+    ) {
         Page<PostDTO> postPages = postService.getPostsByCategoryPage(category, pageable);
         return ResponseEntity.ok(postPages);
     }
