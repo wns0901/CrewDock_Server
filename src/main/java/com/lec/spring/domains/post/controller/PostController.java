@@ -19,7 +19,7 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<Page<PostDTO>> getPosts(
-            @RequestParam(defaultValue = "FREEDOM") Category category,
+            @RequestParam(defaultValue = "NONE") Category category,
             @PageableDefault(page = 1) Pageable pageable
     ) {
         Page<PostDTO> postPages = postService.getPostsByCategoryPage(category, pageable);
