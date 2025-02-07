@@ -32,7 +32,7 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        if (recruitmentScrapRepository.existsByUserAndRecruitment(user, post)) {
+        if (recruitmentScrapRepository.existsByUserIdAndRecruitment(user, post)) {
             throw new IllegalStateException("이미 스크랩한 모집글입니다.");
         }
 
@@ -51,13 +51,13 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        recruitmentScrapRepository.deleteByUserAndRecruitment(user, post);
+        recruitmentScrapRepository.deleteByUserIdAndRecruitment(user, post);
     }
 
     // 내가 스크랩한 모집글 조회
     public List<RecruitmentScrap> getScrappedPosts(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
-        return recruitmentScrapRepository.findByUser(user);
+        return recruitmentScrapRepository.findByUserId(user);
     }
 }

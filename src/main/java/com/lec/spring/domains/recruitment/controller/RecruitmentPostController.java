@@ -47,7 +47,7 @@ public class RecruitmentPostController {
     }
 
     // 모집글 상세 조회
-    @GetMapping("/{recruitmentsId}")
+    @GetMapping("/recruitments/{recruitmentsId}")
     public RecruitmentPost detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
         return recruitmentPostService.detailRecruitmentPost(id);
     }

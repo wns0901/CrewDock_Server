@@ -20,12 +20,13 @@ import java.util.Optional;
 import static com.lec.spring.domains.user.entity.QUser.user;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
-@Repository
-@RequiredArgsConstructor
+@Repository("qrecruitmentPostRepository") // ✅ 정확한 Bean 이름 지정
 public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepository {
-
     private final JPAQueryFactory queryFactory;
-    private final RecruitmentPostRepository recruitmentPostRepository;
+
+    public QRecruitmentPostRepositoryImpl(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
 
     // 모집글을 조회하면 글작성자와 프로젝트를 조회
     @Override
@@ -34,7 +35,7 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
 
         RecruitmentPost result = queryFactory
                 .selectFrom(post)
-                .leftJoin(post.user).fetchJoin()
+                .leftJoin(post.userId).fetchJoin()
                 .leftJoin(post.project).fetchJoin()
                 .where(post.id.eq(postId))
                 .fetchOne();

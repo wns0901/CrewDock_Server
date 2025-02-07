@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.List;
 
 public interface QRecruitmentPostRepository {
 

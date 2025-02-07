@@ -8,4 +8,6 @@ import java.util.List;
 public interface QRecruitmentCommentRepository {
 
     List<RecruitmentComment> commentListByRecruitmentPost(RecruitmentPost recruitmentPost);
+
+    List<RecruitmentComment> findRepliesByParentComment(RecruitmentComment parentComment);
 }

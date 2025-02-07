@@ -8,10 +8,12 @@ import com.lec.spring.domains.project.repository.ProjectMemberRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
+import com.lec.spring.domains.recruitment.repository.dsl.QRecruitmentPostRepository;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,68 +30,64 @@ import java.util.Map;
 public class RecruitmentPostServiceImpl implements RecruitmentPostService {
 
     private final RecruitmentPostRepository postRepository;
+
+    //TODO:
+    @Qualifier("qRecruitmentPostRepository") // ✅ QueryDSL Repository 명확히 지정
+    private final QRecruitmentPostRepository qRecruitmentPostRepository;
+
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    // 전체 페이징 (16개씩)
+    // 모집글 전체 조회
     @Override
     public Page<RecruitmentPost> findAll(int page) {
         Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
         return postRepository.findAll(pageable);
     }
 
-    // 전체 필터링 페이지
+    // 모집글 필터 조회 (QueryDSL 사용)
     @Override
     public Page<RecruitmentPost> findByFilters(String stack, String position, String proceedMethod, String region, int page) {
         Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return postRepository.findByFilters(stack, position, proceedMethod, region, pageable);
+        return qRecruitmentPostRepository.findByFilters(stack, position, proceedMethod, region, pageable);
     }
 
+    // 마감 임박 모집글 조회
     @Override
     public Page<RecruitmentPost> findClosingRecruitments(int page) {
-        LocalDate today = LocalDate.now();
-        LocalDate closingDate = today.plusDays(3);
-
-        Pageable pageable = PageRequest.of(page - 1, 20, Sort.by(
-                Sort.Order.asc("deadline"),  // 마감일 오름차순
-                Sort.Order.asc("recruitedNumber") // 잔여 모집 인원 적은 순
-        ));
-
-        return postRepository.findClosingRecruitments(closingDate, pageable);
+        LocalDate closingDate = LocalDate.now().plusDays(3);
+        Pageable pageable = PageRequest.of(page - 1, 20, Sort.by(Sort.Order.asc("deadline"), Sort.Order.asc("recruitedNumber")));
+        return qRecruitmentPostRepository.findClosingRecruitments(closingDate, pageable);
     }
 
-    // 내가 적은 모집글 확인하기
+    // 내가 작성한 모집글 조회
     @Override
     public List<RecruitmentPost> myRecruitmentPost(Long userId) {
         return postRepository.findAllByUserId(userId);
     }
 
-    // 모집글 상세 보기
+    // 모집글 상세 조회
     @Override
     public RecruitmentPost detailRecruitmentPost(Long id) {
-        return postRepository.findByIdWithUserAndProject(id)
+        return qRecruitmentPostRepository.findByIdWithUserAndProject(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다"));
     }
 
-    //글 작성
+    // 모집글 작성
     @Override
     public RecruitmentPost writeRecruitmentPost(RecruitmentPost post) {
-        // 쓰기 권한(로그인)이 되어있는지 확인
         User user = userRepository.findById(post.getUserId().getId())
-                .orElseThrow(() -> new EntityNotFoundException("로그인이 되어있지 않습니다"));
-
-        // 프로젝트가 있는지 확인
+                .orElseThrow(() -> new EntityNotFoundException("로그인이 필요합니다"));
         Project project = projectRepository.findById(post.getProject().getId())
-                .orElseThrow(() -> new EntityNotFoundException("프로젝트가 없습니다"));
+                .orElseThrow(() -> new EntityNotFoundException("프로젝트가 존재하지 않습니다"));
 
         post.setUserId(user);
         post.setProject(project);
-
         return postRepository.save(post);
     }
 
-    // 수정
+    // 모집글 수정
     @Override
     public RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPost post) {
         RecruitmentPost existingPost = postRepository.findById(id)
@@ -107,39 +104,34 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         return postRepository.save(existingPost);
     }
 
-    // 삭제
+    // 모집글 삭제
     @Override
     public void deleteRecruitmentPost(Long id) {
         RecruitmentPost post = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다"));
-
         postRepository.delete(post);
     }
 
-    // 모집 신청
+    // 모집 지원
     @Transactional
     public void applyToProject(Long projectId, Long userId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트가 존재하지 않습니다."));
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        // 중복 지원 방지
-        if (projectMemberRepository.existsByProjectAndUser(project, user)) {
-            throw new IllegalStateException("이미 신청한 프로젝트입니다.");
+        if (projectMemberRepository.existsByProjectAndUserId(project, user)) {
+            throw new IllegalStateException("이미 지원한 프로젝트입니다.");
         }
 
-        // 프로젝트 멤버 신청 (authority: WAITING, status: REQUEST)
         ProjectMember projectMember = ProjectMember.builder()
-                .project(project)  // 프로젝트 ID 반영
-                .userId(userId)
-                .authority(ProjectMemberAuthirity.WAITING)  // 대기 상태
-                .status(ProjectMemberStatus.REQUEST)        // 요청 상태
-                .position(user.getHopePosition())           // 희망 포지션
+                .project(project)
+                .userId(user.getId())
+                .authority(ProjectMemberAuthirity.WAITING)
+                .status(ProjectMemberStatus.REQUEST)
+                .position(user.getHopePosition())
                 .build();
 
         projectMemberRepository.save(projectMember);
     }
-
 }

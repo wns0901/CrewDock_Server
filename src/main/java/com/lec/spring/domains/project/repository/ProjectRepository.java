@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    @Query("SELECT p FROM project p JOIN ProjectMember pm ON p.id = pm.project.id WHERE pm.user = :user AND pm.authority = 'CAPTAIN'")
+    @Query("SELECT p FROM project p JOIN ProjectMember pm ON p.id = pm.project.id WHERE pm.userId = :user AND pm.authority = 'CAPTAIN'")
     List<Project> findAllByCaptainUser(@Param("user") User user);
-
-
 }
