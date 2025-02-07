@@ -41,13 +41,13 @@ public class RecruitmentPost extends BaseEntity {
     private Region region;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "proceed_method",nullable = false)
+    @Column(nullable = false)
     private ProceedMethod proceedMethod;
 
-    @Column(name = "recruited_number",nullable = false)
+    @Column(nullable = false)
     private Integer recruitedNumber;
 
-    @Column(name = "recruited_field",nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false)
     private String recruitedField;
 
     @Column
