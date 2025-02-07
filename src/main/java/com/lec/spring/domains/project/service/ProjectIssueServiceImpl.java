@@ -6,6 +6,7 @@ import com.lec.spring.domains.project.entity.ProjectIssuePriority;
 import com.lec.spring.domains.project.entity.ProjectIssueStatus;
 import com.lec.spring.domains.project.repository.ProjectIssueRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
+import com.lec.spring.domains.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,38 +18,48 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
 
     private final ProjectIssueRepository projectIssueRepository;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     // 이슈 작성
     @Override
-    public ProjectIssue save(Long projectId, ProjectIssue projectIssue) {
+    public ProjectIssue save(Long projectId, ProjectIssueDTO projectIssueDTO) {
+        projectIssueDTO.setManager(userRepository.findById(projectIssueDTO.getManagerId()).get());
+        projectIssueDTO.setWriter(userRepository.findById(projectIssueDTO.getWriterId()).get());
+        System.out.println("managerId: " + userRepository.findById(projectIssueDTO.getManagerId()).get());
+        System.out.println("writerId: " + userRepository.findById(projectIssueDTO.getWriterId()).get());
         var project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
-        projectIssue.setProject(project);
+        projectIssueDTO.setProject(project);
 
         // 내용 검증
-        validateProjectIssue(projectIssue);
+        validateProjectIssue(projectIssueDTO);
 
         // 시작 날짜가 마감 날짜 이후일 경우 예외 처리
-        if (projectIssue.getStartline() != null && projectIssue.getDeadline() != null
-                && projectIssue.getStartline().isAfter(projectIssue.getDeadline())) {
+        if (projectIssueDTO.getStartline() != null && projectIssueDTO.getDeadline() != null
+                && projectIssueDTO.getStartline().isAfter(projectIssueDTO.getDeadline())) {
             throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후일 수 없습니다.");
         }
 
         // 담당자가 지정되지 않은 경우, 작성자를 기본 담당자로 설정
-        if (projectIssue.getManager() == null) {
-            projectIssue.setManager(projectIssue.getWriter());
+        if (projectIssueDTO.getManager() == null) {
+            projectIssueDTO.setManager(projectIssueDTO.getWriter());
+        }
+
+        // User 객체 먼저 저장 (기본적으로 프로젝트 이슈의 담당자도 저장)
+        if (projectIssueDTO.getManager() != null) {
+            userRepository.save(projectIssueDTO.getManager()); // 담당자 저장
         }
 
         // 상태와 우선순위 변환
-        projectIssue.setStatus(convertStatus(String.valueOf(projectIssue.getStatus())));
-        projectIssue.setPriority(convertPriority(String.valueOf(projectIssue.getPriority())));
+        projectIssueDTO.setStatus(projectIssueDTO.getStatus());
+        projectIssueDTO.setPriority(projectIssueDTO.getPriority());
 
-        return projectIssueRepository.save(projectIssue);
+        return projectIssueRepository.save(projectIssueDTO); // 프로젝트 이슈 저장
     }
 
     // 프로젝트별 이슈 목록
     @Override
-    public List<ProjectIssueDTO> listByProjectId(Long projectId) {
+    public List<ProjectIssue> listByProjectId(Long projectId) {
         return projectIssueRepository.findByProjectIdSorted(projectId);
     }
 
@@ -62,10 +73,10 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
             existingIssue.setIssueName(updatedIssue.getIssueName());
         }
         if (updatedIssue.getStatus() != null) {
-            existingIssue.setStatus(convertStatus(String.valueOf(updatedIssue.getStatus()))); // 상태 변환
+            existingIssue.setStatus(updatedIssue.getStatus()); // 상태 변환
         }
         if (updatedIssue.getPriority() != null) {
-            existingIssue.setPriority(convertPriority(String.valueOf(updatedIssue.getPriority()))); // 우선순위 변환
+            existingIssue.setPriority(updatedIssue.getPriority()); // 우선순위 변환
         }
         if (updatedIssue.getStartline() != null && updatedIssue.getDeadline() != null) {
             if (updatedIssue.getStartline().isAfter(updatedIssue.getDeadline())) {
@@ -119,32 +130,31 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         }
     }
 
-    // 상태 변환
-    private ProjectIssueStatus convertStatus(String status) {
-        switch (status) {
-            case "진행중":
-                return ProjectIssueStatus.INPROGRESS;
-            case "완료":
-                return ProjectIssueStatus.COMPLETE;
-            case "시작 안함":
-                return ProjectIssueStatus.YET;
-            default:
-                throw new IllegalArgumentException("잘못된 상태 값입니다.");
-        }
-    }
+//    // 상태 변환
+//    private ProjectIssueStatus convertStatus(String status) {
+//        switch (status) {
+//            case "진행중":
+//                return ProjectIssueStatus.INPROGRESS;
+//            case "완료":
+//                return ProjectIssueStatus.COMPLETE;
+//            case "시작 안함":
+//                return ProjectIssueStatus.YET;
+//            default:
+//                throw new IllegalArgumentException("잘못된 상태 값입니다.");
+//        }
+//    }
 
-    // 우선순위 변환 (우선순위가 문자열로 들어온 경우 처리)
-    private ProjectIssuePriority convertPriority(String priority) {
-        switch (priority) {
-            case "높음":
-                return ProjectIssuePriority.HIGH;
-            case "중간":
-                return ProjectIssuePriority.MIDDLE;
-            case "낮음":
-                return ProjectIssuePriority.LOW;
-            default:
-                throw new IllegalArgumentException("잘못된 우선순위 값입니다.");
-        }
-    }
-
+//    // 우선순위 변환 (우선순위가 문자열로 들어온 경우 처리)
+//    private ProjectIssuePriority convertPriority(String priority) {
+//        switch (priority) {
+//            case "높음":
+//                return ProjectIssuePriority.HIGH;
+//            case "중간":
+//                return ProjectIssuePriority.MIDDLE;
+//            case "낮음":
+//                return ProjectIssuePriority.LOW;
+//            default:
+//                throw new IllegalArgumentException("잘못된 우선순위 값입니다.");
+//        }
+//    }
 }

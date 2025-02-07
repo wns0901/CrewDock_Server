@@ -11,5 +11,5 @@ import java.util.List;
 
 public interface QProjectIssueRepository {
     // 프로젝트 정렬 (마감일 > 우선 순위 > 상태)
-    List<ProjectIssueDTO> findByProjectIdSorted(Long projectId);
+    List<ProjectIssue> findByProjectIdSorted(Long projectId);
 }

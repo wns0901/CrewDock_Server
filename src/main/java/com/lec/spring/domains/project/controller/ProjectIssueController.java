@@ -19,8 +19,8 @@ public class ProjectIssueController {
 
     // 이슈 목록 get "/projects/{projectId}/issues"
     @GetMapping("/{projectId}/issues")
-    public ResponseEntity<List<ProjectIssueDTO>> getIssues(@PathVariable Long projectId) {
-        List<ProjectIssueDTO> issues = projectIssueService.listByProjectId(projectId);
+    public ResponseEntity<List<ProjectIssue>> getIssues(@PathVariable Long projectId) {
+        List<ProjectIssue> issues = projectIssueService.listByProjectId(projectId);
         return ResponseEntity.ok(issues);
     }
 
@@ -29,8 +29,8 @@ public class ProjectIssueController {
     @PostMapping("/{projectId}/issues")
     public ResponseEntity<ProjectIssue> createIssue(
             @PathVariable Long projectId,
-            @RequestBody ProjectIssue projectIssue) {
-        ProjectIssue savedIssue = projectIssueService.save(projectId, projectIssue);
+            @RequestBody ProjectIssueDTO projectIssueDTO) {
+        ProjectIssue savedIssue = projectIssueService.save(projectId, projectIssueDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedIssue);
     }
 
