@@ -15,14 +15,6 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
     }
 
     @Override
-    public PostComment findByCommentId(Long commentId) {
-        return queryFactory
-                .selectFrom(qPostComment)
-                .where(qPostComment.id.eq(commentId))
-                .fetchOne();
-    }
-
-    @Override
     public long countCommentsByPostId(Long postId) {
         return queryFactory
                 .selectFrom(qPostComment)
@@ -51,7 +43,6 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
                 .set(qPostComment.fixed, isFixed)
                 .where(qPostComment.id.eq(commentId))
                 .execute();
-
     }
 
     @Override
@@ -70,6 +61,21 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
                 .update(qPostComment)
                 .set(qPostComment.deleted, isDeleted)
                 .where(qPostComment.id.eq(commentId))
+                .execute();
+    }
+
+    @Override
+    public void deleteAllCommentsByPostId(Long postId) {
+        queryFactory
+                .delete(qPostComment)
+                .where(qPostComment.parentComment.isNotNull()
+                        .and(qPostComment.postId.eq(postId)))
+                .execute();
+
+        queryFactory
+                .delete(qPostComment)
+                .where(qPostComment.parentComment.id.isNull()
+                        .and(qPostComment.postId.eq(postId)))
                 .execute();
     }
 }

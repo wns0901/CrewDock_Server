@@ -8,13 +8,11 @@ import java.util.Map;
 public interface PostCommentService {
     PostComment saveComment(PostComment postComment);
 
-    PostComment saveChildComment(PostComment postComment, Long parentsId);
-
-    PostComment getCommentById(Long commentId);
-
     Map<String, Object> getCommentsByPostId(Long postId);
 
     PostComment updateFixedStatus(Long commentId, Boolean isFixed);
 
-    void deleteCommentById(Long parentsId, Long commentId);
+    void deleteCommentById(Long postId, Long commentId);
+
+    void deleteAllCommentByPostId(Long postId);
 }

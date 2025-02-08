@@ -30,13 +30,15 @@ public class PostCommentController {
 
     @PatchMapping({"/posts/{postId}/comments",
             "/projects/{projectId}/posts/{postId}/comments"})
-    public PostComment updateFixStatus(@RequestBody PostComment postComment) {
-        return postCommentService.updateFixedStatus(postComment.getId(), postComment.getFixed());
+    public ResponseEntity<PostComment> updateFixStatus(@RequestBody PostComment postComment) {
+        PostComment updateStatus = postCommentService.updateFixedStatus(postComment.getId(), postComment.getFixed());
+        return ResponseEntity.ok(updateStatus);
     }
 
     @DeleteMapping({"/posts/{postId}/comments/{commentId}",
             "/projects/{projectId}/posts/{postId}/comments/{commentId}"})
-    public void deletePostComment(@PathVariable Long parentsId, @PathVariable Long commentId) {
-        postCommentService.deleteCommentById(parentsId, commentId);
+    public ResponseEntity<Void> deletePostComment(@PathVariable Long postId, @PathVariable Long commentId) {
+        postCommentService.deleteCommentById(postId, commentId);
+        return ResponseEntity.noContent().build();
     }
 }
