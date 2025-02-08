@@ -89,6 +89,29 @@ public class QPostRepositoryImpl implements QPostRepository {
         return new PageImpl<>(ProjectPosts, pageable, total);
     }
 
+    @Override
+    public List<Post> findByUserIdWithrowQuertDSL(Long userId, int row) {
+        return queryFactory
+                .selectFrom(qPost)
+                .leftJoin(qPost.user).fetchJoin()
+                .where(qPost.user.id.eq(userId)
+                        .and(qPost.project.isNull()))
+                .orderBy(qPost.id.desc())
+                .limit(row)
+                .fetch();
+    }
+
+    @Override
+    public List<Post> findByUserIdQuertDSL(Long userId) {
+        return queryFactory
+                .selectFrom(qPost)
+                .leftJoin(qPost.user).fetchJoin()
+                .where(qPost.user.id.eq(userId)
+                        .and(qPost.project.isNull()))  // 프로젝트 게시글 제외
+                .orderBy(qPost.id.desc())
+                .fetch();
+    }
+
     private Post fetchOneEntity(BooleanExpression condition) {
         return queryFactory
                 .selectFrom(qPost)

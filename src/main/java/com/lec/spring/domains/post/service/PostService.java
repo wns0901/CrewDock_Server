@@ -14,4 +14,8 @@ public interface PostService extends BasePostService {
     List<PostDTO> getPostsByCategory(Category category);
 
     Page<PostDTO> getPostsByCategoryPage(Category category, Pageable pageable);
+
+    List<PostDTO> getUserPostWithLimit(Long userId, int row);
+
+    List<PostDTO> getUserPost(Long userId);
 }

@@ -25,4 +25,8 @@ public interface QPostRepository {
     Post findProjectPostById(Long postId, Long projectId);
 
     Page<ProjectPostDTO> findByDirectionPage(Long projectId, Direction direction, Pageable pageable);
+
+    List<Post> findByUserIdWithrowQuertDSL(Long userId, int row);
+
+    List<Post> findByUserIdQuertDSL(Long userId);
 }

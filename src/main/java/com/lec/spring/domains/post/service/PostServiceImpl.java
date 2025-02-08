@@ -9,9 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl extends BasePostServiceImpl implements PostService {
+
     private final PostRepository postRepository;
 
     public PostServiceImpl(PostRepository postRepository, PostRepository postRepository1) {
@@ -32,5 +34,34 @@ public class PostServiceImpl extends BasePostServiceImpl implements PostService 
     @Override
     public Page<PostDTO> getPostsByCategoryPage(Category category, Pageable pageable) {
         return postRepository.findByCategoryPage(category, pageable);
+    }
+
+
+
+    @Override
+    public List<PostDTO> getUserPostWithLimit(Long userId, int row) {
+        List<Post> posts = postRepository.findByUserIdWithrowQuertDSL(userId, row);
+        return posts.stream()
+                .map(this::convertToPostDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> getUserPost(Long userId) {
+        List<Post> posts = postRepository.findByUserIdQuertDSL(userId);
+        return posts.stream()
+                .map(this::convertToPostDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    // Post 엔티티 -> PostDTO 변환 메서드
+    private PostDTO convertToPostDTO(Post post) {
+        return PostDTO.builder()
+                .id(post.getId())
+                .userId(post.getUser().getId())
+                .title(post.getTitle())
+                .category(post.getCategory().name()) // Enum -> String 변환
+                .build();
     }
 }

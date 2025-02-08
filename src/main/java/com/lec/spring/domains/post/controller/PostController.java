@@ -11,11 +11,31 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PostDTO>> getPosts(
+            @PathVariable("userId") Long userId,
+            @RequestParam(value = "row", required = false, defaultValue = "0") int row) {
+
+        List<PostDTO> posts;
+
+        if(row>0){
+            posts = postService.getUserPostWithLimit(userId, row);
+        } else{
+            posts = postService.getUserPost(userId);
+        }
+
+        return ResponseEntity.ok(posts);
+
+
+    }
 
     @GetMapping
     public ResponseEntity<Page<PostDTO>> getPosts(
