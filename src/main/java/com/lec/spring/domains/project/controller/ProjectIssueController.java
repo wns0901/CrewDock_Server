@@ -19,8 +19,8 @@ public class ProjectIssueController {
 
     // 이슈 목록 get "/projects/{projectId}/issues"
     @GetMapping("/{projectId}/issues")
-    public ResponseEntity<List<ProjectIssue>> getIssues(@PathVariable Long projectId) {
-        List<ProjectIssue> issues = projectIssueService.listByProjectId(projectId);
+    public ResponseEntity<List<ProjectIssueDTO>> getIssues(@PathVariable Long projectId) {
+        List<ProjectIssueDTO> issues = projectIssueService.listByProjectId(projectId);
         return ResponseEntity.ok(issues);
     }
 
@@ -34,8 +34,18 @@ public class ProjectIssueController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedIssue);
     }
 
+    // 이슈 상세보기 get "/projects/{projectId}/issues/{issueId}
+    @GetMapping("/{projectId}/issues/{issueId}")
+    public ResponseEntity<ProjectIssueDTO> getIssueDetail(
+            @PathVariable Long projectId,
+            @PathVariable Long issueId
+    ) {
+        ProjectIssueDTO issueDTO = projectIssueService.getIssueDetail(projectId, issueId);
+        return ResponseEntity.ok(issueDTO);
+    }
+
     // 이슈 수정 patch "/projects/{projectId}/issues"
-    @PatchMapping("/{projectId}/issues/{issueId}")
+    @PatchMapping("/{projectId}/issues")
     public ResponseEntity<Void> updateIssue(
             @PathVariable Long projectId,
             @PathVariable Long issueId,
@@ -49,7 +59,7 @@ public class ProjectIssueController {
         }
     }
 
-    // 이슈 삭제 delete "/projects/{projectId}/issues/{projectIssueId}"
+    // 다중 이슈 삭제 delete "/projects/{projectId}/issues/{issueId}" -> 다중 삭제 가능
     @DeleteMapping("/{projectId}/issues")
     public ResponseEntity<Void> deleteIssue(
             @PathVariable Long projectId,
@@ -61,7 +71,22 @@ public class ProjectIssueController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
 
+    // 개별 이슈 삭제
+    @DeleteMapping("/{projectId}/issues/{issueId}")
+    public ResponseEntity<Void> deleteIssue(
+            @PathVariable Long projectId,
+            @PathVariable Long issueId) {
+
+        // 개별 이슈 삭제
+        boolean isDeleted = projectIssueService.deleteById(issueId);
+
+        if (isDeleted) {
+            return ResponseEntity.noContent().build();  // 삭제 성공
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // 삭제 실패 (이슈 없음)
+        }
     }
 
 }

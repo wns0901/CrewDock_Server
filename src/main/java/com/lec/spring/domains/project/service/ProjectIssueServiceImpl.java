@@ -1,16 +1,18 @@
 package com.lec.spring.domains.project.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.lec.spring.domains.project.dto.ProjectIssueDTO;
+import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.entity.ProjectIssue;
-import com.lec.spring.domains.project.entity.ProjectIssuePriority;
-import com.lec.spring.domains.project.entity.ProjectIssueStatus;
 import com.lec.spring.domains.project.repository.ProjectIssueRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
+import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -23,16 +25,17 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
     // 이슈 작성
     @Override
     public ProjectIssue save(Long projectId, ProjectIssueDTO projectIssueDTO) {
-        projectIssueDTO.setManager(userRepository.findById(projectIssueDTO.getManagerId()).get());
-        projectIssueDTO.setWriter(userRepository.findById(projectIssueDTO.getWriterId()).get());
-        System.out.println("managerId: " + userRepository.findById(projectIssueDTO.getManagerId()).get());
-        System.out.println("writerId: " + userRepository.findById(projectIssueDTO.getWriterId()).get());
-        var project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
-        projectIssueDTO.setProject(project);
+        // 작성자 조회
+        User writer = userRepository.findById(projectIssueDTO.getWriterId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 작성자입니다."));
 
-        // 내용 검증
-        validateProjectIssue(projectIssueDTO);
+        // 담당자 조회 (없으면 작성자로 설정)
+        User manager = userRepository.findById(projectIssueDTO.getManagerId())
+                .orElse(writer);
+
+        // 프로젝트 조회
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로젝트입니다."));
 
         // 시작 날짜가 마감 날짜 이후일 경우 예외 처리
         if (projectIssueDTO.getStartline() != null && projectIssueDTO.getDeadline() != null
@@ -41,25 +44,23 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         }
 
         // 담당자가 지정되지 않은 경우, 작성자를 기본 담당자로 설정
-        if (projectIssueDTO.getManager() == null) {
-            projectIssueDTO.setManager(projectIssueDTO.getWriter());
-        }
-
-        // User 객체 먼저 저장 (기본적으로 프로젝트 이슈의 담당자도 저장)
-        if (projectIssueDTO.getManager() != null) {
-            userRepository.save(projectIssueDTO.getManager()); // 담당자 저장
+        if (projectIssueDTO.getManagerName() == null) {
+            projectIssueDTO.setManagerName(projectIssueDTO.getWriterName());
         }
 
         // 상태와 우선순위 변환
         projectIssueDTO.setStatus(projectIssueDTO.getStatus());
         projectIssueDTO.setPriority(projectIssueDTO.getPriority());
 
-        return projectIssueRepository.save(projectIssueDTO); // 프로젝트 이슈 저장
+        // DTO -> 엔티티로 변환
+        ProjectIssue projectIssue = projectIssueDTO.toEntity(project, writer, manager);
+
+        return projectIssueRepository.save(projectIssue); // 저장 후 반환
     }
 
     // 프로젝트별 이슈 목록
     @Override
-    public List<ProjectIssue> listByProjectId(Long projectId) {
+    public List<ProjectIssueDTO> listByProjectId(Long projectId) {
         return projectIssueRepository.findByProjectIdSorted(projectId);
     }
 
@@ -92,7 +93,40 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         return 1;
     }
 
-    // 이슈 삭제 -> 다중 선택 가능
+    // 특정 이슈 상세조회
+    @Override
+    public ProjectIssueDTO getIssueDetail(Long projectId, Long issueId) {
+        // 프로젝트와 이슈를 조회
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("Project not found"));
+
+        ProjectIssue projectIssue = projectIssueRepository.findById(issueId)
+                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+        // 작성자 및 담당자 정보 가져오기
+        Long writerId = projectIssue.getWriter().getId();
+        String writerName = projectIssue.getWriter().getUsername();
+        Long managerId = projectIssue.getManager() != null ? projectIssue.getManager().getId() : null;
+        String managerName = projectIssue.getManager() != null ? projectIssue.getManager().getUsername() : null;
+
+        // ProjectIssueDTO로 변환하여 반환
+        return new ProjectIssueDTO(
+                projectIssue.getId(),
+                projectIssue.getIssueName(),
+                projectIssue.getPriority(),
+                projectIssue.getStatus(),
+                projectIssue.getDeadline(),
+                projectIssue.getStartline(),
+                projectIssue.getCreateAt(),
+                writerId,
+                writerName,
+                managerId,
+                managerName,
+                projectIssue.getProject().getId()
+        );
+    }
+
+    // 다중 삭제
     @Override
     public int deleteByIds(List<Long> issueIds) {
         if (issueIds == null || issueIds.isEmpty()) {
@@ -106,6 +140,17 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
 
         projectIssueRepository.deleteAllById(issueIds);
         return (int) count;
+    }
+
+    // 개별 이슈 삭제
+    @Override
+    public boolean deleteById(Long issueId) {
+        Optional<ProjectIssue> issue = projectIssueRepository.findById(issueId);
+        if (issue.isPresent()) {
+            projectIssueRepository.delete(issue.get());
+            return true;  // 삭제 성공
+        }
+        return false;  // 해당 이슈가 존재하지 않음
     }
 
     // 이슈 정보 검증
@@ -129,32 +174,4 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
             throw new IllegalArgumentException("마감 날짜를 지정해주세요.");
         }
     }
-
-//    // 상태 변환
-//    private ProjectIssueStatus convertStatus(String status) {
-//        switch (status) {
-//            case "진행중":
-//                return ProjectIssueStatus.INPROGRESS;
-//            case "완료":
-//                return ProjectIssueStatus.COMPLETE;
-//            case "시작 안함":
-//                return ProjectIssueStatus.YET;
-//            default:
-//                throw new IllegalArgumentException("잘못된 상태 값입니다.");
-//        }
-//    }
-
-//    // 우선순위 변환 (우선순위가 문자열로 들어온 경우 처리)
-//    private ProjectIssuePriority convertPriority(String priority) {
-//        switch (priority) {
-//            case "높음":
-//                return ProjectIssuePriority.HIGH;
-//            case "중간":
-//                return ProjectIssuePriority.MIDDLE;
-//            case "낮음":
-//                return ProjectIssuePriority.LOW;
-//            default:
-//                throw new IllegalArgumentException("잘못된 우선순위 값입니다.");
-//        }
-//    }
 }

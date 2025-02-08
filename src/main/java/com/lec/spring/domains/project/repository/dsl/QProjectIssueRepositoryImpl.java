@@ -1,19 +1,15 @@
 package com.lec.spring.domains.project.repository.dsl;
 
 import com.lec.spring.domains.project.dto.ProjectIssueDTO;
-import com.lec.spring.domains.project.entity.ProjectIssue;
 import com.lec.spring.domains.project.entity.ProjectIssuePriority;
 import com.lec.spring.domains.project.entity.ProjectIssueStatus;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.lec.spring.domains.project.entity.QProjectIssue.projectIssue;
-import static com.lec.spring.domains.user.entity.QUser.user;
 
 @Repository
 public class QProjectIssueRepositoryImpl implements QProjectIssueRepository {
@@ -25,9 +21,23 @@ public class QProjectIssueRepositoryImpl implements QProjectIssueRepository {
     }
 
     @Override
-    public List<ProjectIssue> findByProjectIdSorted(Long projectId) {
+    public List<ProjectIssueDTO> findByProjectIdSorted(Long projectId) {
         return queryFactory
-                .selectFrom(projectIssue)
+                .select(Projections.constructor(ProjectIssueDTO.class,
+                        projectIssue.id, // issueId
+                        projectIssue.issueName, // issueName
+                        projectIssue.priority, // priority
+                        projectIssue.status, // status
+                        projectIssue.deadline, // deadline
+                        projectIssue.startline, // startline
+                        projectIssue.createAt, // createAt
+                        projectIssue.writer.id.as("writerId"), // writerId
+                        projectIssue.writer.nickname.as("writerName"), // writerName
+                        projectIssue.manager.id.as("managerId"), // managerId
+                        projectIssue.manager.nickname.as("managerName"), // managerName
+                        projectIssue.project.id.as("projectId") // projectId
+                ))
+                .from(projectIssue)
                 .where(projectIssue.project.id.eq(projectId))
                 .orderBy(
                         projectIssue.deadline.asc(),
