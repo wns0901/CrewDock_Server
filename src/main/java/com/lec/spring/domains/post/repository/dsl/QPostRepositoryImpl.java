@@ -1,7 +1,6 @@
 package com.lec.spring.domains.post.repository.dsl;
 
 import com.lec.spring.domains.post.dto.PostDTO;
-import com.lec.spring.domains.post.dto.ProjectPostDTO;
 import com.lec.spring.domains.post.entity.Category;
 import com.lec.spring.domains.post.entity.Direction;
 import com.lec.spring.domains.post.entity.Post;
@@ -13,9 +12,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 public class QPostRepositoryImpl implements QPostRepository {
     private final JPAQueryFactory queryFactory;
@@ -28,6 +27,31 @@ public class QPostRepositoryImpl implements QPostRepository {
     @Override
     public Post findByPostId(Long postId) {
         return fetchOneEntity(qPost.id.eq(postId));
+    }
+
+    @Override
+    @Transactional
+    public Post updatePost(Post post) {
+        if (post.getId() == null) {
+            throw new IllegalArgumentException("Post id cannot be null for update");
+        }
+
+        BooleanExpression postCondition = qPost.id.eq(post.getId());
+        Post existingPost = fetchOneEntity(postCondition);
+
+        if (existingPost != null) {
+           queryFactory
+               .update(qPost)
+               .set(qPost.title, post.getTitle() != null ? post.getTitle() : existingPost.getTitle())
+               .set(qPost.content, post.getContent() != null ? post.getContent() : existingPost.getContent())
+               .set(qPost.category, post.getCategory() != null ? post.getCategory() : existingPost.getCategory())
+               .set(qPost.direction, post.getDirection() != null ? post.getDirection() : existingPost.getDirection())
+               .where(postCondition)
+               .execute();
+
+           return fetchOneEntity(postCondition);
+        }
+        return null;
     }
 
     @Override
@@ -48,8 +72,20 @@ public class QPostRepositoryImpl implements QPostRepository {
     }
 
     @Override
-    public Page<PostDTO> findByCategoryPage(Category category, Pageable pageable) {
-        BooleanExpression condition = qPost.category.eq(category);
+    public Page<PostDTO> findPosts(PostDTO postDTO, Pageable pageable) {
+        BooleanExpression condition;
+
+        if (postDTO.getCategory() == null) postDTO.setCategory(Category.NONE);
+        if (postDTO.getDirection() == null) postDTO.setDirection(Direction.NONE);
+
+        if (postDTO.getProjectId() == null) {
+            condition = qPost.category.eq(postDTO.getCategory());
+        }
+        else {
+            condition = qPost.direction.eq(postDTO.getDirection())
+                    .and(qPost.project.id.eq(postDTO.getProjectId()));
+        }
+
         List<PostDTO> posts = buildPostProjections(condition)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -60,9 +96,9 @@ public class QPostRepositoryImpl implements QPostRepository {
     }
 
     @Override
-    public List<ProjectPostDTO> findByDirection(Long projectId, Direction direction) {
+    public List<PostDTO> findByDirection(Long projectId, Direction direction) {
         BooleanExpression condition = qPost.direction.eq(direction).and(qPost.project.id.eq(projectId));
-        return buildProjectProjections(condition)
+        return buildPostProjections(condition)
                 .fetch();
     }
 
@@ -78,15 +114,10 @@ public class QPostRepositoryImpl implements QPostRepository {
     }
 
     @Override
-    public Page<ProjectPostDTO> findByDirectionPage(Long projectId, Direction direction, Pageable pageable) {
-        BooleanExpression condition = qPost.direction.eq(direction).and(qPost.project.id.eq(projectId));
-        List<ProjectPostDTO> ProjectPosts = buildProjectProjections(condition)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        Long total = getTotal(condition);
-        return new PageImpl<>(ProjectPosts, pageable, total);
+    public void deletePostById(Long postId) {
+        queryFactory.delete(qPost)
+                .where(qPost.id.eq(postId))
+                .execute();
     }
 
     private Post fetchOneEntity(BooleanExpression condition) {
@@ -102,34 +133,21 @@ public class QPostRepositoryImpl implements QPostRepository {
         return queryFactory
                 .select(Projections.fields(PostDTO.class,
                         qPost.id,
-                        qPost.user.username.as("userId"),
-                        qPost.title,
-                        qPost.content,
+                        qPost.user,
+                        qPost.project,
                         qPost.category,
-                        qPost.attachments,
-                        qPost.comments,
-                        qPost.createdAt
-                ))
-                .from(qPost)
-                .leftJoin(qPost.user).fetchJoin()
-                .where(condition);
-    }
-
-    private JPAQuery<ProjectPostDTO> buildProjectProjections(BooleanExpression condition) {
-        return queryFactory
-                .select(Projections.fields(ProjectPostDTO.class,
-                        qPost.id,
-                        qPost.user.username.as("userId"),
+                        qPost.direction,
                         qPost.title,
                         qPost.content,
-                        qPost.direction,
                         qPost.attachments,
                         qPost.comments,
-                        qPost.createdAt
+                        qPost.createdAt,
+                        qPost.user.id.as("userId"),
+                        qPost.project.id.as("projectId")
                 ))
                 .from(qPost)
-                .leftJoin(qPost.user).fetchJoin()
-                .leftJoin(qPost.project).fetchJoin()
+                .leftJoin(qPost.user)
+                .leftJoin(qPost.project)
                 .where(condition);
     }
 

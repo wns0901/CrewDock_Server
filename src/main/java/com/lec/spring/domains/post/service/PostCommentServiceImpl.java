@@ -3,6 +3,7 @@ package com.lec.spring.domains.post.service;
 import com.lec.spring.domains.post.entity.PostComment;
 import com.lec.spring.domains.post.repository.PostCommentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,20 +19,16 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     public PostComment saveComment(PostComment postComment) {
+        if (postComment.getParentComment() != null) {
+            PostComment parentComment = postCommentRepository.findById(postComment.getParentComment().getId())
+                    .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+
+            if (parentComment.getParentComment() != null) {
+                throw new RuntimeException("대댓글의 대댓글은 작성할 수 없습니다.");
+            }
+            postComment.setParentComment(parentComment);
+        }
         return postCommentRepository.save(postComment);
-    }
-
-    @Override
-    public PostComment saveChildComment(PostComment postComment, Long parentsId) {
-        PostComment parentComment = postCommentRepository.findById(parentsId).get();
-        postComment.setParentComment(parentComment);
-
-        return postCommentRepository.save(postComment);
-    }
-
-    @Override
-    public PostComment getCommentById(Long commentId) {
-        return postCommentRepository.findByCommentId(commentId);
     }
 
     @Override
@@ -47,17 +44,34 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Override
+    @Transactional
     public PostComment updateFixedStatus(Long commentId, Boolean isFixed) {
-        postCommentRepository.updateFixedStatus(commentId, isFixed);
-        return getCommentById(commentId);
+        Boolean fixed = (isFixed == null || isFixed == false) ? true : false;
+        postCommentRepository.updateFixedStatus(commentId, fixed);
+        return postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
     }
 
     @Override
-    public void deleteCommentById(Long parentsId, Long commentId) {
-        if(parentsId != null && parentsId == commentId) {
-            postCommentRepository.softDeleteParentComment(parentsId, true, "삭제된 댓글입니다.");
+    @Transactional
+    public void deleteCommentById(Long postId, Long commentId) {
+        PostComment comment = postCommentRepository.findById(commentId)
+                .orElse(null);
+
+        if(comment.getParentComment() != null) {
+            Long parentsId = comment.getParentComment().getId();
+            if (parentsId.equals(commentId)) {
+                postCommentRepository.softDeleteParentComment(parentsId, true, "삭제된 댓글입니다.");
+            } else {
+                postCommentRepository.softDeleteComment(commentId, true);
+            }
         } else {
             postCommentRepository.softDeleteComment(commentId, true);
         }
+    }
+
+    @Override
+    public void deleteAllCommentByPostId(Long postId) {
+        postCommentRepository.deleteAllCommentsByPostId(postId);
     }
 }
