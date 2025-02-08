@@ -61,6 +61,7 @@ public class PostServiceImpl extends BasePostServiceImpl implements PostService 
                 .id(post.getId())
                 .userId(post.getUser().getId())
                 .title(post.getTitle())
+                .content(post.getContent())
                 .category(post.getCategory().name()) // Enum -> String 변환
                 .build();
     }
