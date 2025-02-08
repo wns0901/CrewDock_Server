@@ -1,11 +1,9 @@
 package com.lec.spring.domains.project.controller;
 
-import com.lec.spring.domains.project.entity.Project;
-import com.lec.spring.domains.project.entity.ProjectMember;
+import com.lec.spring.domains.project.dto.ProjectMemberDTO;
 import com.lec.spring.domains.project.entity.ProjectMemberAuthirity;
 import com.lec.spring.domains.project.entity.ProjectMemberStatus;
 import com.lec.spring.domains.project.service.ProjectMemberServiceImpl;
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +20,10 @@ public class ProjectMemberController {
 
     // 멤버 조회
     @GetMapping("/{projectId}/members")
-    public ResponseEntity<List<ProjectMember>> getProjectMembers(@PathVariable Long projectId) {
-        List<Tuple> tuples = projectMemberServiceImpl.findMembersByProjectId(projectId);
+    public ResponseEntity<List<ProjectMemberDTO>> getProjectMembers(@PathVariable Long projectId) {
+        // 프로젝트 ID로 멤버 리스트 조회 (이미 ProjectMemberDTO 형태로 반환됨)
+        List<ProjectMemberDTO> members = projectMemberServiceImpl.findMembersByProjectId(projectId);
 
-        List<ProjectMember> members = tuples.stream()
-                .map(tuple -> {
-                    ProjectMember projectMember = tuple.get(0, ProjectMember.class);  // ProjectMember 추출
-                    String userName = tuple.get(1, String.class);  // User name 추출
-                    return projectMember;
-                })
-                .collect(Collectors.toList());
         return ResponseEntity.ok(members);
     }
 
@@ -44,15 +36,22 @@ public class ProjectMemberController {
 
     // 권한 변경
     @PatchMapping("/{projectId}/members")
-    public ResponseEntity<Void> changeMemberAuthority(
+    public ResponseEntity<Void> changeMemberAuthorityAndStatus(
             @PathVariable Long projectId,
             @RequestBody Map<String, Object> request) {
 
-        Long userId = Long.valueOf(String.valueOf(request.get("userId")));  // userId 추출
-        String authorityStr = String.valueOf(request.get("authirity"));  // authority 추출
-        ProjectMemberAuthirity authority = ProjectMemberAuthirity.valueOf(authorityStr);  // Enum 변환
+        Long userId = Long.valueOf(String.valueOf(request.get("userId")));
+        String authorityStr = (String) request.get("authority");
+        String statusStr = (String) request.get("status");
 
-        projectMemberServiceImpl.updateMemberAuthority(projectId, userId, authority);
+        ProjectMemberAuthirity authority = (authorityStr != null) ? ProjectMemberAuthirity.valueOf(authorityStr) : null;
+        ProjectMemberStatus status = (statusStr != null) ? ProjectMemberStatus.valueOf(statusStr) : null;
+
+        // 둘 중 하나라도 값이 있으면 업데이트 수행
+        if (authority != null || status != null) {
+            projectMemberServiceImpl.updateMemberAuthorityAndStatus(projectId, userId, authority, status);
+        }
+
         return ResponseEntity.noContent().build();
     }
 }
