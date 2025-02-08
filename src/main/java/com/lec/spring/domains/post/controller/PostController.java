@@ -39,10 +39,10 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<Page<PostDTO>> getPosts(
-            @RequestParam(defaultValue = "NONE") Category category,
-            @PageableDefault(page = 1) Pageable pageable
+            @ModelAttribute PostDTO postDTO,
+            @PageableDefault(page = 1, size = 10) Pageable pageable
     ) {
-        Page<PostDTO> postPages = postService.getPostsByCategoryPage(category, pageable);
+        Page<PostDTO> postPages = postService.getPosts(postDTO, pageable);
         return ResponseEntity.ok(postPages);
     }
 
@@ -52,17 +52,20 @@ public class PostController {
     }
 
     @PostMapping
-    public Post createPost(@RequestBody Post post) {
-        return postService.savePost(post);
+    public ResponseEntity<Post> createPost(@RequestBody PostDTO postDTO) {
+        Post savedPost = postService.savePost(postDTO);
+        return ResponseEntity.ok(savedPost);
     }
 
     @PatchMapping
-    public Post updatePost(@RequestBody Post post) {
-        return postService.updatePost(post);
+    public ResponseEntity<Post> updatePost(@RequestBody Post post) {
+        Post updatedPost = postService.updatePost(post);
+        return ResponseEntity.ok(updatedPost);
     }
 
     @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable Long postId) {
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
+        return ResponseEntity.noContent().build();
     }
 }
