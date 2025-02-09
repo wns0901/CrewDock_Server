@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,6 +24,12 @@ public class CalendarController {
     public ResponseEntity<List<CalendarDTO>> getUserCalendar(@RequestParam Long userId) {
         List<CalendarDTO> userCalendar = calendarService.getUserCalendar(userId);
         return ResponseEntity.ok(userCalendar);
+    }
+
+    // todays 오놀의 모든 일정 조회
+    @GetMapping("/today")
+    public List<Calendar> getAllCalendarsForToday(@RequestParam("date") LocalDate date) {
+        return calendarService.getAllCalendarsForToday(date);
     }
 
     // 팀 프로젝트 일정 + 공휴일 조회

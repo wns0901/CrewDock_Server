@@ -1,6 +1,7 @@
 package com.lec.spring.domains.calendar.repository.dsl;
 
 import com.lec.spring.domains.calendar.dto.CalendarDTO;
+import com.lec.spring.domains.calendar.entity.Calendar;
 import com.lec.spring.domains.calendar.dto.HolidaysDTO;
 import com.lec.spring.domains.calendar.entity.QCalendar;
 import com.lec.spring.domains.calendar.service.HolidaysService;
@@ -13,6 +14,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.lec.spring.domains.calendar.entity.QCalendar.calendar;
 
 @Repository
 @RequiredArgsConstructor
@@ -134,4 +137,14 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
 
         return projectCalendars;
     }
+
+    // 오늘의 나의 일정 조회
+    @Override
+    public List<Calendar> todaysCalendar(LocalDate today) {
+        return queryFactory.selectFrom(calendar)
+                .where(calendar.startDate.eq(today)
+                        .or(calendar.endDate.eq(today))) // 오늘 기준으로 시작일 또는 종료일이 오늘인 일정 가져오기
+                .fetch();
+    }
+
 }

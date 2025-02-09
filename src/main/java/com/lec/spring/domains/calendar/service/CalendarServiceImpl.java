@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -119,6 +120,12 @@ public class CalendarServiceImpl implements CalendarService {
             return 1;
         }
         return 0;
+    }
+
+    // todays 오늘의 나의 일정 조회
+    @Override
+    public List<Calendar> getAllCalendarsForToday(LocalDate today) {
+        return calendarRepository.todaysCalendar(today);
     }
 
     // 팀 일정 페이지에서 팀 일정 추가 -> 팀 멤버라면 누구든 가능
