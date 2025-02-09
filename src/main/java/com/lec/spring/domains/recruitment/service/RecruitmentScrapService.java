@@ -14,4 +14,6 @@ public interface RecruitmentScrapService {
 
     // 내가 스크랩한 모집글 목록 조회
     List<RecruitmentScrap> getScrappedPosts(Long userId);
+
+    List<RecruitmentScrap> getScrappedPostsWithLimit(Long userId, int row);
 }

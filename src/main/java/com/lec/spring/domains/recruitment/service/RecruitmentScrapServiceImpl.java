@@ -7,6 +7,7 @@ import com.lec.spring.domains.recruitment.repository.RecruitmentScrapRepository;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,9 +56,17 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
     }
 
     // 내가 스크랩한 모집글 조회
+    @Override
     public List<RecruitmentScrap> getScrappedPosts(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
-        return recruitmentScrapRepository.findByUserId(user);
+        return recruitmentScrapRepository.findScrapsByUserId(user);
+    }
+
+    @Override
+    public List<RecruitmentScrap> getScrappedPostsWithLimit(Long userId, int row) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        return recruitmentScrapRepository.findScrapsByUserId(user, row);
     }
 }
