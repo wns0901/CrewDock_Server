@@ -98,20 +98,23 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
 
     // 모집글 수정
     @Override
+    @Transactional
     public RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPost post) {
         RecruitmentPost existingPost = postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다"));
+                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다: " + id));
 
-        existingPost.setTitle(post.getTitle());
-        existingPost.setContent(post.getContent());
-        existingPost.setDeadline(post.getDeadline());
-        existingPost.setRegion(post.getRegion());
-        existingPost.setProceedMethod(post.getProceedMethod());
-        existingPost.setRecruitedNumber(post.getRecruitedNumber());
-        existingPost.setRecruitedField(post.getRecruitedField());
+        // null이 아닐 때만 업데이트 (입력되지 않은 필드는 기존 값 유지)
+        if (post.getTitle() != null) existingPost.setTitle(post.getTitle());
+        if (post.getContent() != null) existingPost.setContent(post.getContent());
+        if (post.getDeadline() != null) existingPost.setDeadline(post.getDeadline());
+        if (post.getRegion() != null) existingPost.setRegion(post.getRegion());
+        if (post.getProceedMethod() != null) existingPost.setProceedMethod(post.getProceedMethod());
+        if (post.getRecruitedNumber() != null) existingPost.setRecruitedNumber(post.getRecruitedNumber());
+        if (post.getRecruitedField() != null) existingPost.setRecruitedField(post.getRecruitedField());
 
         return postRepository.save(existingPost);
     }
+
 
     // 모집글 삭제
     @Override

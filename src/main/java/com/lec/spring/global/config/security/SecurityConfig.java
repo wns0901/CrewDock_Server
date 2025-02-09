@@ -52,6 +52,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        // post맨 사용하려고 올려놓은거입니다...
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/signup", "/recruitments/**").permitAll() // 특정 요청은 인증 없이 허용
+                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                );
+
         // csrf disable
         http
                 .csrf(auth -> auth.disable());
@@ -65,10 +73,11 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable());
 
         // 경로별 인가 설정
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
+//        http
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll()
+//
+//                );
 
         // 세션 설정
         http
@@ -93,7 +102,7 @@ public class SecurityConfig {
 
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository, userRepository), LoginFilter.class);
+//        http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository, userRepository), LoginFilter.class);
 
         return http.build();
     }

@@ -82,10 +82,15 @@ public class RecruitmentPostController {
 
 
     // 모집글 수정
-    @PatchMapping("/recruitments/{recruitmentsId}")
-    public void updateRecruitmentPost(@PathVariable("recruitmentsId") Long id, @RequestBody RecruitmentPost recruitmentPost) {
-        recruitmentPostService.updateRecruitmentPost(id, recruitmentPost);
+    @PatchMapping("/recruitments/{id}")
+    public ResponseEntity<RecruitmentPost> updateRecruitmentPost(
+            @PathVariable Long id,
+            @RequestBody RecruitmentPost post) {
+
+        RecruitmentPost updatedPost = recruitmentPostService.updateRecruitmentPost(id, post);
+        return ResponseEntity.ok(updatedPost);
     }
+
 
     // 모집글 삭제
     @DeleteMapping("/recruitments/{recruitmentsId}")
