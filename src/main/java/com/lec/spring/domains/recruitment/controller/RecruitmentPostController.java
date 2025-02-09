@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,37 +46,40 @@ public class RecruitmentPostController {
         return ResponseEntity.ok(recruitmentPostService.findClosingRecruitments(page));
     }
 
-    // 모집글 상세 조회
+    // 모집글 상세 조회 (특정 JSON 구조로 반환)
     @GetMapping("/recruitments/{recruitmentsId}")
-    public RecruitmentPost detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
-        //TODO: 값 정리
+    public Map<String, Object> detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
+        RecruitmentPost post = recruitmentPostService.detailRecruitmentPost(id);
 
-        // {
-        //    "userId": {
-        //        "id": 1
-        //    },
-        //    "project": {
-        //        "id": 2
-        //    },
-        //    "title": "백엔드 개발자 모집",
-        //    "content": "함께할 백엔드 개발자를 찾습니다. Spring Boot와 JPA를 사용한 경험이 있는 분을 선호합니다.",
-        //    "deadline": "2025-02-28",
-        //    "region": "SEOUL",
-        //    "proceedMethod": "ONLINE",
-        //    "recruitedNumber": 3,
-        //    "recruitedField": "백엔드",
-        //    "createAt": "2025-02-07T12:00:00"
-        //}
+        // JSON 구조 변환
+        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", post.getUser().getId());
 
-        // 추구미
-        return recruitmentPostService.detailRecruitmentPost(id);
+        Map<String, Object> projectMap = new HashMap<>();
+        projectMap.put("id", post.getProject().getId());
+
+        response.put("user", userMap);
+        response.put("project", projectMap);
+        response.put("title", post.getTitle());
+        response.put("content", post.getContent());
+        response.put("deadline", post.getDeadline());
+        response.put("region", post.getRegion().name());
+        response.put("proceedMethod", post.getProceedMethod().name());
+        response.put("recruitedNumber", post.getRecruitedNumber());
+        response.put("recruitedField", post.getRecruitedField());
+        response.put("createAt", post.getCreatedAt()); // BaseEntity에 있는 생성일자
+
+        return response;
     }
 
-    // 모집글 등록
+// 모집글 등록
     @PostMapping("/recruitments")
     public void writeRecruitmentPost(@RequestBody RecruitmentPost recruitmentPost) {
+        System.out.println("받은 데이터: " + recruitmentPost); // 로그 확인용
         recruitmentPostService.writeRecruitmentPost(recruitmentPost);
     }
+
 
     // 모집글 수정
     @PatchMapping("/recruitments/{recruitmentsId}")

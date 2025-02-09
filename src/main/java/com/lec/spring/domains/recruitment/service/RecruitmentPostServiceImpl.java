@@ -79,14 +79,20 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
 
     // 모집글 작성
     @Override
+    @Transactional
     public RecruitmentPost writeRecruitmentPost(RecruitmentPost post) {
+        if (post.getUser() == null || post.getUser().getId() == null) {
+            throw new IllegalArgumentException("유저 정보가 없습니다. JSON 형식을 확인하세요.");
+        }
+
         User user = userRepository.findById(post.getUser().getId())
-                .orElseThrow(() -> new EntityNotFoundException("로그인이 필요합니다"));
+                .orElseThrow(() -> new EntityNotFoundException("해당 유저가 존재하지 않습니다."));
         Project project = projectRepository.findById(post.getProject().getId())
                 .orElseThrow(() -> new EntityNotFoundException("프로젝트가 존재하지 않습니다"));
 
         post.setUser(user);
         post.setProject(project);
+
         return postRepository.save(post);
     }
 

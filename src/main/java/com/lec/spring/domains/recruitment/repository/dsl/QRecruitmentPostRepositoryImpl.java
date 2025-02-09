@@ -29,38 +29,21 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
         this.queryFactory = queryFactory;
     }
 
-    // 모집글을 조회하면 글작성자와 프로젝트를 조회
+    // 모집글을 조회하면 글작성자와 프로젝트를 조회(상세조회때 사용)
     @Override
     public Optional<RecruitmentPost> findByIdWithUserAndProject(Long id) {
         QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
-        // {
-        //    "userId": {
-        //        "id": 1
-        //    },
-        //    "project": {
-        //        "id": 2
-        //    },
-        //    "title": "백엔드 개발자 모집",
-        //    "content": "함께할 백엔드 개발자를 찾습니다. Spring Boot와 JPA를 사용한 경험이 있는 분을 선호합니다.",
-        //    "deadline": "2025-02-28",
-        //    "region": "SEOUL",
-        //    "proceedMethod": "ONLINE",
-        //    "recruitedNumber": 3,
-        //    "recruitedField": "백엔드",
-        //    "createAt": "2025-02-07T12:00:00"
-        //}
 
         RecruitmentPost result = queryFactory
                 .selectFrom(post)
-                .where()
-//                .leftJoin(post.userId).fetchJoin() // 유저 확인
-//                .leftJoin(post.project).fetchJoin() // 프로젝트 확인
-//                .where(post.id.eq(post.id)) // 모집글id
-                .fetchOne();
+                .where(post.id.eq(id))
+                .leftJoin(post.user).fetchJoin() // 유저 정보 가져오기
+                .leftJoin(post.project).fetchJoin() // 프로젝트 정보 가져오기
+                .fetchFirst();
 
-        //TODO
         return Optional.ofNullable(result);
     }
+
 
     // 필터
     @Override
