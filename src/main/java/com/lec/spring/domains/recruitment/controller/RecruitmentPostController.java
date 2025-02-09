@@ -3,7 +3,6 @@ package com.lec.spring.domains.recruitment.controller;
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.service.ProjectService;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
-import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostService;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ public class RecruitmentPostController {
 
     // 모집글 필터링 (페이징 지원)
     @GetMapping("/recruitments/filter")
-    public ResponseEntity<Page<RecruitmentPost>> recruitments(
+    public ResponseEntity<Page<RecruitmentPost>> recruitmentsFilter(
             @RequestParam(required = false) String stack,
             @RequestParam(required = false) String position,
             @RequestParam(required = false) String proceedMethod,
@@ -49,6 +48,26 @@ public class RecruitmentPostController {
     // 모집글 상세 조회
     @GetMapping("/recruitments/{recruitmentsId}")
     public RecruitmentPost detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
+        //TODO: 값 정리
+
+        // {
+        //    "userId": {
+        //        "id": 1
+        //    },
+        //    "project": {
+        //        "id": 2
+        //    },
+        //    "title": "백엔드 개발자 모집",
+        //    "content": "함께할 백엔드 개발자를 찾습니다. Spring Boot와 JPA를 사용한 경험이 있는 분을 선호합니다.",
+        //    "deadline": "2025-02-28",
+        //    "region": "SEOUL",
+        //    "proceedMethod": "ONLINE",
+        //    "recruitedNumber": 3,
+        //    "recruitedField": "백엔드",
+        //    "createAt": "2025-02-07T12:00:00"
+        //}
+
+        // 추구미
         return recruitmentPostService.detailRecruitmentPost(id);
     }
 
@@ -84,11 +103,11 @@ public class RecruitmentPostController {
     }
 
     // 캡틴의 모든 프로젝트 목록 조회
-    @GetMapping("/projects")
+    @GetMapping("/projects/{userId}")
     public ResponseEntity<List<Project>> getCaptainProjects(@RequestParam Long userId) {
         return ResponseEntity.ok(projectService.getCaptainProjects(userId));
     }
-
+//
 
 }
 

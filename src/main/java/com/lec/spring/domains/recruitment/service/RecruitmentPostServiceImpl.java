@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.lec.spring.domains.user.entity.QUser.user;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -60,6 +62,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         Pageable pageable = PageRequest.of(page - 1, 20, Sort.by(Sort.Order.asc("deadline"), Sort.Order.asc("recruitedNumber")));
         return qRecruitmentPostRepository.findClosingRecruitments(closingDate, pageable);
     }
+    //TODO: 조회는 하나 제대로 안됨.
 
     // 내가 작성한 모집글 조회
     @Override
@@ -77,12 +80,12 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     // 모집글 작성
     @Override
     public RecruitmentPost writeRecruitmentPost(RecruitmentPost post) {
-        User user = userRepository.findById(post.getUserId().getId())
+        User user = userRepository.findById(post.getUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException("로그인이 필요합니다"));
         Project project = projectRepository.findById(post.getProject().getId())
                 .orElseThrow(() -> new EntityNotFoundException("프로젝트가 존재하지 않습니다"));
 
-        post.setUserId(user);
+        post.setUser(user);
         post.setProject(project);
         return postRepository.save(post);
     }

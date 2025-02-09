@@ -4,6 +4,7 @@ import com.lec.spring.domains.recruitment.entity.QRecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.Region;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
+import com.lec.spring.domains.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import static com.lec.spring.domains.user.entity.QUser.user;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
-@Repository("qrecruitmentPostRepository") // ✅ 정확한 Bean 이름 지정
+@Repository("qrecruitmentPostRepository") //정확한 Bean 이름 지정
 public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepository {
     private final JPAQueryFactory queryFactory;
 
@@ -30,20 +31,36 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
 
     // 모집글을 조회하면 글작성자와 프로젝트를 조회
     @Override
-    public Optional<RecruitmentPost> findByIdWithUserAndProject(Long postId) {
+    public Optional<RecruitmentPost> findByIdWithUserAndProject(Long id) {
         QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
+        // {
+        //    "userId": {
+        //        "id": 1
+        //    },
+        //    "project": {
+        //        "id": 2
+        //    },
+        //    "title": "백엔드 개발자 모집",
+        //    "content": "함께할 백엔드 개발자를 찾습니다. Spring Boot와 JPA를 사용한 경험이 있는 분을 선호합니다.",
+        //    "deadline": "2025-02-28",
+        //    "region": "SEOUL",
+        //    "proceedMethod": "ONLINE",
+        //    "recruitedNumber": 3,
+        //    "recruitedField": "백엔드",
+        //    "createAt": "2025-02-07T12:00:00"
+        //}
 
         RecruitmentPost result = queryFactory
                 .selectFrom(post)
-                .leftJoin(post.userId).fetchJoin()
-                .leftJoin(post.project).fetchJoin()
-                .where(post.id.eq(postId))
+                .where()
+//                .leftJoin(post.userId).fetchJoin() // 유저 확인
+//                .leftJoin(post.project).fetchJoin() // 프로젝트 확인
+//                .where(post.id.eq(post.id)) // 모집글id
                 .fetchOne();
 
+        //TODO
         return Optional.ofNullable(result);
     }
-
-
 
     // 필터
     @Override
@@ -97,6 +114,7 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
     }
 
 
+    // 마감 3일전
     @Override
     public Page<RecruitmentPost> findClosingRecruitments(LocalDate closingDate, Pageable pageable) {
         QRecruitmentPost post = QRecruitmentPost.recruitmentPost;

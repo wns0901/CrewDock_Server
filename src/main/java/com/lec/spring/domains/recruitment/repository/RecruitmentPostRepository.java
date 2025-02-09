@@ -14,7 +14,8 @@ import java.util.List;
 @Primary
 public interface RecruitmentPostRepository extends JpaRepository<RecruitmentPost, Long>, QRecruitmentPostRepository {
 
-    @Query("SELECT u FROM RecruitmentPost u WHERE u.userId.id = :userId")
+    @Query("SELECT u FROM RecruitmentPost u WHERE u.user.id = :userId")
     List<RecruitmentPost> findAllByUserId(@Param("userId") Long userId);
 
+    // 집가서 처음부터 생각해야할지도~
 }

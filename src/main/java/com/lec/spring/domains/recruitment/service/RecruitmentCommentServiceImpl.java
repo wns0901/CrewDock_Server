@@ -47,7 +47,7 @@ public class RecruitmentCommentServiceImpl implements RecruitmentCommentService 
 
         RecruitmentComment newComment = RecruitmentComment.builder()
                 .post(post)
-                .userId(user)
+                .user(user)
                 .content(content)
                 .comment(parentComment) //  부모 댓글이 있으면 대댓글로 등록
                 .deleted(false)

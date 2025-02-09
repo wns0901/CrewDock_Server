@@ -37,7 +37,7 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
         }
 
         RecruitmentScrap scrap = RecruitmentScrap.builder().
-                userId(user).
+                user(user).
                 recruitment(post).
                 build();
         recruitmentScrapRepository.save(scrap);

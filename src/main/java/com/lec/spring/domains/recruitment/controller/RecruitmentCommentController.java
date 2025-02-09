@@ -16,7 +16,7 @@ public class RecruitmentCommentController {
     private final RecruitmentCommentService commentService;
 
     // 해당 모집글의 모든 댓글 + 대댓글 조회
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<List<RecruitmentComment>> commentList(@PathVariable Long recruitmentsId) {
         List<RecruitmentComment> comments = commentService.findCommentList(recruitmentsId);
         return ResponseEntity.ok(comments);
@@ -30,7 +30,7 @@ public class RecruitmentCommentController {
             @RequestParam(required = false) Long parentCommentId) {
         RecruitmentComment newComment = commentService.createRecruitmentComment(
                 recruitmentsId,
-                recruitmentComment.getUserId().getId(),
+                recruitmentComment.getUser().getId(),
                 recruitmentComment.getContent(),
                 parentCommentId);
         return ResponseEntity.ok(newComment);
