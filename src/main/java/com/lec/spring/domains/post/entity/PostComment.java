@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,5 +39,4 @@ public class PostComment extends BaseEntity {
 
     @Column(name = "is_fixed")
     private Boolean fixed;
-
 }

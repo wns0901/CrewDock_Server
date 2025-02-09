@@ -6,10 +6,7 @@ import java.util.Calendar;
 import java.util.List;
 
 public interface ProjectService {
+    Project getProject(Long projectId);
 
-    List<Project> findById(Long id);
-
-    Project update(Project project);
-
-    Calendar findCalenderById(Long id);
+    void updateProject(Long projectId, Project updatedProject);
 }

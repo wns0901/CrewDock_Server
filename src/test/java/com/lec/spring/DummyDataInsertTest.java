@@ -13,6 +13,7 @@ import com.lec.spring.domains.post.repository.PostRepository;
 import com.lec.spring.domains.project.entity.*;
 import com.lec.spring.domains.project.repository.ProjectMemberRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
+import com.lec.spring.domains.project.repository.ProjectStacksRepository;
 import com.lec.spring.domains.recruitment.entity.ProceedMethod;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.Region;
@@ -21,6 +22,7 @@ import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
 import com.lec.spring.domains.user.entity.Auth;
 import com.lec.spring.domains.user.entity.User;
+import com.lec.spring.domains.user.entity.UserAuth;
 import com.lec.spring.domains.user.entity.UserStacks;
 import com.lec.spring.domains.user.repository.AuthRepository;
 import com.lec.spring.domains.user.repository.UserAuthRepository;
@@ -30,9 +32,8 @@ import com.lec.spring.global.common.entity.Position;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -45,7 +46,7 @@ import java.util.stream.IntStream;
 public class DummyDataInsertTest {
 
     @Autowired
-    EntityManager em;
+    PasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthRepository authRepository;
@@ -78,7 +79,7 @@ public class DummyDataInsertTest {
     private PostRepository postRepository;
 
     @Autowired
-    private PostAttachmentRepository postAttachmentRepository;
+    private ProjectStacksRepository projectStacksRepository;
 
     @Autowired
     private CalendarRepository calendarRepository;
@@ -110,10 +111,38 @@ public class DummyDataInsertTest {
                 userRepository.save(User.builder()
                         .username("user" + i + "@example.com")
                         .name("사용자" + i)
-                        .password("password123")
+                        .nickname("닉네임" + i)
+                        .password(passwordEncoder.encode("qwer1234"))
                         .phoneNumber("010-1234-567" + i)
                         .build())
         ).toList();
+
+        users.forEach(user -> {
+            UserAuth userAuth = UserAuth.builder()
+                    .userId(user.getId())
+                    .auth(authUser)
+                    .build();
+
+            userAuthRepository.save(userAuth);
+        });
+
+        User admin = userRepository.save(User.builder()
+                .username("admin" + 1 + "@example.com")
+                .name("관리자1")
+                .nickname("관리자 닉네임")
+                .password(passwordEncoder.encode("qwer1234"))
+                .phoneNumber("010-1234-9999")
+                .build());
+
+        userAuthRepository.save(UserAuth.builder()
+                .userId(admin.getId())
+                .auth(authAdmin)
+                .build());
+
+        userAuthRepository.save(UserAuth.builder()
+                .userId(admin.getId())
+                .auth(authUser)
+                .build());
 
         List<UserStacks> userStacks = new ArrayList<>();
 
@@ -121,8 +150,8 @@ public class DummyDataInsertTest {
             int finalJ = j;
             userStacks.addAll(IntStream.range(0, users.size())
                     .mapToObj(i ->UserStacks.builder()
-                            .user(users.get(i))
-                            .stack(stackEntities.get(finalJ))
+                            .user(users.get(finalJ))
+                            .stack(stackEntities.get(i))
                             .build())
                     .toList());
         }
@@ -138,6 +167,15 @@ public class DummyDataInsertTest {
                 .githubUrl1("https://github.com/wns0901/matzipWithYou")
                 .introduction("프로젝트 A 소개글입니다.")
                 .build());
+
+        List<ProjectStacks> projectStacks = IntStream.range(0,7)
+                .mapToObj(i -> ProjectStacks.builder()
+                        .projectId(project1.getId())
+                        .stack(stackEntities.get(i))
+                        .build())
+                .toList();
+
+        projectStacksRepository.saveAll(projectStacks);
 
         Project project2 = projectRepository.save(Project.builder()
                 .name("프로젝트 B")
