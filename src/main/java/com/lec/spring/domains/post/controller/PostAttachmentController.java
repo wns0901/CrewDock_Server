@@ -13,6 +13,7 @@ import java.util.List;
 public class PostAttachmentController {
     private final PostAttachmentService postAttachmentService;
 
+
     @GetMapping({"/posts/{postId}/attachments",
             "/projects/{projectId}/posts/{postId}/attachments"})
     public List<PostAttachment> getPostAttachments(@PathVariable Long postId) {
