@@ -109,7 +109,7 @@ public class DummyDataInsertTest {
         Position[] positions = {Position.BACK, Position.FRONT, Position.FULLSTACK, Position.DESIGNER};
         List<User> users = IntStream.range(1, 9).mapToObj(i ->
                 userRepository.save(User.builder()
-                        .username("user" + i + "@example.com")
+                        .username("user" + i + "@q.q")
                         .name("사용자" + i)
                         .nickname("닉네임" + i)
                         .password(passwordEncoder.encode("qwer1234"))
@@ -127,7 +127,7 @@ public class DummyDataInsertTest {
         });
 
         User admin = userRepository.save(User.builder()
-                .username("admin" + 1 + "@example.com")
+                .username("admin" + 1 + "@q.q")
                 .name("관리자1")
                 .nickname("관리자 닉네임")
                 .password(passwordEncoder.encode("qwer1234"))
@@ -310,7 +310,7 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(0))
                 .project(project1)
-                .content("프로젝트 A 시작 일정")
+                .contnet("프로젝트 A 시작 일정")
                 .startTime(LocalTime.of(10,0,0))
                 .endTime(LocalTime.of(18,0,0))
                 .startDate(LocalDate.of(2025, 1, 1))
@@ -320,7 +320,7 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(1))
                 .project(project2)
-                .content("프로젝트 B 중간 일정")
+                .contnet("프로젝트 B 중간 일정")
                 .startTime(LocalTime.of(9,0,0))
                 .endTime(LocalTime.of(17,0,0))
                 .startDate(LocalDate.of(2025, 2, 1))
@@ -372,7 +372,6 @@ public class DummyDataInsertTest {
             );
         });
 
-//        em.flush();
     }
 
 }
