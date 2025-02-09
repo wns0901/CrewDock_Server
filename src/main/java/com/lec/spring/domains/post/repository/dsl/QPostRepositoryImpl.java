@@ -14,7 +14,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class QPostRepositoryImpl implements QPostRepository {
     private final JPAQueryFactory queryFactory;
@@ -104,13 +106,38 @@ public class QPostRepositoryImpl implements QPostRepository {
                     .and(qPost.project.id.eq(postDTO.getProjectId()));
         }
 
-        List<PostDTO> posts = buildPostProjections(condition)
+        List<Post> posts = queryFactory
+                .selectFrom(qPost)
+                .leftJoin(qPost.user).fetchJoin()
+                .leftJoin(qPost.project).fetchJoin()
+                .leftJoin(qPost.attachments)
+                .leftJoin(qPost.comments)
+                .where(condition)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        List<PostDTO> postDTOs = posts.stream()
+                .map(post -> {
+                    PostDTO dto = new PostDTO();
+                    dto.setId(post.getId());
+                    dto.setTitle(post.getTitle());
+                    dto.setContent(post.getContent());
+                    dto.setCategory(post.getCategory());
+                    dto.setDirection(post.getDirection());
+                    dto.setAttachments(new ArrayList<>(post.getAttachments()));
+                    dto.setComments(new ArrayList<>(post.getComments()));
+                    dto.setCreatedAt(post.getCreatedAt());
+                    dto.setUserId(post.getUser().getId());
+                    if (post.getProject() != null) {
+                        dto.setProjectId(post.getProject().getId());
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
         Long total = getTotal(condition);
-        return new PageImpl<>(posts, pageable, total);
+        return new PageImpl<>(postDTOs, pageable, total);
     }
 
     @Override
@@ -189,6 +216,8 @@ public class QPostRepositoryImpl implements QPostRepository {
                 .from(qPost)
                 .leftJoin(qPost.user)
                 .leftJoin(qPost.project)
+                .leftJoin(qPost.attachments)
+                .leftJoin(qPost.comments)
                 .where(condition);
     }
 
