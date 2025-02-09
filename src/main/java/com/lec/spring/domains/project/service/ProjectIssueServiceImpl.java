@@ -43,10 +43,6 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
             throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후일 수 없습니다.");
         }
 
-        // 담당자가 지정되지 않은 경우, 작성자를 기본 담당자로 설정
-        if (projectIssueDTO.getManagerName() == null) {
-            projectIssueDTO.setManagerName(projectIssueDTO.getWriterName());
-        }
 
         // 상태와 우선순위 변환
         projectIssueDTO.setStatus(projectIssueDTO.getStatus());
@@ -126,32 +122,29 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         );
     }
 
-    // 다중 삭제
-    @Override
-    public int deleteByIds(List<Long> issueIds) {
-        if (issueIds == null || issueIds.isEmpty()) {
-            return 0;
+        // 다중 삭제
+        @Override
+        public int deleteByIds(List<Long> issueIds) {
+            List<ProjectIssue> issuesToDelete = projectIssueRepository.findAllById(issueIds);
+            if (!issuesToDelete.isEmpty()) {
+                projectIssueRepository.deleteAll(issuesToDelete);  // 이슈들 삭제
+                return issuesToDelete.size();  // 삭제된 이슈 수 반환
+            }
+            return 0; // 삭제된 이슈 없음
         }
 
-        long count = projectIssueRepository.countByIdIn(issueIds);
-        if (count == 0) {
-            return 0;
-        }
-
-        projectIssueRepository.deleteAllById(issueIds);
-        return (int) count;
-    }
-
-    // 개별 이슈 삭제
+    // 개별 삭제
     @Override
-    public boolean deleteById(Long issueId) {
+    public int deleteById(Long issueId) {
         Optional<ProjectIssue> issue = projectIssueRepository.findById(issueId);
         if (issue.isPresent()) {
-            projectIssueRepository.delete(issue.get());
-            return true;  // 삭제 성공
+            projectIssueRepository.delete(issue.get()); // 개별 이슈 삭제
+            return 1; // 삭제된 이슈 수 1
         }
-        return false;  // 해당 이슈가 존재하지 않음
+        return 0; // 삭제된 이슈 없음
     }
+
+
 
     // 이슈 정보 검증
     private void validateProjectIssue(ProjectIssue projectIssue) {

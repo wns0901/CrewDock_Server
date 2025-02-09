@@ -59,34 +59,34 @@ public class ProjectIssueController {
         }
     }
 
-    // 다중 이슈 삭제 delete "/projects/{projectId}/issues/{issueId}" -> 다중 삭제 가능
     @DeleteMapping("/{projectId}/issues")
-    public ResponseEntity<Void> deleteIssue(
+    public ResponseEntity<Void> deleteIssues(
             @PathVariable Long projectId,
-            @RequestBody List<Long> issueIds) {
-        int rowsDeleted = projectIssueService.deleteByIds(issueIds);
+            @RequestParam List<Long> issueIds) {
 
-        if (rowsDeleted > 0) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        // 다중 삭제 처리
+        if (issueIds != null && !issueIds.isEmpty()) {
+            int deletedCount = projectIssueService.deleteByIds(issueIds);
+            if (deletedCount > 0) {
+                return ResponseEntity.noContent().build(); // 성공적으로 삭제
+            }
         }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 삭제 실패
     }
 
-    // 개별 이슈 삭제
     @DeleteMapping("/{projectId}/issues/{issueId}")
     public ResponseEntity<Void> deleteIssue(
             @PathVariable Long projectId,
             @PathVariable Long issueId) {
 
-        // 개별 이슈 삭제
-        boolean isDeleted = projectIssueService.deleteById(issueId);
-
-        if (isDeleted) {
-            return ResponseEntity.noContent().build();  // 삭제 성공
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // 삭제 실패 (이슈 없음)
+        // 개별 삭제 처리
+        int deletedCount = projectIssueService.deleteById(issueId);
+        if (deletedCount > 0) {
+            return ResponseEntity.noContent().build(); // 성공적으로 삭제
         }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 삭제 실패
     }
 
 }

@@ -47,9 +47,8 @@ public class ProjectIssueDTO{
 
         this.writerId = writerId;
         this.writerName = writerName;
-        // Manager가 존재하는지 확인 후 닉네임을 설정
-        this.managerId = managerId;  // issueDTO.getManagerName() 대신 managerId 사용
-        this.managerName = (managerId != null) ? writerName : null;
+        this.managerId = managerId;
+        this.managerName = managerName;
 
         this.projectId = projectId;
     }

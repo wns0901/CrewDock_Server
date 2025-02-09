@@ -22,7 +22,8 @@ public interface ProjectIssueService {
     // 특정 이슈들 삭제하기 -> 다중 삭제 기능
     int deleteByIds(List<Long> issueIds);
 
-    // 특정 이슈 삭제하기 -> 개별 삭제 기능
-    boolean deleteById(Long issueId);
+    // 특정 이슈 삭제 -> 개별 삭제
+    int deleteById(Long issueId);
+
 
 }
