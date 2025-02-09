@@ -29,12 +29,4 @@ public class QPostAttachmentRepositoryImpl implements QPostAttachmentRepository 
                 .where(qPostAttachment.postId.eq(postId))
                 .fetch();
     }
-
-    @Override
-    public void deleteByAttachmentId(Long attachmentId) {
-        queryFactory
-            .delete(qPostAttachment)
-            .where(qPostAttachment.id.eq(attachmentId))
-            .execute();
-    }
 }

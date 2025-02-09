@@ -16,7 +16,7 @@ public interface QPostRepository {
 
     List<PostDTO> findByCategory(Category category);
 
-    Post findPostById(Long postId);
+    PostDTO findPostById(Long postId);
 
     Page<PostDTO> findPosts(PostDTO postDTO, Pageable pageable);
 
@@ -25,4 +25,8 @@ public interface QPostRepository {
     Post findProjectPostById(Long postId, Long projectId);
 
     void deletePostById(Long postId);
+
+    List<Post> findByUserIdWithrowQuertDSL(Long userId, int row);
+
+    List<Post> findByUserIdQuertDSL(Long userId);
 }

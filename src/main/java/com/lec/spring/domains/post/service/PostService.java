@@ -16,7 +16,7 @@ public interface PostService{
 
     void deletePost(Long postId);
 
-    Post getPostDetail(Long postId);
+    PostDTO getPostDetail(Long postId);
 
     List<PostDTO> getPostsByCategory(Category category);
 
@@ -25,4 +25,8 @@ public interface PostService{
     Post getProjectPostDetail(Long postId, Long projectId);
 
     List<PostDTO> getPostsByDirection(Long projectId, Direction direction);
+
+    List<PostDTO> getUserPostWithLimit(Long userId, int row);
+
+    List<PostDTO> getUserPost(Long userId);
 }

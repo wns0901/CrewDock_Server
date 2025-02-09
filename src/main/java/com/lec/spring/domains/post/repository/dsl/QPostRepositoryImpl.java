@@ -62,13 +62,31 @@ public class QPostRepositoryImpl implements QPostRepository {
     }
 
     @Override
-    public Post findPostById(Long postId) {
-        return queryFactory
+    public PostDTO findPostById(Long postId) {
+        Post post = queryFactory
                 .selectFrom(qPost)
                 .leftJoin(qPost.user).fetchJoin()
                 .where(qPost.id.eq(postId))
-                .where(qPost.project.id.isNull())
                 .fetchOne();
+
+        if (post != null) {
+            PostDTO postDTO = new PostDTO();
+            postDTO.setId(post.getId());
+            postDTO.setTitle(post.getTitle());
+            postDTO.setContent(post.getContent());
+            postDTO.setCategory(post.getCategory());
+            postDTO.setDirection(post.getDirection());
+            postDTO.setAttachments(post.getAttachments());
+            postDTO.setComments(post.getComments());
+            postDTO.setCreatedAt(post.getCreatedAt());
+            postDTO.setUserId(post.getUser().getId());
+            if (post.getProject() != null) {
+                postDTO.setProjectId(post.getProject().getId());
+            }
+            return postDTO;
+        }
+        return null;
+
     }
 
     @Override
@@ -118,6 +136,29 @@ public class QPostRepositoryImpl implements QPostRepository {
         queryFactory.delete(qPost)
                 .where(qPost.id.eq(postId))
                 .execute();
+    }
+
+    @Override
+    public List<Post> findByUserIdWithrowQuertDSL(Long userId, int row) {
+        return queryFactory
+                .selectFrom(qPost)
+                .leftJoin(qPost.user).fetchJoin()
+                .where(qPost.user.id.eq(userId)
+                        .and(qPost.project.isNull()))
+                .orderBy(qPost.id.desc())
+                .limit(row)
+                .fetch();
+    }
+
+    @Override
+    public List<Post> findByUserIdQuertDSL(Long userId) {
+        return queryFactory
+                .selectFrom(qPost)
+                .leftJoin(qPost.user).fetchJoin()
+                .where(qPost.user.id.eq(userId)
+                        .and(qPost.project.isNull()))  // 프로젝트 게시글 제외
+                .orderBy(qPost.id.desc())
+                .fetch();
     }
 
     private Post fetchOneEntity(BooleanExpression condition) {

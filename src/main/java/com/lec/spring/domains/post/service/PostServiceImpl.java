@@ -10,12 +10,14 @@ import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.repository.UserRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -66,7 +68,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post getPostDetail(Long postId) {
+    @Transactional
+    public PostDTO getPostDetail(Long postId) {
         return postRepository.findPostById(postId);
     }
 
@@ -88,5 +91,39 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostDTO> getPostsByDirection(Long projectId, Direction direction) {
         return postRepository.findByDirection(projectId, direction);
+    }
+
+    @Override
+    public List<PostDTO> getUserPostWithLimit(Long userId, int row) {
+        List<Post> posts = postRepository.findByUserIdWithrowQuertDSL(userId, row);
+        return posts.stream()
+                .map(this::convertToPostDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> getUserPost(Long userId) {
+        List<Post> posts = postRepository.findByUserIdQuertDSL(userId);
+        return posts.stream()
+                .map(this::convertToPostDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    // Post 엔티티 -> PostDTO 변환 메서드
+    private PostDTO convertToPostDTO(Post post) {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setId(post.getId());
+        postDTO.setUserId(post.getUser().getId());
+        postDTO.setTitle(post.getTitle());
+        postDTO.setContent(post.getContent());
+        postDTO.setCategory(post.getCategory());
+        postDTO.setDirection(post.getDirection());
+        postDTO.setAttachments(post.getAttachments());
+        postDTO.setComments(post.getComments());
+        if(post.getProject() != null) {
+            postDTO.setProjectId(post.getProject().getId());
+        }
+        return postDTO;
     }
 }
