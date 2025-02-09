@@ -18,7 +18,7 @@ public class QRecruitmentCommentRepositoryImpl implements QRecruitmentCommentRep
     QRecruitmentComment comment = QRecruitmentComment.recruitmentComment;
     QRecruitmentComment parentComment = new QRecruitmentComment("parentComment");
 
-    // ✅ 모집글에 속한 모든 댓글 조회 (부모-자식 댓글 계층 구조 유지)
+    // 모집글에 속한 모든 댓글 조회 (부모-자식 댓글 계층 구조 유지)
     @Override
     public List<RecruitmentComment> commentListByRecruitmentPost(RecruitmentPost recruitmentPost) {
         return queryFactory
@@ -30,7 +30,7 @@ public class QRecruitmentCommentRepositoryImpl implements QRecruitmentCommentRep
                 .fetch();
     }
 
-    // ✅ 특정 댓글의 대댓글 조회 (QueryDSL 적용)
+    // 특정 댓글의 대댓글 조회 (QueryDSL 적용)
     @Override
     public List<RecruitmentComment> findRepliesByParentComment(RecruitmentComment parentComment) {
         return queryFactory

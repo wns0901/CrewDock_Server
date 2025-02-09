@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.lec.spring.domains.user.entity.QUser.user;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -60,6 +62,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         Pageable pageable = PageRequest.of(page - 1, 20, Sort.by(Sort.Order.asc("deadline"), Sort.Order.asc("recruitedNumber")));
         return qRecruitmentPostRepository.findClosingRecruitments(closingDate, pageable);
     }
+    //TODO: 조회는 하나 제대로 안됨.
 
     // 내가 작성한 모집글 조회
     @Override
@@ -76,33 +79,42 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
 
     // 모집글 작성
     @Override
+    @Transactional
     public RecruitmentPost writeRecruitmentPost(RecruitmentPost post) {
-        User user = userRepository.findById(post.getUserId().getId())
-                .orElseThrow(() -> new EntityNotFoundException("로그인이 필요합니다"));
+        if (post.getUser() == null || post.getUser().getId() == null) {
+            throw new IllegalArgumentException("유저 정보가 없습니다. JSON 형식을 확인하세요.");
+        }
+
+        User user = userRepository.findById(post.getUser().getId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 유저가 존재하지 않습니다."));
         Project project = projectRepository.findById(post.getProject().getId())
                 .orElseThrow(() -> new EntityNotFoundException("프로젝트가 존재하지 않습니다"));
 
-        post.setUserId(user);
+        post.setUser(user);
         post.setProject(project);
+
         return postRepository.save(post);
     }
 
     // 모집글 수정
     @Override
+    @Transactional
     public RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPost post) {
         RecruitmentPost existingPost = postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다"));
+                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다: " + id));
 
-        existingPost.setTitle(post.getTitle());
-        existingPost.setContent(post.getContent());
-        existingPost.setDeadline(post.getDeadline());
-        existingPost.setRegion(post.getRegion());
-        existingPost.setProceedMethod(post.getProceedMethod());
-        existingPost.setRecruitedNumber(post.getRecruitedNumber());
-        existingPost.setRecruitedField(post.getRecruitedField());
+        // null이 아닐 때만 업데이트 (입력되지 않은 필드는 기존 값 유지)
+        if (post.getTitle() != null) existingPost.setTitle(post.getTitle());
+        if (post.getContent() != null) existingPost.setContent(post.getContent());
+        if (post.getDeadline() != null) existingPost.setDeadline(post.getDeadline());
+        if (post.getRegion() != null) existingPost.setRegion(post.getRegion());
+        if (post.getProceedMethod() != null) existingPost.setProceedMethod(post.getProceedMethod());
+        if (post.getRecruitedNumber() != null) existingPost.setRecruitedNumber(post.getRecruitedNumber());
+        if (post.getRecruitedField() != null) existingPost.setRecruitedField(post.getRecruitedField());
 
         return postRepository.save(existingPost);
     }
+
 
     // 모집글 삭제
     @Override

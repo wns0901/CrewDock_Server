@@ -4,6 +4,7 @@ import com.lec.spring.domains.recruitment.entity.QRecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.Region;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
+import com.lec.spring.domains.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import static com.lec.spring.domains.user.entity.QUser.user;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
-@Repository("qrecruitmentPostRepository") // ✅ 정확한 Bean 이름 지정
+@Repository("qrecruitmentPostRepository") //정확한 Bean 이름 지정
 public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepository {
     private final JPAQueryFactory queryFactory;
 
@@ -28,21 +29,20 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
         this.queryFactory = queryFactory;
     }
 
-    // 모집글을 조회하면 글작성자와 프로젝트를 조회
+    // 모집글을 조회하면 글작성자와 프로젝트를 조회(상세조회때 사용)
     @Override
-    public Optional<RecruitmentPost> findByIdWithUserAndProject(Long postId) {
+    public Optional<RecruitmentPost> findByIdWithUserAndProject(Long id) {
         QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
 
         RecruitmentPost result = queryFactory
                 .selectFrom(post)
-                .leftJoin(post.userId).fetchJoin()
-                .leftJoin(post.project).fetchJoin()
-                .where(post.id.eq(postId))
-                .fetchOne();
+                .where(post.id.eq(id))
+                .leftJoin(post.user).fetchJoin() // 유저 정보 가져오기
+                .leftJoin(post.project).fetchJoin() // 프로젝트 정보 가져오기
+                .fetchFirst();
 
         return Optional.ofNullable(result);
     }
-
 
 
     // 필터
@@ -97,6 +97,7 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
     }
 
 
+    // 마감 3일전
     @Override
     public Page<RecruitmentPost> findClosingRecruitments(LocalDate closingDate, Pageable pageable) {
         QRecruitmentPost post = QRecruitmentPost.recruitmentPost;

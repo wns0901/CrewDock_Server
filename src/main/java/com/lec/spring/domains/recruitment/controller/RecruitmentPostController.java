@@ -3,7 +3,6 @@ package com.lec.spring.domains.recruitment.controller;
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.service.ProjectService;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
-import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostService;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +30,7 @@ public class RecruitmentPostController {
 
     // 모집글 필터링 (페이징 지원)
     @GetMapping("/recruitments/filter")
-    public ResponseEntity<Page<RecruitmentPost>> recruitments(
+    public ResponseEntity<Page<RecruitmentPost>> recruitmentsFilter(
             @RequestParam(required = false) String stack,
             @RequestParam(required = false) String position,
             @RequestParam(required = false) String proceedMethod,
@@ -46,23 +46,51 @@ public class RecruitmentPostController {
         return ResponseEntity.ok(recruitmentPostService.findClosingRecruitments(page));
     }
 
-    // 모집글 상세 조회
+    // 모집글 상세 조회 (특정 JSON 구조로 반환)
     @GetMapping("/recruitments/{recruitmentsId}")
-    public RecruitmentPost detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
-        return recruitmentPostService.detailRecruitmentPost(id);
+    public Map<String, Object> detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
+        RecruitmentPost post = recruitmentPostService.detailRecruitmentPost(id);
+
+        // JSON 구조 변환
+        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", post.getUser().getId());
+
+        Map<String, Object> projectMap = new HashMap<>();
+        projectMap.put("id", post.getProject().getId());
+
+        response.put("user", userMap);
+        response.put("project", projectMap);
+        response.put("title", post.getTitle());
+        response.put("content", post.getContent());
+        response.put("deadline", post.getDeadline());
+        response.put("region", post.getRegion().name());
+        response.put("proceedMethod", post.getProceedMethod().name());
+        response.put("recruitedNumber", post.getRecruitedNumber());
+        response.put("recruitedField", post.getRecruitedField());
+        response.put("createAt", post.getCreatedAt()); // BaseEntity에 있는 생성일자
+
+        return response;
     }
 
-    // 모집글 등록
+// 모집글 등록
     @PostMapping("/recruitments")
     public void writeRecruitmentPost(@RequestBody RecruitmentPost recruitmentPost) {
+        System.out.println("받은 데이터: " + recruitmentPost); // 로그 확인용
         recruitmentPostService.writeRecruitmentPost(recruitmentPost);
     }
 
+
     // 모집글 수정
-    @PatchMapping("/recruitments/{recruitmentsId}")
-    public void updateRecruitmentPost(@PathVariable("recruitmentsId") Long id, @RequestBody RecruitmentPost recruitmentPost) {
-        recruitmentPostService.updateRecruitmentPost(id, recruitmentPost);
+    @PatchMapping("/recruitments/{id}")
+    public ResponseEntity<RecruitmentPost> updateRecruitmentPost(
+            @PathVariable Long id,
+            @RequestBody RecruitmentPost post) {
+
+        RecruitmentPost updatedPost = recruitmentPostService.updateRecruitmentPost(id, post);
+        return ResponseEntity.ok(updatedPost);
     }
+
 
     // 모집글 삭제
     @DeleteMapping("/recruitments/{recruitmentsId}")
@@ -84,11 +112,11 @@ public class RecruitmentPostController {
     }
 
     // 캡틴의 모든 프로젝트 목록 조회
-    @GetMapping("/projects")
+    @GetMapping("/projects/{userId}")
     public ResponseEntity<List<Project>> getCaptainProjects(@RequestParam Long userId) {
         return ResponseEntity.ok(projectService.getCaptainProjects(userId));
     }
-
+//
 
 }
 
