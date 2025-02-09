@@ -20,6 +20,7 @@ public class UserResponseDTO {
     private String notionUrl;
     private String blogUrl;
     private Position hopePosition;
+    private String selfIntroduction;
     private List<String> stacks;
 
     public static UserResponseDTO fromEntity(User user) {
@@ -33,6 +34,7 @@ public class UserResponseDTO {
                 .notionUrl(user.getNotionUrl())
                 .blogUrl(user.getBlogUrl())
                 .hopePosition(user.getHopePosition())
+                .selfIntroduction(user.getSelfIntroduction())
                 .stacks(user.getUserStacks().stream()
                         .map(userStack -> userStack.getStack().getName())
                         .toList())

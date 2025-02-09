@@ -19,6 +19,7 @@ public class ModifyDTO  {
     private String blogUrl;
     private Position hopePosition;
     private List<Long> stackIds;
+    private String selfIntroduction;
 
 
 }

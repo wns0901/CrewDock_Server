@@ -161,6 +161,7 @@ public class UserServiceImpl implements UserService {
         if (modifyDTO.getGithubUrl() != null) user.setGithubUrl(modifyDTO.getGithubUrl());
         if (modifyDTO.getNotionUrl() != null) user.setNotionUrl(modifyDTO.getNotionUrl());
         if (modifyDTO.getBlogUrl() != null) user.setBlogUrl(modifyDTO.getBlogUrl());
+        if (modifyDTO.getSelfIntroduction() != null) user.setSelfIntroduction(modifyDTO.getSelfIntroduction());
         if (modifyDTO.getHopePosition() != null) user.setHopePosition(modifyDTO.getHopePosition());
     }
 
