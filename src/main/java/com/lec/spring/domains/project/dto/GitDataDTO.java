@@ -10,5 +10,5 @@ public class GitDataDTO {
     private List<CommitDTO> commits;
     private List<PullDTO> pulls;
     private List<IssueDTO> issues;
-    private List<BranchDTO> branches;
+
 }
