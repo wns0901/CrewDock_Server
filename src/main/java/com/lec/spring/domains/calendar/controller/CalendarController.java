@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -19,17 +20,11 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     // 개인 일정 + 팀 일정 + 공휴일 조회
-    // /calenders?[userId]
+    // /calendars?[userId]
     @GetMapping
     public ResponseEntity<List<CalendarDTO>> getUserCalendar(@RequestParam Long userId) {
         List<CalendarDTO> userCalendar = calendarService.getUserCalendar(userId);
         return ResponseEntity.ok(userCalendar);
-    }
-
-    // todays 오놀의 모든 일정 조회
-    @GetMapping("/today")
-    public List<CalendarDTO> getAllCalendarsForToday(@RequestParam("date") LocalDate date) {
-        return calendarService.getAllCalendarsForToday(date);
     }
 
     // 팀 프로젝트 일정 + 공휴일 조회

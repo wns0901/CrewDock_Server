@@ -5,5 +5,7 @@ import com.lec.spring.domains.calendar.entity.Calendar;
 import com.lec.spring.domains.calendar.repository.dsl.QCalendarRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface CalendarRepository extends JpaRepository<Calendar, Long>, QCalendarRepository {
 }

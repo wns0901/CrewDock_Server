@@ -13,7 +13,5 @@ public interface QCalendarRepository {
     // 공휴일 + 해당 팀 일정 조회 >> 팀 프로젝트 일정에서만 확인 가능.
     List<CalendarDTO> findProjectCalendar(Long userId, Long projectId);
 
-    // 나의 오늘의 일정 조회
-    List<CalendarDTO> todaysCalendar(LocalDate today);
 
 }

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.lec.spring.domains.calendar.entity.QCalendar.calendar;
+import static com.lec.spring.domains.project.entity.QProject.project;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,12 +27,12 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
     @Override
     public List<CalendarDTO> findUserCalendar(Long userId) {
         QCalendar calendar = QCalendar.calendar;
+        QProjectMember projectMember = QProjectMember.projectMember;
 
         // 공휴일 데이터 조회 (API 호출)
         List<HolidaysDTO> holidays = holidaysService.getHolidaysForCurrentMonth();
 
-        // 개인 일정 및 팀 일정 데이터 조회 (QueryDSL)
-        List<CalendarDTO> userCalendars = queryFactory
+        List<CalendarDTO> userCalendarsWithoutProject = queryFactory
                 .select(
                         calendar.id,
                         calendar.user.id.as("userId"),
@@ -43,12 +44,8 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
                         calendar.endTime
                 )
                 .from(calendar)
-                .where(calendar.user.id.eq(userId)
-                        .or(calendar.project.id.in(
-                                queryFactory.select(QProjectMember.projectMember.userId) // 사용자가 속한 프로젝트 조회
-                                        .from(QProjectMember.projectMember)
-                                        .where(QProjectMember.projectMember.userId.eq(userId))
-                        ))).fetch()
+                .where(calendar.user.id.eq(userId)) // 개인 일정만 가져오기 & 프로젝트 ID가 null인 일정만 가져오기
+                .fetch()
                 .stream()
                 .map(tuple -> new CalendarDTO(
                         tuple.get(0, Long.class), // ID
@@ -65,27 +62,24 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
 
         // 공휴일 데이터를 일정 리스트에 추가
         holidays.forEach(holiday -> {
-            // 공휴일이 해당 날짜와 일치하는지 확인
-            boolean isHoliday = holiday.isHoliday(); // dateKind가 있는지 확인
-
-            // 주어진 날짜가 공휴일이면 true, 아니면 false
+            boolean isHoliday = holiday.isHoliday();
             if (isHoliday || holiday.isHoliday(LocalDate.now())) {
                 CalendarDTO holidayCalendar = new CalendarDTO(
-                        null, // ID는 null, 공휴일 데이터에는 없으므로
-                        userId, // 공휴일은 사용자와 연관이 있으므로 userId를 전달
+                        null, // ID는 null
+                        userId, // 공휴일은 사용자와 연관
                         null, // 프로젝트 ID는 필요 없음
-                        holiday.getDateName(), // 공휴일 이름
-                        holiday.getLocdate(), // 시작일 = 공휴일 날짜
-                        holiday.getLocdate(), // 종료일 = 공휴일 날짜
-                        null, // 시작 시간은 null
-                        null, // 종료 시간은 null
-                        true // 공휴일 여부를 true로 표시
+                        holiday.getDateName(),
+                        holiday.getLocdate(),
+                        holiday.getLocdate(),
+                        null,
+                        null,
+                        true // 공휴일 여부
                 );
-                userCalendars.add(holidayCalendar);
+                userCalendarsWithoutProject.add(holidayCalendar);
             }
         });
 
-        return userCalendars;
+        return userCalendarsWithoutProject;
     }
 
     @Override
@@ -149,22 +143,4 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
         return projectCalendars;
     }
 
-    // 오늘의 나의 일정 조회
-    @Override
-    public List<CalendarDTO> todaysCalendar(LocalDate today) {
-        return queryFactory.select(Projections.bean(CalendarDTO.class,
-                        calendar.id,
-                        calendar.user.id.as("userId"),
-                        calendar.project.id.as("projectId"),
-                        calendar.content,
-                        calendar.startDate,
-                        calendar.endDate,
-                        calendar.startTime,
-                        calendar.endTime
-                        )) // CalendarDTO로 변환
-                .from(calendar)
-                .where(calendar.startDate.eq(today) // 오늘 시작일인 일정
-                        .or(calendar.endDate.eq(today))) // 오늘 종료일인 일정
-                .fetch();
-    }
 }
