@@ -24,4 +24,14 @@ public class HolidaysDTO {
                 : null;
     }
 
+    // 특정 날짜가 공휴일인지 확인하는 메소드 추가
+    public boolean isHoliday(LocalDate date) {
+        return this.locdate != null && this.locdate.equals(date);
+    }
+
+    // 공휴일 여부를 나타내는 필드 추가 (선택 사항)
+    public boolean isHoliday() {
+        return this.dateKind != null && !this.dateKind.isEmpty();
+    }
+
 }

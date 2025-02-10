@@ -28,7 +28,7 @@ public class CalendarController {
 
     // todays 오놀의 모든 일정 조회
     @GetMapping("/today")
-    public List<Calendar> getAllCalendarsForToday(@RequestParam("date") LocalDate date) {
+    public List<CalendarDTO> getAllCalendarsForToday(@RequestParam("date") LocalDate date) {
         return calendarService.getAllCalendarsForToday(date);
     }
 

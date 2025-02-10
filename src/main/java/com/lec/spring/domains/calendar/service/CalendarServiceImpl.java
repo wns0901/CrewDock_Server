@@ -28,6 +28,7 @@ public class CalendarServiceImpl implements CalendarService {
     private final UserRepository userRepository;
 
 
+
     // 개인 일정 페이지에서 개인 일정 + 공휴일 + 본인이 소속된 모든 팀 일정 보여주기
     // 팀은 여러개 가능. 하지만 팀 일정 해당 페이지에서 수정 및 삭제 불가
     @Override
@@ -44,7 +45,7 @@ public class CalendarServiceImpl implements CalendarService {
                         calendar.getEndDate(),
                         calendar.getStartTime(),
                         calendar.getEndTime(),
-                        false // 공휴일 여부는 기본 false로 설정
+                        true
                 ))
                 .collect(Collectors.toList());
 
@@ -124,7 +125,7 @@ public class CalendarServiceImpl implements CalendarService {
 
     // todays 오늘의 나의 일정 조회
     @Override
-    public List<Calendar> getAllCalendarsForToday(LocalDate today) {
+    public List<CalendarDTO> getAllCalendarsForToday(LocalDate today) {
         return calendarRepository.todaysCalendar(today);
     }
 

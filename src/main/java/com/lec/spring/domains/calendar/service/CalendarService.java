@@ -24,7 +24,7 @@ public interface CalendarService {
     int deletePersonalEvent(Long userId, Long calendarId);
 
     // todays 오늘의 나의 일정 조회
-    List<Calendar> getAllCalendarsForToday(LocalDate today);
+    List<CalendarDTO> getAllCalendarsForToday(LocalDate today);
 
     // 해당 팀 일정 추가 >> 해당 팀 프로젝트에서만 가능
     Calendar addProjectEvent(Project projectId, Calendar calendar);

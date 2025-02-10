@@ -1,10 +1,8 @@
 package com.lec.spring.domains.calendar.repository.dsl;
 
 import com.lec.spring.domains.calendar.dto.CalendarDTO;
-import com.lec.spring.domains.calendar.entity.Calendar;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -16,6 +14,6 @@ public interface QCalendarRepository {
     List<CalendarDTO> findProjectCalendar(Long userId, Long projectId);
 
     // 나의 오늘의 일정 조회
-    List<Calendar> todaysCalendar(LocalDate today);
+    List<CalendarDTO> todaysCalendar(LocalDate today);
 
 }

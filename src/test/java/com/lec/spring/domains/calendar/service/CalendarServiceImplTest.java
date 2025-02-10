@@ -73,7 +73,6 @@ class CalendarServiceImplTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(projectRepository.findById(1L)).thenReturn(Optional.of(testProject));
         when(calendarRepository.save(any(Calendar.class))).thenReturn(testCalendar);
-        when(calendarRepository.findUserCalendar(1L)).thenReturn(List.of(testCalendar));
         when(calendarRepository.count()).thenReturn(1L);  // count() 테스트용
 
         // 🛠 `holidaysService.getHolidaysForCurrentMonth()`가 빈 리스트를 반환하도록 설정
