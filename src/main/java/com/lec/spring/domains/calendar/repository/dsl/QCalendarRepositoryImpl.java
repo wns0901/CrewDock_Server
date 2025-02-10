@@ -6,6 +6,8 @@ import com.lec.spring.domains.calendar.entity.QCalendar;
 import com.lec.spring.domains.calendar.service.HolidaysService;
 import com.lec.spring.domains.project.entity.QProjectMember;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -32,6 +34,9 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
         // 공휴일 데이터 조회 (API 호출)
         List<HolidaysDTO> holidays = holidaysService.getHolidaysForCurrentMonth();
 
+        // 일정 기간 차이를 계산하는 표현식 (DATEDIFF를 사용하여 endDate - startDate 계산)
+        NumberExpression<Integer> duration = Expressions.numberTemplate(Integer.class, "DATEDIFF({0}, {1})", calendar.endDate, calendar.startDate);
+
         List<CalendarDTO> userCalendarsWithoutProject = queryFactory
                 .select(
                         calendar.id,
@@ -45,6 +50,11 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
                 )
                 .from(calendar)
                 .where(calendar.user.id.eq(userId)) // 개인 일정만 가져오기 & 프로젝트 ID가 null인 일정만 가져오기
+                .orderBy(
+                        calendar.startDate.asc(), // 시작일이 빠른 순서대로 정렬
+                        calendar.startTime.asc().nullsLast(), // 시작 시간이 빠른 순서대로 정렬
+                        duration.desc() // 시작 시간이 같다면 기간이 긴 일정이 위로
+                )
                 .fetch()
                 .stream()
                 .map(tuple -> new CalendarDTO(

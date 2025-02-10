@@ -31,4 +31,7 @@ public interface CalendarService {
 
     // 해당 팀 일정 삭제 >> 해당 팀 프로젝트에서만 가능
     int deleteProjectEvent(Long projectId, Long calendarId);
+
+    // 일정 상세보기
+    CalendarDTO detailCalendar(Long calendarId);
 }

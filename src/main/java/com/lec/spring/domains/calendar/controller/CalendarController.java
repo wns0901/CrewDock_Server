@@ -84,4 +84,11 @@ public class CalendarController {
         calendarService.deleteProjectEvent(projectId, calendarId);
         return ResponseEntity.noContent().build();
     }
+
+    // 일정 상세보기 -> 팀, 개인 모두 사용
+    // /calendars/{calendarId}
+    @GetMapping("/{calendarId}")
+    public CalendarDTO getCalendar(@PathVariable Long calendarId) {
+        return calendarService.detailCalendar(calendarId);
+    }
 }

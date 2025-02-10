@@ -159,6 +159,23 @@ public class CalendarServiceImpl implements CalendarService {
         return 0;
     }
 
+    @Override
+    public CalendarDTO detailCalendar(Long calendarId) {
+        // 일정 ID에 해당하는 일정 조회
+        Calendar calendar = calendarRepository.findById(calendarId)
+                .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
+
+        // 필요한 정보만을 CalendarDTO로 변환하여 반환
+        return new CalendarDTO(
+                calendar.getId(),
+                calendar.getContent(),
+                calendar.getStartDate(),
+                calendar.getStartTime(),
+                calendar.getEndDate(),
+                calendar.getEndTime()
+        );
+    }
+
     // 공휴일 데이터를 CalendarDTO로 변환
     private List<CalendarDTO> convertHolidaysToCalendarDTOs(List<HolidaysDTO> holidaysForCurrentMonth) {
         return holidaysForCurrentMonth.stream()

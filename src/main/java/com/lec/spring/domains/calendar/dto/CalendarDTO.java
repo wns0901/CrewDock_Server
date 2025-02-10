@@ -21,4 +21,13 @@ public class CalendarDTO {
     private LocalTime startTime;  // 일정 시작 시간
     private LocalTime endTime;    // 일정 종료 시간
     private boolean isHoliday;    // 공휴일 여부
+
+    public CalendarDTO(Long id, String content, LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+        this.id = id;
+        this.content = content;
+        this.startDate = startDate;
+        this.startTime = startTime;
+        this.endDate = endDate;
+        this.endTime = endTime;
+    }
 }
