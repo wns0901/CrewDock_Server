@@ -31,6 +31,8 @@ public class ChatMessage {
 
     private String sender;
 
+    private Boolean isFirstMsg;
+
     private List<String> readUsers;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

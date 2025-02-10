@@ -5,15 +5,12 @@ import com.lec.spring.domains.chat.entity.ChatRoom;
 import com.lec.spring.domains.chat.entity.ChatRoomUser;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.repository.UserRepository;
-import org.joda.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ChatMessageRepositoryTest {
@@ -72,6 +69,22 @@ class ChatMessageRepositoryTest {
                 .build();
 
         chatRoomUserRepository.saveAll(List.of(chatRoomUser, chatRoomUser2));
+    }
+
+    @Test
+    public void test2() {
+        System.out.println("testResult --------");
+        List<?> result = chatRoomRepository.findChatRoomInfosByUserId(1L);
+        result.forEach(System.out::println);
+    }
+
+    @Test
+    public void test3() {
+        System.out.println("testResult --------");
+//        ChatMessage result = chatMessageRepository.findOneByRoomId(1L);
+        ChatMessage result = chatMessageRepository.findTopByRoomIdOrderByCreatedAtDesc(1L);
+        System.out.println(result);
+
     }
 
 }
