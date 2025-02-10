@@ -1,20 +1,22 @@
 package com.lec.spring.domains.recruitment.service;
 
+import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface RecruitmentPostService {
 
     // 모집글 전체 조회 (페이징 적용)
-    Page<RecruitmentPost> findAll(int page);
+    Page<RecruitmentPostDTO> findAll(int page);
 
     // 필터 옵션 모집글 조회(페이징)
-    Page<RecruitmentPost> findByFilters(String stack, String position, String proceedMethod, String region, int page);
+    Page<RecruitmentPostDTO> findByFilters(String stack, String position, String proceedMethod, String region, Pageable pageable);
 
     // 마감 기한 3일전
-    Page<RecruitmentPost> findClosingRecruitments(int page);
+    Page<RecruitmentPostDTO> findClosingRecruitments(int page);
 
     // 캡틴이 만든 모집글 목록 조회
     List<RecruitmentPost> myRecruitmentPost(Long userId);

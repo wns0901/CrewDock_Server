@@ -6,6 +6,7 @@ import com.lec.spring.domains.project.entity.ProjectMemberAuthirity;
 import com.lec.spring.domains.project.entity.ProjectMemberStatus;
 import com.lec.spring.domains.project.repository.ProjectMemberRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
+import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.recruitment.repository.dsl.QRecruitmentPostRepository;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.lec.spring.domains.stack.entity.QStack.stack;
 import static com.lec.spring.domains.user.entity.QUser.user;
 
 @Service
@@ -41,26 +43,26 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    // 모집글 전체 조회
     @Override
-    public Page<RecruitmentPost> findAll(int page) {
+    public Page<RecruitmentPostDTO> findAll(int page) {
         Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return postRepository.findAll(pageable);
+        Page<RecruitmentPost> posts = postRepository.findAllRecruitments(pageable); // ✅ 커스텀 쿼리 사용
+        return posts.map(RecruitmentPostDTO::fromEntity);
     }
 
     // 모집글 필터 조회 (QueryDSL 사용)
     @Override
-    public Page<RecruitmentPost> findByFilters(String stack, String position, String proceedMethod, String region, int page) {
-        Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
+    public Page<RecruitmentPostDTO> findByFilters(String stack, String position, String proceedMethod, String region, Pageable pageable) {
         return qRecruitmentPostRepository.findByFilters(stack, position, proceedMethod, region, pageable);
     }
 
     // 마감 임박 모집글 조회
     @Override
-    public Page<RecruitmentPost> findClosingRecruitments(int page) {
-        LocalDate closingDate = LocalDate.now().plusDays(3);
-        Pageable pageable = PageRequest.of(page - 1, 20, Sort.by(Sort.Order.asc("deadline"), Sort.Order.asc("recruitedNumber")));
-        return qRecruitmentPostRepository.findClosingRecruitments(closingDate, pageable);
+    public Page<RecruitmentPostDTO> findClosingRecruitments(int page) {
+//        LocalDate closingDate = LocalDate.now().plusDays(3);
+//        Pageable pageable = PageRequest.of(page - 1, 20, Sort.by(Sort.Order.asc("deadline"), Sort.Order.asc("recruitedNumber")));
+//        return qRecruitmentPostRepository.findByFilters(stack, position, proceedMethod, region, pageable);
+        return null;
     }
     //TODO: 조회는 하나 제대로 안됨.
 

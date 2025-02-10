@@ -2,11 +2,15 @@ package com.lec.spring.domains.recruitment.controller;
 
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.service.ProjectService;
+import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostService;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,27 +26,32 @@ public class RecruitmentPostController {
     private final ProjectService projectService;
     private final RecruitmentPostServiceImpl recruitmentPostServiceImpl;
 
-    // 모집글 페이지
+
+    // 모집글 전체 조회
     @GetMapping("/recruitments")
-    public ResponseEntity<Page<RecruitmentPost>> recruitmentsPage(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<RecruitmentPostDTO>> recruitmentsPage(
+            @RequestParam(value = "page", defaultValue = "1") int page) {
         return ResponseEntity.ok(recruitmentPostService.findAll(page));
     }
 
-    // 모집글 필터링 (페이징 지원)
+    // 모집글 필터 조회
     @GetMapping("/recruitments/filter")
-    public ResponseEntity<Page<RecruitmentPost>> recruitmentsFilter(
+    public ResponseEntity<Page<RecruitmentPostDTO>> recruitmentsFilter(
             @RequestParam(required = false) String stack,
             @RequestParam(required = false) String position,
             @RequestParam(required = false) String proceedMethod,
             @RequestParam(required = false) String region,
             @RequestParam(value = "page", defaultValue = "1") int page) {
 
-        return ResponseEntity.ok(recruitmentPostService.findByFilters(stack, position, proceedMethod, region, page));
+        Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(recruitmentPostService.findByFilters(stack, position, proceedMethod, region, pageable));
     }
 
-    // 모집 마감 임박 프로젝트 (마감 3일 전, 최대 20개, 잔여 모집 인원 수 적은 순 정렬)
+
+    // 모집 마감 임박 프로젝트 조회
     @GetMapping("/recruitments/closing")
-    public ResponseEntity<Page<RecruitmentPost>> closingRecruitments(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<RecruitmentPostDTO>> closingRecruitments(
+            @RequestParam(value = "page", defaultValue = "1") int page) {
         return ResponseEntity.ok(recruitmentPostService.findClosingRecruitments(page));
     }
 

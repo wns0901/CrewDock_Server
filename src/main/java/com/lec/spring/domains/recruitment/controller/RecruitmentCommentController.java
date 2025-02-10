@@ -1,5 +1,6 @@
 package com.lec.spring.domains.recruitment.controller;
 
+import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentCommentDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentComment;
 import com.lec.spring.domains.recruitment.service.RecruitmentCommentService;
 import lombok.RequiredArgsConstructor;
@@ -16,19 +17,19 @@ public class RecruitmentCommentController {
     private final RecruitmentCommentService commentService;
 
     // 해당 모집글의 모든 댓글 + 대댓글 조회
-    @GetMapping()
-    public ResponseEntity<List<RecruitmentComment>> commentList(@PathVariable Long recruitmentsId) {
-        List<RecruitmentComment> comments = commentService.findCommentList(recruitmentsId);
+    @GetMapping
+    public ResponseEntity<List<RecruitmentCommentDTO>> commentList(@PathVariable Long recruitmentsId) {
+        List<RecruitmentCommentDTO> comments = commentService.findCommentList(recruitmentsId);
         return ResponseEntity.ok(comments);
     }
 
     // 댓글 작성 (부모 댓글 ID가 있으면 대댓글 등록)
     @PostMapping
-    public ResponseEntity<RecruitmentComment> createComment(
+    public ResponseEntity<RecruitmentCommentDTO> createComment(
             @PathVariable Long recruitmentsId,
             @RequestBody RecruitmentComment recruitmentComment,
             @RequestParam(required = false) Long parentCommentId) {
-        RecruitmentComment newComment = commentService.createRecruitmentComment(
+        RecruitmentCommentDTO newComment = commentService.createRecruitmentComment(
                 recruitmentsId,
                 recruitmentComment.getUser().getId(),
                 recruitmentComment.getContent(),
@@ -50,3 +51,4 @@ public class RecruitmentCommentController {
         return ResponseEntity.ok().build();
     }
 }
+

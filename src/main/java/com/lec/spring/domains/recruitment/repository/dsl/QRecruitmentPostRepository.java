@@ -1,5 +1,6 @@
 package com.lec.spring.domains.recruitment.repository.dsl;
 
+import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.user.entity.User;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ public interface QRecruitmentPostRepository {
 
     Optional<RecruitmentPost> findByIdWithUserAndProject(Long id);
 
-    Page<RecruitmentPost> findByFilters(String stack, String position, String proceedMethod, String region, Pageable pageable);
+    Page<RecruitmentPostDTO> findByFilters(String stack, String position, String proceedMethod, String region, Pageable pageable);
 
-    Page<RecruitmentPost> findClosingRecruitments(LocalDate closingDate, Pageable pageable);
+    Page<RecruitmentPostDTO> findClosingRecruitments(LocalDate closingDate, Pageable pageable);
 }
