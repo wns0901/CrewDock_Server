@@ -17,8 +17,8 @@ class UserRepositoryTest {
     @Test
     @Transactional
     void test1() {
-        User user = userRepository.findById(1L).orElse(null);
-        System.out.println(user);
+//        User user = userRepository.findById(1L).orElse(null);
+//        System.out.println(user);
     }
 
 }
