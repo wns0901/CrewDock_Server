@@ -13,17 +13,18 @@ import java.util.List;
 public class PostAttachmentController {
     private final PostAttachmentService postAttachmentService;
 
+
     @GetMapping({"/posts/{postId}/attachments",
             "/projects/{projectId}/posts/{postId}/attachments"})
     public List<PostAttachment> getPostAttachments(@PathVariable Long postId) {
         return postAttachmentService.getPostAttachmentByPostId(postId);
     }
 
-    @PostMapping({"/posts/{postId}/attatchments",
+    @PostMapping({"/posts/{postId}/attachments",
             "/projects/{projectId}/posts/{postId}/attachments"})
     public PostAttachment registerProjectPostAttachment(@RequestParam("file")MultipartFile file,
                                                         @PathVariable Long postId,
-                                                        @PathVariable Long projectId)
+                                                        @PathVariable(required = false) Long projectId)
     {
         return postAttachmentService.uploadPostAttachment(file, postId, projectId);
     }
