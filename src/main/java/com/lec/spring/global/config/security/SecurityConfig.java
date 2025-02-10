@@ -3,6 +3,7 @@ package com.lec.spring.global.config.security;
 import com.lec.spring.domains.chat.repository.ChatRoomRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.user.repository.AuthRepository;
+import com.lec.spring.domains.user.repository.UserRepository;
 import com.lec.spring.global.config.security.jwt.JWTFilter;
 import com.lec.spring.global.config.security.jwt.JWTUtil;
 import com.lec.spring.global.config.security.jwt.LoginFilter;
@@ -36,6 +37,7 @@ public class SecurityConfig {
     private final ProjectRepository projectRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final UserRepository userRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -93,7 +95,7 @@ public class SecurityConfig {
 
         http.addFilterAt(new LoginFilter(jwtUtil, chatRoomRepository, authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository), LoginFilter.class);
+        http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository, userRepository), LoginFilter.class);
 
         return http.build();
     }
