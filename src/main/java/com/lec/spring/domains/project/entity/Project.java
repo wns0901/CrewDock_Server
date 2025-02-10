@@ -50,7 +50,7 @@ public class Project extends BaseEntity {
     @Column(columnDefinition = "LONGTEXT")
     private String introduction;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
     @Builder.Default
     @ToString.Exclude
     @JsonIgnore
