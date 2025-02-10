@@ -1,9 +1,13 @@
 package com.lec.spring.domains.recruitment.service;
 
+
+import com.lec.spring.domains.recruitment.dto.ScrappedPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.RecruitmentScrap;
+import com.lec.spring.domains.recruitment.repository.RecruitmentCommentRepository;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.recruitment.repository.RecruitmentScrapRepository;
+import com.lec.spring.domains.recruitment.repository.dsl.QRecruitmentCommentRepositoryImpl;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
@@ -19,7 +25,7 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
     private final RecruitmentPostRepository recruitmentPostRepository;
     private final UserRepository userRepository;
 
-    public RecruitmentScrapServiceImpl(RecruitmentScrapRepository recruitmentScrapRepository, RecruitmentPostRepository recruitmentPostRepository, UserRepository userRepository) {
+    public RecruitmentScrapServiceImpl(RecruitmentScrapRepository recruitmentScrapRepository, RecruitmentPostRepository recruitmentPostRepository, UserRepository userRepository, QRecruitmentCommentRepositoryImpl qrecruitmentCommentRepository) {
         this.recruitmentScrapRepository = recruitmentScrapRepository;
         this.recruitmentPostRepository = recruitmentPostRepository;
         this.userRepository = userRepository;
@@ -55,18 +61,12 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
         recruitmentScrapRepository.deleteByUserIdAndRecruitment(user, post);
     }
 
-    // 내가 스크랩한 모집글 조회
-    @Override
-    public List<RecruitmentScrap> getScrappedPosts(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
-        return recruitmentScrapRepository.findScrapsByUserId(user);
-    }
 
     @Override
-    public List<RecruitmentScrap> getScrappedPostsWithLimit(Long userId, int row) {
+    public List<ScrappedPostDTO> getScrappedPosts(Long userId, int row) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
-        return recruitmentScrapRepository.findScrapsByUserId(user, row);
+
+        return recruitmentScrapRepository.findScrappedPostsWithCommentCount(userId, row);
     }
 }

@@ -1,8 +1,10 @@
 package com.lec.spring.domains.recruitment.service;
 
+import com.lec.spring.domains.recruitment.dto.ScrappedPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentScrap;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RecruitmentScrapService {
 
@@ -13,7 +15,5 @@ public interface RecruitmentScrapService {
     void unScrapPost(Long postId, Long userId);
 
     // 내가 스크랩한 모집글 목록 조회
-    List<RecruitmentScrap> getScrappedPosts(Long userId);
-
-    List<RecruitmentScrap> getScrappedPostsWithLimit(Long userId, int row);
+    List<ScrappedPostDTO> getScrappedPosts(Long userId, int row);
 }

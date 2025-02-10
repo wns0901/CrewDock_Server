@@ -1,5 +1,6 @@
 package com.lec.spring.domains.recruitment.controller;
 
+import com.lec.spring.domains.recruitment.dto.ScrappedPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentScrap;
 import com.lec.spring.domains.recruitment.service.RecruitmentScrapService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/recruitments")
@@ -29,16 +31,12 @@ public class RecruitmentScrapController {
         return ResponseEntity.ok().build();
     }
 
-    // 내가 스크랩한 모집글 조회 (row 파라미터 지원)
     @GetMapping("/scraps")
-    public ResponseEntity<List<RecruitmentScrap>> getScrappedPosts(
+    public ResponseEntity<List<ScrappedPostDTO>> getScrappedPosts(
             @RequestParam Long userId,
             @RequestParam(value = "row", required = false, defaultValue = "0") int row) {
 
-        List<RecruitmentScrap> scraps = (row > 0) ?
-                scrapService.getScrappedPostsWithLimit(userId, row) :
-                scrapService.getScrappedPosts(userId);
-
-        return ResponseEntity.ok(scraps);
+        List<ScrappedPostDTO> scrappedPosts = scrapService.getScrappedPosts(userId, row);
+        return ResponseEntity.ok(scrappedPosts);
     }
 }

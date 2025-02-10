@@ -11,7 +11,7 @@ import java.util.List;
 public interface RecruitmentScrapRepository extends JpaRepository<RecruitmentScrap, Long>, QRecruitmentScrapRepository {
     boolean existsByUserIdAndRecruitment(User userId, RecruitmentPost recruitment);
     void deleteByUserIdAndRecruitment(User userId, RecruitmentPost recruitment);
-    List<RecruitmentScrap> findByUserId(User userId);
+    List<RecruitmentScrap> findByUser(User user);
 }
 
 

@@ -34,7 +34,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     private final RecruitmentPostRepository postRepository;
 
     //TODO:
-    @Qualifier("qRecruitmentPostRepository") // ✅ QueryDSL Repository 명확히 지정
+  //  @Qualifier("qRecruitmentPostRepository") // ✅ QueryDSL Repository 명확히 지정
     private final QRecruitmentPostRepository qRecruitmentPostRepository;
 
     private final UserRepository userRepository;
