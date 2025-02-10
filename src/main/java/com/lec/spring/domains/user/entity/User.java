@@ -1,5 +1,6 @@
 package com.lec.spring.domains.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lec.spring.domains.project.entity.ProjectMember;
 import com.lec.spring.global.common.entity.BaseEntity;
 import com.lec.spring.global.common.entity.Position;
@@ -14,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
