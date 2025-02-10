@@ -1,5 +1,6 @@
 package com.lec.spring.domains.user.controller;
 
+import com.lec.spring.domains.user.dto.ModifyDTO;
 import com.lec.spring.domains.user.dto.RegisterDTO;
 import com.lec.spring.domains.user.entity.UserValidator;
 import com.lec.spring.domains.user.service.UserService;
@@ -48,6 +49,11 @@ public class UserController {
         return userService.checkAuthNum(authNum, email);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable Long id) {
+        return userService.getUser(id);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid RegisterDTO userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -56,12 +62,17 @@ public class UserController {
         return userService.register(userDto);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> modifyUser(@PathVariable Long id, @RequestBody ModifyDTO modifyDTO) {
+        return userService.modifyUser(id, modifyDTO);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         return userService.deleteUser(id);
     }
 
-    @InitBinder
+    @InitBinder("registerDTO")
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.addValidators(userValidator);
     }
