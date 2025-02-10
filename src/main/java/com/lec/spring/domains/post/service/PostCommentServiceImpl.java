@@ -5,6 +5,7 @@ import com.lec.spring.domains.post.repository.PostCommentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,31 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     public Map<String, Object> getCommentsByPostId(Long postId) {
-        List<PostComment> comments = postCommentRepository.findCommentsByPostId(postId);
+        List<PostComment> commentList = postCommentRepository.findCommentsByPostId(postId);
         long count = postCommentRepository.countCommentsByPostId(postId);
 
+        List<Map<String, Object>> commentsList = new ArrayList<>();
+
+        for (PostComment comment : commentList) {
+            Map<String, Object> commentData = new HashMap<>();
+            commentData.put("createdAt", comment.getCreatedAt());
+            commentData.put("id", comment.getId());
+            commentData.put("postId", comment.getPostId());
+            commentData.put("userId", comment.getUser().getId());
+            commentData.put("userNickname", comment.getUser().getNickname());
+            commentData.put("parentComment", comment.getParentComment());
+            commentData.put("content", comment.getContent());
+            commentData.put("deleted", comment.getDeleted());
+            commentData.put("fixed", comment.getFixed());
+
+            commentsList.add(commentData);
+        }
+
+        Map<String, Object> commentsWrapper = new HashMap<>();
+        commentsWrapper.put("comment", commentsList);
+
         Map<String, Object> result = new HashMap<>();
-        result.put("comments", comments);
+        result.put("comments", commentsWrapper);
         result.put("count", count);
 
         return result;

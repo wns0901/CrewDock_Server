@@ -24,7 +24,8 @@ public class PostCommentController {
 
     @PostMapping({"/posts/{postId}/comments",
             "/projects/{projectId}/posts/{postId}/comments"})
-    public PostComment createPostComment(@RequestBody PostComment postComment) {
+    public PostComment createPostComment(@PathVariable Long postId, @RequestBody PostComment postComment) {
+        postComment.setPostId(postId);
         return postCommentService.saveComment(postComment);
     }
 

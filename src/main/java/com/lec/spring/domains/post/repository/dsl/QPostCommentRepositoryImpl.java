@@ -2,9 +2,13 @@ package com.lec.spring.domains.post.repository.dsl;
 
 import com.lec.spring.domains.post.entity.PostComment;
 import com.lec.spring.domains.post.entity.QPostComment;
+import com.lec.spring.domains.user.entity.User;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QPostCommentRepositoryImpl implements QPostCommentRepository {
     private final JPAQueryFactory queryFactory;
@@ -25,8 +29,12 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
     @Override
     public List<PostComment> findCommentsByPostId(Long postId) {
         return queryFactory
-                .selectFrom(qPostComment)
+                .select(qPostComment)
+                .from(qPostComment)
+                .leftJoin(qPostComment.user)
+                .leftJoin(qPostComment.parentComment)
                 .where(qPostComment.postId.eq(postId))
+                .orderBy(qPostComment.id.asc())
                 .fetch();
     }
 
