@@ -11,4 +11,5 @@ import lombok.*;
 public class PostDTO extends Post {
     private Long userId;
     private Long projectId;
+    private String userNickname;
 }

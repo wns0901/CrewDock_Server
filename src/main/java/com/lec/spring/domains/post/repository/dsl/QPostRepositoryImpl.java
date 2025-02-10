@@ -116,7 +116,8 @@ public class QPostRepositoryImpl implements QPostRepository {
                         qPost.direction,
                         qPost.createdAt,
                         qPost.user.id.as("userId"),
-                        qPost.project.id.as("projectId")
+                        qPost.project.id.as("projectId"),
+                        qPost.user.nickname.as("userNickname")
                 ))
                 .from(qPost)
                 .leftJoin(qPost.user)

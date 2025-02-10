@@ -94,6 +94,7 @@ public class PostServiceImpl implements PostService {
             postData.put("id", post.getId());
             postData.put("userId", post.getUserId());
             postData.put("projectId", post.getProjectId());
+            postData.put("userNickname", post.getUserNickname());
             postData.put("category", post.getCategory());
             postData.put("direction", post.getDirection());
             postData.put("title", post.getTitle());
