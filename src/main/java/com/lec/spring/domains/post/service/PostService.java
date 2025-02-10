@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PostService{
     Post savePost(PostDTO postDTO);
@@ -20,7 +21,7 @@ public interface PostService{
 
     List<PostDTO> getPostsByCategory(Category category);
 
-    Page<PostDTO> getPosts(PostDTO postDTO, Pageable pageable);
+    Map<String, Object> getPosts(PostDTO postDTO, Pageable pageable);
 
     Post getProjectPostDetail(Long postId, Long projectId);
 

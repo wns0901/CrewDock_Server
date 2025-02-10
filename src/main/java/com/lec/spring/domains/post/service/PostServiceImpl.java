@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,8 +83,36 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostDTO> getPosts(PostDTO postDTO, Pageable pageable) {
-        return postRepository.findPosts(postDTO, pageable);
+    public Map<String, Object> getPosts(PostDTO postDTO, Pageable pageable) {
+        Page<PostDTO> postPages = postRepository.findPosts(postDTO, pageable);
+
+        List<Map<String, Object>> postsList = new ArrayList<>();
+
+        for (PostDTO post : postPages.getContent()) {
+            Map<String, Object> postData = new HashMap<>();
+            postData.put("createdAt", post.getCreatedAt());
+            postData.put("id", post.getId());
+            postData.put("userId", post.getUserId());
+            postData.put("projectId", post.getProjectId());
+            postData.put("category", post.getCategory());
+            postData.put("direction", post.getDirection());
+            postData.put("title", post.getTitle());
+            postData.put("content", post.getContent());
+
+            postsList.add(postData);
+        }
+
+        Map<String, Object> postsWrapper = new HashMap<>();
+        postsWrapper.put("post", postsList);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("posts", postsWrapper);
+        response.put("totalElements", postPages.getTotalElements());
+        response.put("totalPages", postPages.getTotalPages());
+        response.put("currentPage", postPages.getNumber() + 1);
+        response.put("pageSize", postPages.getSize());
+
+        return response;
     }
 
     @Override

@@ -99,42 +99,33 @@ public class QPostRepositoryImpl implements QPostRepository {
         if (postDTO.getDirection() == null) postDTO.setDirection(Direction.NONE);
 
         if (postDTO.getProjectId() == null) {
-            condition = qPost.category.eq(postDTO.getCategory());
+            condition = qPost.category.eq(postDTO.getCategory())
+                    .and(qPost.project.id.isNull());
         }
         else {
             condition = qPost.direction.eq(postDTO.getDirection())
                     .and(qPost.project.id.eq(postDTO.getProjectId()));
         }
 
-        List<Post> posts = queryFactory
-                .selectFrom(qPost)
-                .leftJoin(qPost.user).fetchJoin()
-                .leftJoin(qPost.project).fetchJoin()
-                .leftJoin(qPost.attachments)
-                .leftJoin(qPost.comments)
+        List<PostDTO> postDTOs = queryFactory
+                .select(Projections.fields(PostDTO.class,
+                        qPost.id,
+                        qPost.title,
+                        qPost.content,
+                        qPost.category,
+                        qPost.direction,
+                        qPost.createdAt,
+                        qPost.user.id.as("userId"),
+                        qPost.project.id.as("projectId")
+                ))
+                .from(qPost)
+                .leftJoin(qPost.user)
+                .leftJoin(qPost.project)
                 .where(condition)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(qPost.createdAt.desc())
                 .fetch();
-
-        List<PostDTO> postDTOs = posts.stream()
-                .map(post -> {
-                    PostDTO dto = new PostDTO();
-                    dto.setId(post.getId());
-                    dto.setTitle(post.getTitle());
-                    dto.setContent(post.getContent());
-                    dto.setCategory(post.getCategory());
-                    dto.setDirection(post.getDirection());
-                    dto.setAttachments(new ArrayList<>(post.getAttachments()));
-                    dto.setComments(new ArrayList<>(post.getComments()));
-                    dto.setCreatedAt(post.getCreatedAt());
-                    dto.setUserId(post.getUser().getId());
-                    if (post.getProject() != null) {
-                        dto.setProjectId(post.getProject().getId());
-                    }
-                    return dto;
-                })
-                .collect(Collectors.toList());
 
         Long total = getTotal(condition);
         return new PageImpl<>(postDTOs, pageable, total);
