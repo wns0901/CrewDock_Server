@@ -22,9 +22,10 @@ public class PostAttachmentController {
 
     @PostMapping({"/posts/{postId}/attachments",
             "/projects/{projectId}/posts/{postId}/attachments"})
-    public PostAttachment registerProjectPostAttachment(@RequestParam("file")MultipartFile file,
-                                                        @PathVariable Long postId,
-                                                        @PathVariable(required = false) Long projectId)
+    public PostAttachment registerProjectPostAttachment(
+            @RequestParam("file")MultipartFile file,
+            @PathVariable Long postId,
+            @PathVariable(required = false) Long projectId)
     {
         return postAttachmentService.uploadPostAttachment(file, postId, projectId);
     }
