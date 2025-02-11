@@ -1,8 +1,7 @@
-package com.lec.spring.global.common.util;
+package com.lec.spring.global.common.util.s3;
 
+import com.lec.spring.global.common.util.BucketDirectory;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface S3Service {
     String uploadFile(MultipartFile file, BucketDirectory bucketDirectory);
