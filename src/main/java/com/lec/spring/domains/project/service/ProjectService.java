@@ -2,6 +2,7 @@ package com.lec.spring.domains.project.service;
 
 import com.lec.spring.domains.project.dto.ProjectUpdateDTO;
 import com.lec.spring.domains.project.entity.Project;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Calendar;
 import java.util.List;
