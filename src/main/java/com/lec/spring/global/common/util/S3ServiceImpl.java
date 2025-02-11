@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,15 @@ public class S3ServiceImpl implements S3Service {
         return "";
     }
 
+    @Override
+    public String uploadImgFile(MultipartFile file, BucketDirectory bucketDirectory) {
+        if (Objects.requireNonNull(file.getContentType()).startsWith("image")) {
+            return uploadFile(file, bucketDirectory);
+        }
+
+        throw new IllegalArgumentException("이미지 파일이 아닙니다.");
+    }
+
     private String addTimestampToFilename(String filename) {
         String timestamp = String.valueOf(System.currentTimeMillis());
         int lastDotIndex = filename.lastIndexOf(".");
@@ -58,7 +68,6 @@ public class S3ServiceImpl implements S3Service {
     public void deleteFile(String url) {
         String fileName = url.substring(54);
         String decodedFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
-        System.out.println("-----------------fileNma: " + decodedFileName);
         amazonS3Client.deleteObject(bucket, decodedFileName);
     }
 }
