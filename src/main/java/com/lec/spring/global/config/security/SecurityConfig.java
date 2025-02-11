@@ -1,5 +1,6 @@
 package com.lec.spring.global.config.security;
 
+import com.lec.spring.domains.chat.repository.ChatRoomRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.user.repository.AuthRepository;
 import com.lec.spring.domains.user.repository.UserRepository;
@@ -31,10 +32,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final AuthRepository authRepository;
     private final ProjectRepository projectRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
 
     @Bean
@@ -68,6 +70,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
+
                 );
 
         // 세션 설정
@@ -83,15 +86,15 @@ public class SecurityConfig {
                     // ✅ 방법 1: 구체적인 오리진 지정
 //                    config.setAllowedOrigins(corsAllowedOrigins);
                     // ✅ 방법 2: 패턴 사용
-                    config.setAllowedOriginPatterns(List.of("*"));
+                     config.setAllowedOriginPatterns(List.of("*"));
                     config.setAllowedMethods(List.of("*"));
                     config.setAllowCredentials(true);
                     config.setAllowedHeaders(List.of("*"));
-                    config.setExposedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+                    config.setExposedHeaders(List.of("Authorization"));
                     return config;
                 }));
 
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new LoginFilter(jwtUtil, chatRoomRepository, authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
 
         http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository, userRepository), LoginFilter.class);
 

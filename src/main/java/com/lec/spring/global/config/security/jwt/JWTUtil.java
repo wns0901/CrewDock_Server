@@ -18,12 +18,13 @@ public class JWTUtil {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String creatJWT(Long id, String username, String nickname,String role, Long expiredMs) {
+    public String creatJWT(Long id, String username, String nickname, String role, String chatRoomIds, Long expiredMs) {
         return Jwts.builder()
                 .claim("id", id)
                 .claim("username", username)
                 .claim("nickname", nickname)
                 .claim("role", role)
+                .claim("chatRoomIds", chatRoomIds)
                 .issuedAt(new Date(System.currentTimeMillis())) // 생성시기
                 .expiration(new Date(System.currentTimeMillis() + expiredMs)) // 만료시기
                 .signWith(secretKey) // 서버의 비밀키로 서명

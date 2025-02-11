@@ -20,8 +20,10 @@ public class RecruitmentScrap extends BaseEntity {
     private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "recuritment_id", nullable = false)
     private RecruitmentPost recruitment;
 }

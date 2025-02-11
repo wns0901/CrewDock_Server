@@ -1,6 +1,7 @@
 package com.lec.spring.domains.project.controller;
 
 import com.lec.spring.domains.project.dto.GitDataDTO;
+import com.lec.spring.domains.project.dto.ProjectUpdateDTO;
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.service.GitService;
 import com.lec.spring.domains.project.service.ProjectService;
@@ -38,9 +39,9 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
-    // 프로젝트 정보 수정
     @PatchMapping
-    public ResponseEntity<Void> updateProject(@RequestBody Project updatedProject) {
+    public ResponseEntity<Void> updateProject(@RequestBody ProjectUpdateDTO updatedProject) {
+        System.out.println("수정할 플젝정보" + updatedProject);
         projectService.updateProject(updatedProject.getId(), updatedProject);
         return ResponseEntity.noContent().build();
     }

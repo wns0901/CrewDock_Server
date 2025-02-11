@@ -1,13 +1,17 @@
 package com.lec.spring.domains.user.controller;
 
+import com.lec.spring.domains.user.dto.ModifyDTO;
 import com.lec.spring.domains.user.dto.RegisterDTO;
+import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.entity.UserValidator;
 import com.lec.spring.domains.user.service.UserService;
+import com.lec.spring.global.config.security.PrincipalDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -23,10 +27,14 @@ public class UserController {
 
     @GetMapping("/auth")
     public Authentication auth() {
-        return SecurityContextHolder.getContext().getAuthentication();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return authentication;
     }
 
     @PostMapping("/check-username")
+
     public ResponseEntity<?> checkUsername(@RequestParam("username") String username) {
         return userService.isExistsByUsername(username);
     }
@@ -48,6 +56,11 @@ public class UserController {
         return userService.checkAuthNum(authNum, email);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable Long id) {
+        return userService.getUser(id);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid RegisterDTO userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -56,13 +69,23 @@ public class UserController {
         return userService.register(userDto);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> modifyUser(@PathVariable Long id, @RequestBody ModifyDTO modifyDTO) {
+        return userService.modifyUser(id, modifyDTO);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         return userService.deleteUser(id);
     }
 
-    @InitBinder
+    @InitBinder("registerDTO")
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.addValidators(userValidator);
+    }
+
+    @GetMapping("")
+    public User user(@AuthenticationPrincipal PrincipalDetails userDetails) {
+        return (userDetails != null) ? userDetails.getUser() : null;
     }
 }
