@@ -5,6 +5,8 @@ import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.entity.ProjectStacks;
 import com.lec.spring.domains.project.entity.ProjectStatus;
 import com.lec.spring.domains.project.repository.ProjectRepository;
+import com.lec.spring.domains.user.entity.User;
+import com.lec.spring.domains.user.repository.UserRepository;
 import com.lec.spring.domains.project.repository.ProjectStacksRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
+
     private final StackRepository stackRepository;
     private final ProjectStacksRepository projectStacksRepository;
     @Override
@@ -42,6 +46,8 @@ public class ProjectServiceImpl implements ProjectService {
         if (updatedProject.getGithubUrl2() != null) project.setGithubUrl2(updatedProject.getGithubUrl2());
         if (updatedProject.getDesignUrl() != null) project.setDesignUrl(updatedProject.getDesignUrl());
         if (updatedProject.getImgUrl() != null) project.setImgUrl(updatedProject.getImgUrl());
+        // TODO: 이미지 저장로직
+
         if (updatedProject.getIntroduction() != null) project.setIntroduction(updatedProject.getIntroduction());
 
 
@@ -74,4 +80,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
+    public List<Project> getCaptainProjects(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+        return projectRepository.findAllByCaptainUser(user);
+    }
 }

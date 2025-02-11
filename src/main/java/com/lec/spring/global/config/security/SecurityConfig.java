@@ -70,6 +70,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
+
                 );
 
         // 세션 설정
