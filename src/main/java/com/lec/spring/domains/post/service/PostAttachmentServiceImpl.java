@@ -35,18 +35,6 @@ public class PostAttachmentServiceImpl implements PostAttachmentService {
         return postAttachmentRepository.save(postAttachment);
     }
 
-    public String saveFileToStorage(MultipartFile file, Long postId, Long projectId) {
-        String directoryPath;
-
-        if(projectId != null) {
-            directoryPath = String.format("/projects/%d/posts/%d/attachments", projectId, postId);
-        } else {
-            directoryPath = String.format("/posts/%d/attachments", postId);
-        }
-
-        return directoryPath;
-    }
-
     @Override
     public List<PostAttachment> getPostAttachmentByPostId(Long postId) {
         return postAttachmentRepository.findByPostId(postId);

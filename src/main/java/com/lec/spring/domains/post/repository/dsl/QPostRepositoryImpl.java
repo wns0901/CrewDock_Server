@@ -144,10 +144,7 @@ public class QPostRepositoryImpl implements QPostRepository {
     public Post findProjectPostById(Long postId, Long projectId) {
         return queryFactory
                 .selectFrom(qPost)
-                .leftJoin(qPost.user).fetchJoin()
-                .leftJoin(qPost.project).fetchJoin()
-                .where(qPost.id.eq(postId)
-                        .and(qPost.project.id.eq(projectId)))
+                .where(qPost.id.eq(postId))
                 .fetchOne();
     }
 

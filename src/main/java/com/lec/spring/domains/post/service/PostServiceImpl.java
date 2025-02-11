@@ -56,7 +56,7 @@ public class PostServiceImpl implements PostService {
                 .project(project)
                 .build();
 
-        return postRepository.save(post);
+        return new PostDTO(postRepository.save(post));
     }
 
     @Override
@@ -85,7 +85,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public Map<String, Object> getPosts(PostDTO postDTO, Pageable pageable) {
         Page<PostDTO> postPages = postRepository.findPosts(postDTO, pageable);
-
         List<Map<String, Object>> postsList = new ArrayList<>();
 
         for (PostDTO post : postPages.getContent()) {
@@ -108,7 +107,6 @@ public class PostServiceImpl implements PostService {
 
         Map<String, Object> response = new HashMap<>();
         response.put("posts", postsWrapper);
-        response.put("totalElements", postPages.getTotalElements());
         response.put("totalPages", postPages.getTotalPages());
         response.put("currentPage", postPages.getNumber() + 1);
         response.put("pageSize", postPages.getSize());
@@ -118,7 +116,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post getProjectPostDetail(Long postId, Long projectId) {
-        return postRepository.findProjectPostById(postId, projectId);
+        Post projectPostById = postRepository.findProjectPostById(postId, projectId);
+        if (projectPostById == null) return null;
+        return new PostDTO(projectPostById);
     }
 
     @Override
