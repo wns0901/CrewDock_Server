@@ -1,10 +1,9 @@
 package com.lec.spring.global.common.util;
 
+import com.lec.spring.global.common.util.s3.S3Service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class S3ServiceImplTest {
