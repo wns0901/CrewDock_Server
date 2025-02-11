@@ -12,10 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.lec.spring.domains.project.entity.QProject.project;
 
 @Service
 @RequiredArgsConstructor
@@ -83,27 +84,63 @@ public class CalendarServiceImpl implements CalendarService {
 
     // 개인 일정 페이지에서 개인 일정 추가
     @Override
-    public Calendar addPersonalEvent(Long userId, Calendar calendar) {
+    public CalendarDTO addPersonalEvent(Long userId, CalendarDTO calendarDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. ID: " + userId));
-        calendar.setUser(user);
 
-        return calendarRepository.save(calendar);
+        // Calendar Entity 생성
+        Calendar calendar = Calendar.builder()
+                .user(user)
+                .content(calendarDTO.getContent())
+                .startDate(calendarDTO.getStartDate())
+                .endDate(calendarDTO.getEndDate())
+                .startTime(calendarDTO.getStartTime())
+                .endTime(calendarDTO.getEndTime())
+                .build();
+
+        Calendar savedCalendar = calendarRepository.save(calendar);
+
+        // CalendarDTO로 변환 후 반환
+        return new CalendarDTO(
+                savedCalendar.getId(),
+                savedCalendar.getUser().getId(),
+                null,
+                savedCalendar.getContent(),
+                savedCalendar.getStartDate(),
+                savedCalendar.getEndDate(),
+                savedCalendar.getStartTime(),
+                savedCalendar.getEndTime(),
+                false
+        );
     }
 
     // 개인 일정 페이지에서 개인 일정 수정
     @Override
-    public Calendar updatePersonalEvent(Long calendarId, Calendar updateData) {
+    public CalendarDTO updatePersonalEvent(Long calendarId, CalendarDTO updateData) {
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일정이 존재하지 않습니다. ID: " + calendarId));
 
+        // Update Calendar Entity
         calendar.setContent(updateData.getContent());
         calendar.setStartDate(updateData.getStartDate());
         calendar.setEndDate(updateData.getEndDate());
         calendar.setStartTime(updateData.getStartTime());
         calendar.setEndTime(updateData.getEndTime());
 
-        return calendarRepository.save(calendar);
+        Calendar updatedCalendar = calendarRepository.save(calendar);
+
+        // CalendarDTO로 변환 후 반환
+        return new CalendarDTO(
+                updatedCalendar.getId(),
+                updatedCalendar.getUser().getId(),
+                null,
+                updatedCalendar.getContent(),
+                updatedCalendar.getStartDate(),
+                updatedCalendar.getEndDate(),
+                updatedCalendar.getStartTime(),
+                updatedCalendar.getEndTime(),
+                false
+        );
     }
 
     // 개인 일정 페이지에서 개인 일정 삭제
@@ -123,24 +160,59 @@ public class CalendarServiceImpl implements CalendarService {
 
     // 팀 일정 페이지에서 팀 일정 추가 -> 팀 멤버라면 누구든 가능
     @Override
-    public Calendar addProjectEvent(Project projectId, Calendar calendar) {
-        calendar.setProject(projectId);
-        return calendarRepository.save(calendar);
+    public CalendarDTO addProjectEvent(Project projectId, CalendarDTO calendarDTO) {
+        Calendar calendar = Calendar.builder()
+                .project(projectId)
+                .content(calendarDTO.getContent())
+                .startDate(calendarDTO.getStartDate())
+                .endDate(calendarDTO.getEndDate())
+                .startTime(calendarDTO.getStartTime())
+                .endTime(calendarDTO.getEndTime())
+                .build();
+
+        Calendar savedCalendar = calendarRepository.save(calendar);
+
+        // CalendarDTO로 변환 후 반환
+        return new CalendarDTO(
+                savedCalendar.getId(),
+                null,
+                savedCalendar.getProject().getId(),
+                savedCalendar.getContent(),
+                savedCalendar.getStartDate(),
+                savedCalendar.getEndDate(),
+                savedCalendar.getStartTime(),
+                savedCalendar.getEndTime(),
+                false
+        );
     }
 
     // 팀 일정 페이지에서 팀 일정 수정 -> 팀 멤버라면 누구든 가능
     @Override
-    public Calendar updateProjectEvent(Long calendarId, Calendar updateData) {
+    public CalendarDTO updateProjectEvent(Long calendarId, CalendarDTO calendarDTO) {
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일정이 존재하지 않습니다. ID: " + calendarId));
 
-        calendar.setContent(updateData.getContent());
-        calendar.setStartDate(updateData.getStartDate());
-        calendar.setEndDate(updateData.getEndDate());
-        calendar.setStartTime(updateData.getStartTime());
-        calendar.setEndTime(updateData.getEndTime());
+        // Update Calendar Entity
+        calendar.setContent(calendarDTO.getContent());
+        calendar.setStartDate(calendarDTO.getStartDate());
+        calendar.setEndDate(calendarDTO.getEndDate());
+        calendar.setStartTime(calendarDTO.getStartTime());
+        calendar.setEndTime(calendarDTO.getEndTime());
 
-        return calendarRepository.save(calendar);
+        Calendar updatedCalendar = calendarRepository.save(calendar);
+
+        // CalendarDTO로 변환 후 반환
+        return new CalendarDTO(
+                updatedCalendar.getId(),
+                null,
+                updatedCalendar.getProject().getId(),
+                updatedCalendar.getContent(),
+                updatedCalendar.getStartDate(),
+                updatedCalendar.getEndDate(),
+                updatedCalendar.getStartTime(),
+                updatedCalendar.getEndTime(),
+                false
+        );
     }
 
     // 팀 일정 페이지에서 팀 일정 삭제 -> 팀 멤버라면 누구든 가능
