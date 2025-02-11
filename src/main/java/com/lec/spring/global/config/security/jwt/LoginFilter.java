@@ -32,6 +32,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Authentication token = new UsernamePasswordAuthenticationToken(username.toUpperCase(), password);
 
         return authenticationManager.authenticate(token);
+
     }
 
     @Override

@@ -109,7 +109,7 @@ public class DummyDataInsertTest {
         Position[] positions = {Position.BACK, Position.FRONT, Position.FULLSTACK, Position.DESIGNER};
         List<User> users = IntStream.range(1, 9).mapToObj(i ->
                 userRepository.save(User.builder()
-                        .username("user" + i + "@example.com")
+                        .username("user" + i + "@q.com")
                         .name("사용자" + i)
                         .nickname("닉네임" + i)
                         .password(passwordEncoder.encode("qwer1234"))
@@ -232,7 +232,7 @@ public class DummyDataInsertTest {
         // 6. 프로젝트 모집글 생성
         IntStream.range(1, 21).forEach(i ->
                 recruitmentPostRepository.save(RecruitmentPost.builder()
-                        .userId(users.get(i % users.size()))
+                        .user(users.get(i % users.size()))
                         .project(project1)
                         .title("프로젝트 A 개발자 모집 " + i)
                         .content("백엔드/프론트엔드/디자이너 중 1명 모집")
@@ -329,7 +329,7 @@ public class DummyDataInsertTest {
 
         // 모집글 삽입
         recruitmentPostRepository.save(RecruitmentPost.builder()
-                .userId(users.get(0))
+                .user(users.get(0))
                 .project(project1)
                 .title("프로젝트 A 개발자 모집")
                 .content("백엔드 개발자 1명 모집")
@@ -341,7 +341,7 @@ public class DummyDataInsertTest {
                 .build());
 
         recruitmentPostRepository.save(RecruitmentPost.builder()
-                .userId(users.get(1))
+                .user(users.get(1))
                 .project(project2)
                 .title("프로젝트 B 디자이너 모집")
                 .content("UI/UX 디자이너 1명 모집")
@@ -371,6 +371,8 @@ public class DummyDataInsertTest {
                             .build())
             );
         });
+
+
 
     }
 

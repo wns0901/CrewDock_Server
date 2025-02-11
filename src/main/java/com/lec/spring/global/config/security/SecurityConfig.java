@@ -52,14 +52,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        // post맨 사용하려고 올려놓은거입니다...
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/signup", "/recruitments/**").permitAll() // 특정 요청은 인증 없이 허용
-                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
-                );
-
         // csrf disable
         http
                 .csrf(auth -> auth.disable());
