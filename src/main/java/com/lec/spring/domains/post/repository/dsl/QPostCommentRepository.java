@@ -5,7 +5,7 @@ import com.lec.spring.domains.post.entity.PostComment;
 import java.util.List;
 
 public interface QPostCommentRepository {
-    PostComment findByCommentId(Long commentId);
+    long countCommentsByPostId(Long postId);
 
     List<PostComment> findCommentsByPostId(Long postId);
 
@@ -14,4 +14,6 @@ public interface QPostCommentRepository {
     void softDeleteParentComment(Long parentsId, boolean isDeleted, String newContent);
 
     void softDeleteComment(Long commentId, boolean isDeleted);
+
+    void deleteAllCommentsByPostId(Long postId);
 }

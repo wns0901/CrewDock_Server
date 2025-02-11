@@ -1,5 +1,10 @@
 package com.lec.spring.global.config.security.jwt;
 
+import com.lec.spring.domains.chat.entity.ChatRoom;
+import com.lec.spring.domains.chat.entity.ChatRoomUser;
+import com.lec.spring.domains.chat.repository.ChatRoomRepository;
+import com.lec.spring.domains.chat.repository.ChatRoomUserRepository;
+import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.global.config.security.PrincipalDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,13 +20,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final ChatRoomRepository chatRoomRepository;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -48,9 +55,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
 
+        String chatRoomIds = chatRoomRepository.findChatRoomInfosByUserId(id).stream().map(room -> room.getId().toString()).collect(Collectors.joining(","));
+
         String role = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 
-        String token = jwtUtil.creatJWT(id, username, nickname,role, 3600 * 1000L);
+        String token = jwtUtil.creatJWT(id, username, nickname, role, chatRoomIds, 3600 * 1000L);
 
         response.addHeader("Authorization", "Bearer " + token);
     }

@@ -109,7 +109,7 @@ public class DummyDataInsertTest {
         Position[] positions = {Position.BACK, Position.FRONT, Position.FULLSTACK, Position.DESIGNER};
         List<User> users = IntStream.range(1, 9).mapToObj(i ->
                 userRepository.save(User.builder()
-                        .username("user" + i + "@q.com")
+                        .username("user" + i + "@q.q")
                         .name("사용자" + i)
                         .nickname("닉네임" + i)
                         .password(passwordEncoder.encode("qwer1234"))
@@ -371,8 +371,6 @@ public class DummyDataInsertTest {
                             .build())
             );
         });
-
-
 
     }
 

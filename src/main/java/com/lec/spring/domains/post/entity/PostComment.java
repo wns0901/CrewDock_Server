@@ -4,7 +4,7 @@ import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import net.minidev.json.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
