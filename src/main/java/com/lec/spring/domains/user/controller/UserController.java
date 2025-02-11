@@ -27,7 +27,6 @@ public class UserController {
 
     private final UserService userService;
     private final UserValidator userValidator;
-    private final S3Service s3Service;
 
     @GetMapping("/auth")
     public Authentication auth() {

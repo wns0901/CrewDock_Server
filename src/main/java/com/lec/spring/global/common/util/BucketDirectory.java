@@ -1,7 +1,9 @@
 package com.lec.spring.global.common.util;
 
 public enum BucketDirectory {
-    PROFILE("profile"),
+    USERPROFILE("profile"),
+    PROJECTPROFILE("project-profile"),
+    BANNER("banner"),
     POST("post"),
     RECRUITMENT("recruitment"),
     PORTFOLIO("portfolio"),
