@@ -38,8 +38,8 @@ public class ProjectPostController {
     }
 
     @PatchMapping
-    public ResponseEntity<Post> updateProjectPost(@RequestBody Post post) {
-        Post updatedPost = postService.updatePost(post);
+    public ResponseEntity<Post> updateProjectPost(@RequestBody PostDTO postDTO) {
+        Post updatedPost = postService.updatePost(postDTO);
         return ResponseEntity.ok(updatedPost);
     }
 

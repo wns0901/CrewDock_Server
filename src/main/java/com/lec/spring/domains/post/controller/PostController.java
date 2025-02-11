@@ -57,8 +57,8 @@ public class PostController {
     }
 
     @PatchMapping
-    public ResponseEntity<Post> updatePost(@RequestBody Post post) {
-        Post updatedPost = postService.updatePost(post);
+    public ResponseEntity<Post> updatePost(@RequestBody PostDTO postDTO) {
+        Post updatedPost = postService.updatePost(postDTO);
         return ResponseEntity.ok(updatedPost);
     }
 

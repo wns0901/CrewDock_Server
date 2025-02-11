@@ -13,7 +13,7 @@ import java.util.Map;
 public interface PostService{
     Post savePost(PostDTO postDTO);
 
-    Post updatePost(Post post);
+    Post updatePost(PostDTO postDTO);
 
     void deletePost(Long postId);
 

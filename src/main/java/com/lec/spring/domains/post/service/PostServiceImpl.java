@@ -60,8 +60,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(Post post) {
-        return postRepository.updatePost(post);
+    public Post updatePost(PostDTO postDTO) {
+        Post existingPost = postRepository.findById(postDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Post Not Found"));
+
+        existingPost.setTitle(postDTO.getTitle());
+        existingPost.setContent(postDTO.getContent());
+        existingPost.setCategory(postDTO.getCategory());
+        existingPost.setDirection(postDTO.getDirection());
+
+        return new PostDTO(postRepository.save(existingPost));
     }
 
     @Transactional
