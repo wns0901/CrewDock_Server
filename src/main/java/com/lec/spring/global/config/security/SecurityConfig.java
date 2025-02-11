@@ -65,11 +65,11 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable());
 
         // 경로별 인가 설정
-//        http
-//                .authorizeHttpRequests(auth -> auth
-//                        .anyRequest().permitAll()
-//
-//                );
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+
+                );
 
         // 세션 설정
         http
@@ -94,7 +94,7 @@ public class SecurityConfig {
 
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-//        http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository, userRepository), LoginFilter.class);
+        http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository, userRepository), LoginFilter.class);
 
         return http.build();
     }
