@@ -109,8 +109,8 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
         return new ProjectIssueDTO(
                 projectIssue.getId(),
                 projectIssue.getIssueName(),
-                projectIssue.getPriority(),
                 projectIssue.getStatus(),
+                projectIssue.getPriority(),
                 projectIssue.getDeadline(),
                 projectIssue.getStartline(),
                 projectIssue.getCreateAt(),

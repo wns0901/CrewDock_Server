@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectIssueDTO{
+    private Long id;
     // writer와 manager는 User의 정보를 간단히 포함
     private Long writerId;  // 작성자 ID  userId
     private String writerName; // 작성자 이름 userName
@@ -26,8 +27,6 @@ public class ProjectIssueDTO{
     // Project 관련 정보
     private Long projectId;
 
-    private Long issueId;
-
     private String issueName;   // 이슈 이름(작업명)
     private ProjectIssuePriority priority;  // 우선 순위
     private ProjectIssueStatus status;  // 상태
@@ -36,20 +35,20 @@ public class ProjectIssueDTO{
     private LocalDateTime createAt;    // 작성일
 
 
-    public ProjectIssueDTO(Long issueId, String issueName, ProjectIssuePriority priority, ProjectIssueStatus status, LocalDate deadline, LocalDate startline, LocalDateTime createAt, Long writerId, String writerName, Long managerId, String managerName, Long projectId) {
-        this.issueId = issueId;
+    public ProjectIssueDTO(Long id, String issueName, ProjectIssueStatus status, ProjectIssuePriority priority,
+                           LocalDate deadline, LocalDate startline, LocalDateTime createAt, Long writerId,
+                           String writerName, Long managerId, String managerName, Long projectId) {
+        this.id = id;
         this.issueName = issueName;
         this.status = status;
-        this.priority = priority; // issueDTO.getPriority()는 불필요, 이미 파라미터로 넘어옴
+        this.priority = priority;
         this.deadline = deadline;
         this.startline = startline;
         this.createAt = createAt;
-
         this.writerId = writerId;
         this.writerName = writerName;
         this.managerId = managerId;
         this.managerName = managerName;
-
         this.projectId = projectId;
     }
 

@@ -28,8 +28,8 @@ public class QProjectIssueRepositoryImpl implements QProjectIssueRepository {
                 .select(Projections.constructor(ProjectIssueDTO.class,
                         projectIssue.id, // issueId
                         projectIssue.issueName, // issueName
-                        projectIssue.priority, // priority
                         projectIssue.status, // status
+                        projectIssue.priority, // priority
                         projectIssue.deadline, // deadline
                         projectIssue.startline, // startline
                         projectIssue.createAt, // createAt
