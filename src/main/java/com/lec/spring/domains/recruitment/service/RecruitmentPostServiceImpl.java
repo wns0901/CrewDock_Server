@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.lec.spring.domains.post.entity.QPost.post;
 import static com.lec.spring.domains.stack.entity.QStack.stack;
 import static com.lec.spring.domains.user.entity.QUser.user;
 
@@ -46,7 +47,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     @Override
     public Page<RecruitmentPostDTO> findAll(int page) {
         Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<RecruitmentPost> posts = postRepository.findAllRecruitments(pageable); // ✅ 커스텀 쿼리 사용
+        Page<RecruitmentPost> posts = postRepository.findAllRecruitments(pageable); // 커스텀 쿼리 사용
         return posts.map(RecruitmentPostDTO::fromEntity);
     }
 
@@ -64,7 +65,6 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
 //        return qRecruitmentPostRepository.findByFilters(stack, position, proceedMethod, region, pageable);
         return null;
     }
-    //TODO: 조회는 하나 제대로 안됨.
 
     // 내가 작성한 모집글 조회
     @Override
@@ -73,11 +73,14 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     }
 
     // 모집글 상세 조회
+    // 모집글 상세 조회
     @Override
-    public RecruitmentPost detailRecruitmentPost(Long id) {
-        return qRecruitmentPostRepository.findByIdWithUserAndProject(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다"));
+    public RecruitmentPostDTO detailRecruitmentPost(Long id) {
+        RecruitmentPost post = qRecruitmentPostRepository.findByIdWithUserAndProject(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다")); // 먼저 찾기
+        return RecruitmentPostDTO.fromEntity(post); // DTO로 변환 후 반환
     }
+
 
     // 모집글 작성
     @Override

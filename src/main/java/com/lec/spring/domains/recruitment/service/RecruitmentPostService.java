@@ -22,7 +22,7 @@ public interface RecruitmentPostService {
     List<RecruitmentPost> myRecruitmentPost(Long userId);
 
     // 특정 모집글 상세 조회
-    RecruitmentPost detailRecruitmentPost(Long id);
+    RecruitmentPostDTO detailRecruitmentPost(Long id);
 
     // 모집글 등록
     RecruitmentPost writeRecruitmentPost(RecruitmentPost recruitmentPost);
