@@ -7,6 +7,8 @@ import com.lec.spring.domains.user.repository.UserRepository;
 import com.lec.spring.global.config.security.jwt.JWTFilter;
 import com.lec.spring.global.config.security.jwt.JWTUtil;
 import com.lec.spring.global.config.security.jwt.LoginFilter;
+import com.lec.spring.global.config.security.oauth.CustomOAuth2SuccessHandler;
+import com.lec.spring.global.config.security.oauth.PrincipalOauth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +40,8 @@ public class SecurityConfig {
     private final ChatRoomRepository chatRoomRepository;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final PrincipalOauth2UserService principalOauth2UserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -70,7 +74,6 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
-
                 );
 
         // 세션 설정
@@ -97,6 +100,12 @@ public class SecurityConfig {
         http.addFilterAt(new LoginFilter(jwtUtil, chatRoomRepository, authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
 
         http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository, userRepository), LoginFilter.class);
+
+        http.oauth2Login(httpSecurityOAuth2LoginConfigurer -> httpSecurityOAuth2LoginConfigurer
+                .userInfoEndpoint(userInfoEndpointConfigurer -> userInfoEndpointConfigurer
+                        .userService(principalOauth2UserService))
+                .successHandler(customOAuth2SuccessHandler)
+        );
 
         return http.build();
     }
