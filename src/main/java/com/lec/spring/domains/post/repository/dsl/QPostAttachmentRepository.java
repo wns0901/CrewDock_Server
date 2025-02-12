@@ -9,6 +9,4 @@ public interface QPostAttachmentRepository {
     PostAttachment findByAttachmentId(Long attachmentId);
 
     List<PostAttachment> findByPostId(Long postId);
-
-    void deleteByAttachmentId(Long attachmentId);
 }

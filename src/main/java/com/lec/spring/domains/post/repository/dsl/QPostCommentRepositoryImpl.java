@@ -2,9 +2,13 @@ package com.lec.spring.domains.post.repository.dsl;
 
 import com.lec.spring.domains.post.entity.PostComment;
 import com.lec.spring.domains.post.entity.QPostComment;
+import com.lec.spring.domains.user.entity.User;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QPostCommentRepositoryImpl implements QPostCommentRepository {
     private final JPAQueryFactory queryFactory;
@@ -15,18 +19,22 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
     }
 
     @Override
-    public PostComment findByCommentId(Long commentId) {
+    public long countCommentsByPostId(Long postId) {
         return queryFactory
                 .selectFrom(qPostComment)
-                .where(qPostComment.id.eq(commentId))
-                .fetchOne();
+                .where(qPostComment.postId.eq(postId))
+                .fetchCount();
     }
 
     @Override
     public List<PostComment> findCommentsByPostId(Long postId) {
         return queryFactory
-                .selectFrom(qPostComment)
+                .select(qPostComment)
+                .from(qPostComment)
+                .leftJoin(qPostComment.user)
+                .leftJoin(qPostComment.parentComment)
                 .where(qPostComment.postId.eq(postId))
+                .orderBy(qPostComment.id.asc())
                 .fetch();
     }
 
@@ -43,7 +51,6 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
                 .set(qPostComment.fixed, isFixed)
                 .where(qPostComment.id.eq(commentId))
                 .execute();
-
     }
 
     @Override
@@ -62,6 +69,21 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
                 .update(qPostComment)
                 .set(qPostComment.deleted, isDeleted)
                 .where(qPostComment.id.eq(commentId))
+                .execute();
+    }
+
+    @Override
+    public void deleteAllCommentsByPostId(Long postId) {
+        queryFactory
+                .delete(qPostComment)
+                .where(qPostComment.parentComment.isNotNull()
+                        .and(qPostComment.postId.eq(postId)))
+                .execute();
+
+        queryFactory
+                .delete(qPostComment)
+                .where(qPostComment.parentComment.id.isNull()
+                        .and(qPostComment.postId.eq(postId)))
                 .execute();
     }
 }

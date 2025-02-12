@@ -1,13 +1,16 @@
 package com.lec.spring.domains.project.controller;
 
 import com.lec.spring.domains.project.dto.GitDataDTO;
+import com.lec.spring.domains.project.dto.ProjectUpdateDTO;
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.service.GitService;
 import com.lec.spring.domains.project.service.ProjectService;
 import com.lec.spring.domains.project.util.GitUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -38,12 +41,14 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
-    // 프로젝트 정보 수정
     @PatchMapping
-    public ResponseEntity<Void> updateProject(@RequestBody Project updatedProject) {
+    public ResponseEntity<Void> updateProject(
+            @ModelAttribute ProjectUpdateDTO updatedProject
+    ) {
+        System.out.println(updatedProject);
+        // 프로젝트 업데이트 처리
         projectService.updateProject(updatedProject.getId(), updatedProject);
         return ResponseEntity.noContent().build();
     }
-
 }
 
