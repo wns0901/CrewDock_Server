@@ -15,6 +15,8 @@ public interface UserService {
 
     ResponseEntity<?> register(RegisterDTO registerDTO);
 
+    ResponseEntity<?> SocialRegister(RegisterDTO registerDTO);
+
     ResponseEntity<?> checkAuthNum(String authNum, String email);
 
     ResponseEntity<?> modifyUser(Long id, ModifyDTO modifyDTO);

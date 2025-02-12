@@ -130,6 +130,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResponseEntity<?> SocialRegister(RegisterDTO registerDTO) {
+        try {
+            User user = userRepository.findById(registerDTO.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+            user.setNickname(registerDTO.getNickname());
+            user.setGithubUrl(registerDTO.getGithubUrl());
+            user.setNotionUrl(registerDTO.getNotionUrl());
+            user.setBlogUrl(registerDTO.getBlogUrl());
+            user.setPhoneNumber(registerDTO.getPhoneNumber());
+            user.setHopePosition(registerDTO.getHopePosition());
+
+            userRepository.save(user);
+
+            Auth auth = authRepository.findByName("ROLE_MEMBER");
+
+            userAuthRepository.save(UserAuth.builder().userId(user.getId()).auth(auth).build());
+
+            List<Stack> stacks = stackRepository.findAllById(registerDTO.getStackIds());
+
+            List<UserStacks> userStacks = stacks.stream().map(stack -> UserStacks.builder().user(user).stack(stack).build()).toList();
+
+            userStacksRepository.saveAll(userStacks);
+
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Override
     public ResponseEntity<?> checkAuthNum(String authNum, String email) {
         redisUtil.getData(email);
         if (authNum.equals(redisUtil.getData(email))) {

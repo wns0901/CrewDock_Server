@@ -70,6 +70,11 @@ public class UserController {
         return userService.register(userDto);
     }
 
+    @PostMapping("/register/social")
+    public ResponseEntity<?> socialRegister(@RequestBody RegisterDTO userDto) {
+        return userService.SocialRegister(userDto);
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<?> modifyUser(@PathVariable Long id, @RequestBody ModifyDTO modifyDTO) {
         return userService.modifyUser(id, modifyDTO);
