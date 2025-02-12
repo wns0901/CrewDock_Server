@@ -22,25 +22,6 @@ public class BannerController {
         return ResponseEntity.ok(banners);
     }
 
-    // 배너 추가
-    @PostMapping
-    public ResponseEntity<Banner> createBanner(@RequestBody Banner banner) {
-        Banner newBanner = bannerService.createBanner(banner);
-        return ResponseEntity.ok(newBanner);
-    }
 
-    // 배너 수정
-    @PutMapping("/{id}")
-    public ResponseEntity<Banner> updateBanner(@PathVariable Long id, @RequestBody Banner banner) {
-        Banner updatedBanner = bannerService.updateBanner(id, banner);
-        return ResponseEntity.ok(updatedBanner);
-    }
-
-    // 배너 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBanner(@PathVariable Long id) {
-        bannerService.deleteBanner(id);
-        return ResponseEntity.ok().build();
-    }
 }
 
