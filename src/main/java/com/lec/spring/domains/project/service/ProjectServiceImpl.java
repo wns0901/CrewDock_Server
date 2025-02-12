@@ -5,14 +5,15 @@ import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.entity.ProjectStacks;
 import com.lec.spring.domains.project.entity.ProjectStatus;
 import com.lec.spring.domains.project.repository.ProjectRepository;
-import com.lec.spring.domains.user.entity.User;
-import com.lec.spring.domains.user.repository.UserRepository;
 import com.lec.spring.domains.project.repository.ProjectStacksRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
+import com.lec.spring.global.common.util.BucketDirectory;
+import com.lec.spring.global.common.util.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,10 +22,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
-
     private final StackRepository stackRepository;
     private final ProjectStacksRepository projectStacksRepository;
+   private final S3Service s3Service;
+
+
     @Override
     public Project getProject(Long projectId) {
         return projectRepository.findById(projectId)
@@ -45,8 +47,13 @@ public class ProjectServiceImpl implements ProjectService {
         if (updatedProject.getGithubUrl1() != null) project.setGithubUrl1(updatedProject.getGithubUrl1());
         if (updatedProject.getGithubUrl2() != null) project.setGithubUrl2(updatedProject.getGithubUrl2());
         if (updatedProject.getDesignUrl() != null) project.setDesignUrl(updatedProject.getDesignUrl());
-        if (updatedProject.getImgUrl() != null) project.setImgUrl(updatedProject.getImgUrl());
-        // TODO: 이미지 저장로직
+
+        if(updatedProject.getFile() != null) {
+            s3Service.deleteFile(project.getImgUrl());
+            String imgUrl = s3Service.uploadImgFile(updatedProject.getFile(), BucketDirectory.PROJECTPROFILE);
+            project.setImgUrl(imgUrl);
+        }
+
 
         if (updatedProject.getIntroduction() != null) project.setIntroduction(updatedProject.getIntroduction());
 
@@ -80,10 +87,4 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
-    public List<Project> getCaptainProjects(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
-
-        return projectRepository.findAllByCaptainUser(user);
-    }
 }

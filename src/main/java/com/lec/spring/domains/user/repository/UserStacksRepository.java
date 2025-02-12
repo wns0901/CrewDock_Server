@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserStacksRepository extends JpaRepository<UserStacks, Long> {
     void deleteAllByUser(User user);
+
 }
