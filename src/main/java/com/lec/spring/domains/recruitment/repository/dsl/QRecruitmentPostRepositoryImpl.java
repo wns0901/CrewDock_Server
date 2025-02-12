@@ -1,10 +1,9 @@
 package com.lec.spring.domains.recruitment.repository.dsl;
 
 import com.lec.spring.domains.project.entity.QProject;
+import com.lec.spring.domains.recruitment.dto.RecruitmentPostCommentsDTO;
+import com.lec.spring.domains.recruitment.entity.*;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
-import com.lec.spring.domains.recruitment.entity.QRecruitmentPost;
-import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
-import com.lec.spring.domains.recruitment.entity.Region;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.user.entity.QUser;
 import com.lec.spring.domains.user.entity.User;
@@ -20,21 +19,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.lec.spring.domains.post.entity.QPost.post;
+import static com.lec.spring.domains.recruitment.entity.QRecruitmentComment.recruitmentComment;
+import static com.lec.spring.domains.recruitment.entity.QRecruitmentPost.recruitmentPost;
 import static com.lec.spring.domains.user.entity.QUser.user;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Repository("qrecruitmentPostRepository")
+@RequiredArgsConstructor
 public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepository {
     private final JPAQueryFactory queryFactory;
-
-    public QRecruitmentPostRepositoryImpl(JPAQueryFactory queryFactory) {
-        this.queryFactory = queryFactory;
-    }
+    private final QRecruitmentPost post = recruitmentPost;  // ✅ Q클래스 사용
+    private final QRecruitmentComment comment = recruitmentComment;
 
     // 모집글 상세 조회
     @Override
     public Optional<RecruitmentPost> findByIdWithUserAndProject(Long id) {
-        QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
+        QRecruitmentPost post = recruitmentPost;
         QUser user = QUser.user;
         QProject project = QProject.project;
 
@@ -51,7 +52,7 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
     // 모집글 필터 조회
     @Override
     public Page<RecruitmentPostDTO> findByFilters(String stack, String position, String proceedMethod, String region, Pageable pageable) {
-        QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
+        QRecruitmentPost post = recruitmentPost;
 
         List<RecruitmentPost> results = queryFactory
                 .selectFrom(post)
@@ -88,7 +89,7 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
     // 모집 마감 임박 프로젝트 조회 (마감 3일 전)
     @Override
     public Page<RecruitmentPostDTO> findClosingRecruitments(LocalDate closingDate, Pageable pageable) {
-        QRecruitmentPost post = QRecruitmentPost.recruitmentPost;
+        QRecruitmentPost post = recruitmentPost;
 
         List<RecruitmentPost> results = queryFactory
                 .selectFrom(post)
@@ -111,25 +112,64 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
         return new PageImpl<>(dtoList, pageable, total);
     }
 
+    @Override
+    public List<RecruitmentPostCommentsDTO> findAllByUserId2(Long userId) {
+        return queryFactory
+                .selectFrom(post)
+                .where(post.user.id.eq(userId))
+                .fetch()
+                .stream()
+                .map(p -> {
+                    List<RecruitmentComment> comments = queryFactory
+                            .selectFrom(comment)
+                            .where(comment.post.isNotNull().and(comment.post.id.eq(p.getId())))  // ✅ 수정된 부분
+                            .fetch();
+                    return RecruitmentPostCommentsDTO.fromEntity(p, comments);
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    // ✅ 특정 유저가 작성한 모집글 + 댓글 (row 제한)
+    @Override
+    public List<RecruitmentPostCommentsDTO> findByUserIdWithLimit(Long userId, Pageable pageable) {
+        return queryFactory
+                .selectFrom(recruitmentPost)
+                .where(recruitmentPost.user.id.eq(userId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch()
+                .stream()
+                .map(p -> {
+                    List<RecruitmentComment> comments = queryFactory
+                            .selectFrom(comment)
+                            .where(comment.post.isNotNull().and(comment.post.id.eq(p.getId())))  // ✅ 수정된 부분
+                            .fetch();
+                    return RecruitmentPostCommentsDTO.fromEntity(p, comments);
+                })
+                .collect(Collectors.toList());
+    }
+
+
 
     // 필터 메서드들
     private BooleanExpression stackFilter(String stack) {
         return (stack == null || stack.isEmpty()) ? null :
-                QRecruitmentPost.recruitmentPost.recruitedField.containsIgnoreCase(stack);
+                recruitmentPost.recruitedField.containsIgnoreCase(stack);
     }
 
     private BooleanExpression positionFilter(String position) {
         return (position == null || position.isEmpty()) ? null :
-                QRecruitmentPost.recruitmentPost.recruitedField.containsIgnoreCase(position);
+                recruitmentPost.recruitedField.containsIgnoreCase(position);
     }
 
     private BooleanExpression proceedMethodFilter(String proceedMethod) {
         return (proceedMethod == null || proceedMethod.isEmpty()) ? null :
-                QRecruitmentPost.recruitmentPost.proceedMethod.stringValue().equalsIgnoreCase(proceedMethod);
+                recruitmentPost.proceedMethod.stringValue().equalsIgnoreCase(proceedMethod);
     }
 
     private BooleanExpression regionFilter(String region) {
         return (region == null || region.isEmpty()) ? null :
-                QRecruitmentPost.recruitmentPost.region.stringValue().equalsIgnoreCase(region);
+                recruitmentPost.region.stringValue().equalsIgnoreCase(region);
     }
 }

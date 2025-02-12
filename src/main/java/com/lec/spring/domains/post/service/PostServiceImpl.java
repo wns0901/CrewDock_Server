@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -116,16 +118,32 @@ public class PostServiceImpl implements PostService {
     private PostDTO convertToPostDTO(Post post) {
         PostDTO postDTO = new PostDTO();
         postDTO.setId(post.getId());
+        postDTO.setCreatedAt(post.getCreatedAt());
         postDTO.setUserId(post.getUser().getId());
         postDTO.setTitle(post.getTitle());
         postDTO.setContent(post.getContent());
         postDTO.setCategory(post.getCategory());
         postDTO.setDirection(post.getDirection());
         postDTO.setAttachments(post.getAttachments());
-        postDTO.setComments(post.getComments());
-        if(post.getProject() != null) {
+
+        if (post.getProject() != null) {
             postDTO.setProjectId(post.getProject().getId());
         }
+
+        // ✅ comments에서 user.nickname과 content만 포함하도록 변환
+        List<Map<String, Object>> filteredComments = post.getComments().stream().map(comment -> {
+            Map<String, Object> commentData = new HashMap<>();
+            commentData.put("userNickname", comment.getUser().getNickname()); // ✅ 닉네임만 포함
+            commentData.put("content", comment.getContent()); // ✅ 댓글 내용만 포함
+            return commentData;
+        }).collect(Collectors.toList());
+
+        // ✅ comments 대신 filteredComments 필드 사용!
+        postDTO.setFilteredComments(filteredComments);
+
         return postDTO;
     }
+
+
+
 }
