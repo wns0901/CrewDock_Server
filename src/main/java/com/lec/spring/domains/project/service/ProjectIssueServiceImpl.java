@@ -24,7 +24,7 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
 
     // 이슈 작성
     @Override
-    public ProjectIssue save(Long projectId, ProjectIssueDTO projectIssueDTO) {
+    public ProjectIssueDTO save(Long projectId, ProjectIssueDTO projectIssueDTO) {
         // 작성자 조회
         User writer = userRepository.findById(projectIssueDTO.getWriterId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 작성자입니다."));
@@ -43,15 +43,10 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
             throw new IllegalArgumentException("시작 날짜는 마감 날짜 이후일 수 없습니다.");
         }
 
+        // 저장 후 엔티티를 DTO로 변환하여 반환
+        ProjectIssue savedIssue = projectIssueRepository.save(projectIssueDTO.toEntity(project, writer, manager));
 
-        // 상태와 우선순위 변환
-        projectIssueDTO.setStatus(projectIssueDTO.getStatus());
-        projectIssueDTO.setPriority(projectIssueDTO.getPriority());
-
-        // DTO -> 엔티티로 변환
-        ProjectIssue projectIssue = projectIssueDTO.toEntity(project, writer, manager);
-
-        return projectIssueRepository.save(projectIssue); // 저장 후 반환
+        return ProjectIssueDTO.fromEntity(savedIssue); // 저장 후 반환
     }
 
     // 프로젝트별 이슈 목록
@@ -62,7 +57,7 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
 
     // 이슈 수정
     @Override
-    public int update(Long projectId, Long issueId, ProjectIssue updatedIssue) {
+    public int update(Long projectId, Long issueId, ProjectIssueDTO updatedIssue) {
         var existingIssue = projectIssueRepository.findById(issueId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이슈입니다."));
 
@@ -82,9 +77,15 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
             existingIssue.setStartline(updatedIssue.getStartline());
             existingIssue.setDeadline(updatedIssue.getDeadline());
         }
-        if (updatedIssue.getManager() != null) {
-            existingIssue.setManager(updatedIssue.getManager());
+
+        // 새로운 담당자가 존재하는 경우 업데이트
+        if (updatedIssue.getManagerId() != null) {
+            User newManager = userRepository.findById(updatedIssue.getManagerId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 담당자입니다."));
+            existingIssue.setManager(newManager);
         }
+
+        projectIssueRepository.save(existingIssue); // 변경 사항 저장
 
         return 1;
     }
@@ -92,50 +93,31 @@ public class ProjectIssueServiceImpl implements ProjectIssueService {
     // 특정 이슈 상세조회
     @Override
     public ProjectIssueDTO getIssueDetail(Long projectId, Long issueId) {
-        // 프로젝트와 이슈를 조회
-        Project project = projectRepository.findById(projectId)
+        // 프로젝트 확인
+        projectRepository.findById(projectId)
                 .orElseThrow(() -> new NotFoundException("Project not found"));
 
         ProjectIssue projectIssue = projectIssueRepository.findById(issueId)
                 .orElseThrow(() -> new RuntimeException("Issue not found"));
 
-        // 작성자 및 담당자 정보 가져오기
-        Long writerId = projectIssue.getWriter().getId();
-        String writerName = projectIssue.getWriter().getUsername();
-        Long managerId = projectIssue.getManager() != null ? projectIssue.getManager().getId() : null;
-        String managerName = projectIssue.getManager() != null ? projectIssue.getManager().getUsername() : null;
-
-        // ProjectIssueDTO로 변환하여 반환
-        return new ProjectIssueDTO(
-                projectIssue.getId(),
-                projectIssue.getIssueName(),
-                projectIssue.getStatus(),
-                projectIssue.getPriority(),
-                projectIssue.getDeadline(),
-                projectIssue.getStartline(),
-                projectIssue.getCreateAt(),
-                writerId,
-                writerName,
-                managerId,
-                managerName,
-                projectIssue.getProject().getId()
-        );
+        // DTO 변환 후 반환
+        return ProjectIssueDTO.fromEntity(projectIssue);
     }
 
-        // 다중 삭제
-        @Override
-        public int deleteByIds(List<Long> issueIds) {
-            List<ProjectIssue> issuesToDelete = projectIssueRepository.findAllById(issueIds);
-            if (!issuesToDelete.isEmpty()) {
-                projectIssueRepository.deleteAll(issuesToDelete);  // 이슈들 삭제
-                return issuesToDelete.size();  // 삭제된 이슈 수 반환
-            }
-            return 0; // 삭제된 이슈 없음
+    // 다중 삭제
+    @Override
+    public int deleteByIds(Long projectId, List<Long> issueIds) {
+        List<ProjectIssue> issuesToDelete = projectIssueRepository.findAllById(issueIds);
+        if (!issuesToDelete.isEmpty()) {
+            projectIssueRepository.deleteAll(issuesToDelete);  // 이슈들 삭제
+            return issuesToDelete.size();  // 삭제된 이슈 수 반환
         }
+        return 0; // 삭제된 이슈 없음
+    }
 
     // 개별 삭제
     @Override
-    public int deleteById(Long issueId) {
+    public int deleteById(Long projectId, Long issueId) {
         Optional<ProjectIssue> issue = projectIssueRepository.findById(issueId);
         if (issue.isPresent()) {
             projectIssueRepository.delete(issue.get()); // 개별 이슈 삭제

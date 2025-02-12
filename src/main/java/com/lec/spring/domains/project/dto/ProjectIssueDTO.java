@@ -6,6 +6,7 @@ import com.lec.spring.domains.project.entity.ProjectIssuePriority;
 import com.lec.spring.domains.project.entity.ProjectIssueStatus;
 import com.lec.spring.domains.user.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProjectIssueDTO{
     private Long id;
     // writer와 manager는 User의 정보를 간단히 포함
@@ -64,6 +66,21 @@ public class ProjectIssueDTO{
                 .manager(manager)
                 .project(project)
                 .createAt(LocalDateTime.now())  // 생성 시간 설정
+                .build();
+    }
+
+    // entity -> DTO 로 변경
+    public static ProjectIssueDTO fromEntity(ProjectIssue projectIssue) {
+        return ProjectIssueDTO.builder()
+                .issueName(projectIssue.getIssueName())
+                .status(projectIssue.getStatus())
+                .priority(projectIssue.getPriority())
+                .deadline(projectIssue.getDeadline())
+                .startline(projectIssue.getStartline())
+                .writerId(projectIssue.getWriter().getId())
+                .managerId(projectIssue.getManager().getId())
+                .projectId(projectIssue.getProject().getId())
+                .createAt(projectIssue.getCreateAt())
                 .build();
     }
 
