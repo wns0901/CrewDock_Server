@@ -31,7 +31,8 @@ public class QRecruitmentScrapRepositoryImpl implements QRecruitmentScrapReposit
                         recruitmentPost.id,                    // recruitmentPostId
                         recruitmentPost.title,                 // title
                         recruitmentScrap.createdAt,            // createdAt
-                        recruitmentComment.count()             // commentCount
+                        recruitmentComment.count(),             // commentCount
+                        recruitmentPost.deadline
                 ))
                 .from(recruitmentScrap)
                 .leftJoin(recruitmentScrap.recruitment, recruitmentPost)

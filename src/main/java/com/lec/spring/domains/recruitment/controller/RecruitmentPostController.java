@@ -79,7 +79,7 @@ public class RecruitmentPostController {
         return recruitmentPostService.detailRecruitmentPost(id);
     }
 
-// 모집글 등록
+    // 모집글 등록
     @PostMapping("/recruitments")
     public void writeRecruitmentPost(@RequestBody RecruitmentPost recruitmentPost) {
         System.out.println("받은 데이터: " + recruitmentPost); // 로그 확인용
