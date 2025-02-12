@@ -9,7 +9,7 @@ import com.lec.spring.domains.project.repository.ProjectStacksRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
 import com.lec.spring.global.common.util.BucketDirectory;
-import com.lec.spring.global.common.util.S3Service;
+import com.lec.spring.global.common.util.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

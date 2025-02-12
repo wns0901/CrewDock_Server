@@ -4,7 +4,7 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import com.lec.spring.domains.banner.entity.Banner;
 import com.lec.spring.domains.banner.repository.BannerRepository;
 import com.lec.spring.global.common.util.BucketDirectory;
-import com.lec.spring.global.common.util.S3Service;
+import com.lec.spring.global.common.util.s3.S3Service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ import java.util.List;
 public class BannerServiceImpl implements BannerService {
     private final BannerRepository bannerRepository;
     private final S3Service s3Service;
+
     @Override
     public List<Banner> getAllBanners() {
         return bannerRepository.findAll();

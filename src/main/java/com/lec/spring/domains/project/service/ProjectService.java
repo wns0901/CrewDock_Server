@@ -12,5 +12,5 @@ public interface ProjectService {
 
     void updateProject(Long projectId, ProjectUpdateDTO updatedProject);
 
-    List<Project> getCaptainProjects(Long userId);
+
 }
