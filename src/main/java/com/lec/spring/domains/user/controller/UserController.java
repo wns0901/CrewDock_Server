@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/user")
@@ -87,5 +88,10 @@ public class UserController {
     @GetMapping("")
     public User user(@AuthenticationPrincipal PrincipalDetails userDetails) {
         return (userDetails != null) ? userDetails.getUser() : null;
+    }
+
+    @PatchMapping("/{id}/profile-img")
+    public ResponseEntity<?> modifyProfileImg(@PathVariable Long id, MultipartFile file) {
+        return userService.modifyProfileImg(id, file);
     }
 }
