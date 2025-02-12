@@ -52,7 +52,7 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
                 .build();
         recruitmentScrapRepository.save(scrap);
 
-        // 모집글의 댓글 개수 가져오기
+        // 모집글의 댓글 개수 가져오기.
         long commentCount = commentRepository.countByPostId(postId);
 
         return new ScrappedPostDTO(
