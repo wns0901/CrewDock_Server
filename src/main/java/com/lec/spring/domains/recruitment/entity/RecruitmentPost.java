@@ -51,6 +51,4 @@ public class RecruitmentPost extends BaseEntity {
     @Column(nullable = false)
     private String recruitedField;
 
-    @Column
-    private LocalDateTime createAt;
 }
