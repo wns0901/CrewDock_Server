@@ -5,8 +5,6 @@ import com.lec.spring.domains.user.dto.RegisterDTO;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.domains.user.entity.UserValidator;
 import com.lec.spring.domains.user.service.UserService;
-import com.lec.spring.global.common.util.BucketDirectory;
-import com.lec.spring.global.common.util.S3Service;
 import com.lec.spring.global.config.security.PrincipalDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/user")
