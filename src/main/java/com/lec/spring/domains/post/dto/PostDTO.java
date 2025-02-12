@@ -1,16 +1,14 @@
 package com.lec.spring.domains.post.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import com.lec.spring.domains.post.entity.Post;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class PostDTO extends BasePostDTO {
-    private String category;
+@ToString(callSuper = true)
+public class PostDTO extends Post {
+    private Long userId;
+    private Long projectId;
 }

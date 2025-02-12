@@ -10,6 +10,7 @@ import net.minidev.json.annotate.JsonIgnore;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

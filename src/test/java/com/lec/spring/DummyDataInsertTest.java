@@ -114,6 +114,7 @@ public class DummyDataInsertTest {
                         .nickname("닉네임" + i)
                         .password(passwordEncoder.encode("qwer1234"))
                         .phoneNumber("010-1234-567" + i)
+                        .hopePosition(positions[i % 4])
                         .build())
         ).toList();
 
@@ -168,7 +169,7 @@ public class DummyDataInsertTest {
                 .introduction("프로젝트 A 소개글입니다.")
                 .build());
 
-        List<ProjectStacks> projectStacks = IntStream.range(0,7)
+        List<ProjectStacks> projectStacks = IntStream.range(0, 7)
                 .mapToObj(i -> ProjectStacks.builder()
                         .projectId(project1.getId())
                         .stack(stackEntities.get(i))
@@ -310,9 +311,9 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(0))
                 .project(project1)
-                .content("프로젝트 A 시작 일정")
-                .startTime(LocalTime.of(10,0,0))
-                .endTime(LocalTime.of(18,0,0))
+                .contnet("프로젝트 A 시작 일정")
+                .startTime(LocalTime.of(10, 0, 0))
+                .endTime(LocalTime.of(18, 0, 0))
                 .startDate(LocalDate.of(2025, 1, 1))
                 .endDate(LocalDate.of(2025, 1, 31))
                 .build());
@@ -320,9 +321,9 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(1))
                 .project(project2)
-                .content("프로젝트 B 중간 일정")
-                .startTime(LocalTime.of(9,0,0))
-                .endTime(LocalTime.of(17,0,0))
+                .contnet("프로젝트 B 중간 일정")
+                .startTime(LocalTime.of(9, 0, 0))
+                .endTime(LocalTime.of(17, 0, 0))
                 .startDate(LocalDate.of(2025, 2, 1))
                 .endDate(LocalDate.of(2025, 2, 28))
                 .build());

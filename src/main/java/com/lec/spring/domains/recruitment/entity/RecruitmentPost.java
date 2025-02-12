@@ -1,5 +1,6 @@
 package com.lec.spring.domains.recruitment.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.global.common.entity.BaseEntity;
@@ -9,21 +10,25 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RecruitmentPost extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"username", "email", "password"}) // Project 객체의 특정 필드 제외
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"name", "description"}) // Project 객체의 특정 필드 제외
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
@@ -50,6 +55,4 @@ public class RecruitmentPost extends BaseEntity {
     @Column(nullable = false)
     private String recruitedField;
 
-    @Column
-    private LocalDateTime createAt;
 }

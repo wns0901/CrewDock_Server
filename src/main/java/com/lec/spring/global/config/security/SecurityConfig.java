@@ -1,11 +1,14 @@
 package com.lec.spring.global.config.security;
 
+import com.lec.spring.domains.chat.repository.ChatRoomRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.user.repository.AuthRepository;
 import com.lec.spring.domains.user.repository.UserRepository;
 import com.lec.spring.global.config.security.jwt.JWTFilter;
 import com.lec.spring.global.config.security.jwt.JWTUtil;
 import com.lec.spring.global.config.security.jwt.LoginFilter;
+import com.lec.spring.global.config.security.oauth.CustomOAuth2SuccessHandler;
+import com.lec.spring.global.config.security.oauth.PrincipalOauth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,11 +34,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final AuthRepository authRepository;
     private final ProjectRepository projectRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final PrincipalOauth2UserService principalOauth2UserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -83,17 +89,23 @@ public class SecurityConfig {
                     // ✅ 방법 1: 구체적인 오리진 지정
 //                    config.setAllowedOrigins(corsAllowedOrigins);
                     // ✅ 방법 2: 패턴 사용
-                    config.setAllowedOriginPatterns(List.of("*"));
+                     config.setAllowedOriginPatterns(List.of("*"));
                     config.setAllowedMethods(List.of("*"));
                     config.setAllowCredentials(true);
                     config.setAllowedHeaders(List.of("*"));
-                    config.setExposedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+                    config.setExposedHeaders(List.of("Authorization"));
                     return config;
                 }));
 
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new LoginFilter(jwtUtil, chatRoomRepository, authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
 
         http.addFilterBefore(new JWTFilter(jwtUtil, authRepository, projectRepository, userRepository), LoginFilter.class);
+
+        http.oauth2Login(httpSecurityOAuth2LoginConfigurer -> httpSecurityOAuth2LoginConfigurer
+                .userInfoEndpoint(userInfoEndpointConfigurer -> userInfoEndpointConfigurer
+                        .userService(principalOauth2UserService))
+                .successHandler(customOAuth2SuccessHandler)
+        );
 
         return http.build();
     }
