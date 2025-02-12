@@ -120,12 +120,6 @@ public class RecruitmentPostController {
         return ResponseEntity.ok("프로젝트 신청이 완료되었습니다.");
     }
 
-    // 캡틴의 모든 프로젝트 목록 조회
-    @GetMapping("/projects/{userId}")
-    public ResponseEntity<List<Project>> getCaptainProjects(@RequestParam Long userId) {
-        return ResponseEntity.ok(projectService.getCaptainProjects(userId));
-    }
-//
 
 }
 

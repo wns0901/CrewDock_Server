@@ -7,8 +7,10 @@ import com.lec.spring.domains.project.service.GitService;
 import com.lec.spring.domains.project.service.ProjectService;
 import com.lec.spring.domains.project.util.GitUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -40,11 +42,13 @@ public class ProjectController {
     }
 
     @PatchMapping
-    public ResponseEntity<Void> updateProject(@RequestBody ProjectUpdateDTO updatedProject) {
-        System.out.println("수정할 플젝정보" + updatedProject);
+    public ResponseEntity<Void> updateProject(
+            @ModelAttribute ProjectUpdateDTO updatedProject
+    ) {
+        System.out.println(updatedProject);
+        // 프로젝트 업데이트 처리
         projectService.updateProject(updatedProject.getId(), updatedProject);
         return ResponseEntity.noContent().build();
     }
-
 }
 
