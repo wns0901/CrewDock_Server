@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final JavaMailSender javaMailSender;
     private final UserStacksRepository userStacksRepository;
     private final StackRepository stackRepository;
+    private final PasswordEncoder passwordEncoder;
     private final RedisUtil redisUtil;
 
     @Value("${spring.mail.username}")
@@ -96,6 +98,8 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> register(RegisterDTO registerDTO) {
 
         User user = RegisterDTO.of(registerDTO);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(user);
 
@@ -194,8 +198,6 @@ public class UserServiceImpl implements UserService {
         userAuthRepository.deleteAllByUserId(user.getId());
 
         userRepository.delete(user);
-
-//        userRepository.deleteByUserId(id);
 
         return ResponseEntity.ok().body("회원 탈퇴에 성공했습니다.");
     }
