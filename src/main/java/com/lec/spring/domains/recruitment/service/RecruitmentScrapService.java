@@ -9,7 +9,7 @@ import java.util.Map;
 public interface RecruitmentScrapService {
 
     // 모집글 스크랩
-    void scrapPost(Long postId, Long userId);
+    ScrappedPostDTO scrapPost(Long postId, Long userId);
 
     // 모집글 스크랩 취소
     void unScrapPost(Long postId, Long userId);
