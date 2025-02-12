@@ -49,7 +49,8 @@ public class PostCommentServiceImpl implements PostCommentService {
             commentData.put("parentComment", comment.getParentComment());
             commentData.put("content", comment.getContent());
             commentData.put("deleted", comment.getDeleted());
-            commentData.put("fixed", comment.getFixed());
+            commentData.put("fixed", comment.getFixed() != null ? comment.getFixed() : false);
+
 
             commentsList.add(commentData);
         }

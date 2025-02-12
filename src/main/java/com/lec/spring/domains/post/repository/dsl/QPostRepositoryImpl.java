@@ -79,8 +79,6 @@ public class QPostRepositoryImpl implements QPostRepository {
             postDTO.setCategory(post.getCategory());
             postDTO.setDirection(post.getDirection());
             postDTO.setAttachments(post.getAttachments());
-            postDTO.setComments(post.getComments());
-            postDTO.setCreatedAt(post.getCreatedAt());
             postDTO.setUserId(post.getUser().getId());
             postDTO.setUserNickname(post.getUser().getNickname());
             if (post.getProject() != null) {
