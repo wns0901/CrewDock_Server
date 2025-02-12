@@ -14,6 +14,8 @@ import com.lec.spring.domains.user.repository.AuthRepository;
 import com.lec.spring.domains.user.repository.UserAuthRepository;
 import com.lec.spring.domains.user.repository.UserRepository;
 import com.lec.spring.domains.user.repository.UserStacksRepository;
+import com.lec.spring.global.common.util.BucketDirectory;
+import com.lec.spring.global.common.util.s3.S3Service;
 import com.lec.spring.global.config.redis.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final StackRepository stackRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisUtil redisUtil;
+    private final S3Service s3Service;
 
     @Value("${spring.mail.username}")
     private String hostEmail;
@@ -209,6 +212,32 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.badRequest().body("존재하지 않는 회원입니다.");
         }
         return ResponseEntity.ok().body(userResponse);
+    }
+
+    @Override
+    public ResponseEntity<?> modifyProfileImg(Long userId, MultipartFile file) {
+        try {
+            User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+            if (user.getProfileImgUrl() != null) {
+                s3Service.deleteFile(user.getProfileImgUrl());
+            }
+
+            String profileImgUrl = s3Service.uploadImgFile(file, BucketDirectory.USERPROFILE);
+
+            user.setProfileImgUrl(profileImgUrl);
+
+            user = userRepository.save(user);
+
+            user.setUserAuths(null);
+            user.setUserStacks(null);
+            user.setProjectMembers(null);
+            user.setPassword(null);
+
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
