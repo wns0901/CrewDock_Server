@@ -1,12 +1,12 @@
 package com.lec.spring.domains.post.controller;
 
-import com.lec.spring.domains.post.dto.ProjectPostDTO;
-import com.lec.spring.domains.post.entity.Direction;
+import com.lec.spring.domains.post.dto.PostDTO;
 import com.lec.spring.domains.post.entity.Post;
-import com.lec.spring.domains.post.service.ProjectPostService;
+import com.lec.spring.domains.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,34 +14,37 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/projects/{projectId}/posts")
 @RequiredArgsConstructor
 public class ProjectPostController {
-    private final ProjectPostService projectPostService;
+    private final PostService postService;
 
-    @GetMapping("/")
-    public ResponseEntity<Page<ProjectPostDTO>> getProjectPosts(@PathVariable("projectId") Long projectId,
-            @RequestParam Direction direction,
-            Pageable pageable)
+    @GetMapping
+    public ResponseEntity<Page<PostDTO>> getProjectPosts(
+            @ModelAttribute PostDTO postDTO,
+            @PageableDefault(page = 1, size = 10) Pageable pageable)
     {
-       Page<ProjectPostDTO> projectPostDTOPages = projectPostService.getPostsByDirectionPage(projectId, direction, pageable);
+       Page<PostDTO> projectPostDTOPages = postService.getPosts(postDTO, pageable);
        return ResponseEntity.ok(projectPostDTOPages);
     }
 
     @GetMapping("/{postId}")
-    public Post getProjectPost(@PathVariable("projectId") Long projectId, @PathVariable("postId") Long postId) {
-        return projectPostService.getProjectPostDetail(projectId, postId);
+    public Post getProjectPostDetail(@PathVariable("projectId") Long projectId, @PathVariable("postId") Long postId) {
+        return postService.getProjectPostDetail(projectId, postId);
     }
 
     @PostMapping
-    public Post createProjectPost(@RequestBody Post post) {
-        return projectPostService.savePost(post);
+    public ResponseEntity<Post> createProjectPost(@RequestBody PostDTO postDTO) {
+        Post createdPost = postService.savePost(postDTO);
+        return ResponseEntity.ok(createdPost);
     }
 
     @PatchMapping
-    public Post updateProjectPost(@RequestBody Post post) {
-        return projectPostService.updatePost(post);
+    public ResponseEntity<Post> updateProjectPost(@RequestBody Post post) {
+        Post updatedPost = postService.updatePost(post);
+        return ResponseEntity.ok(updatedPost);
     }
 
     @DeleteMapping("/{postId}")
-    public void deleteProjectPost(@PathVariable("postId") Long postId) {
-        projectPostService.deletePost(postId);
+    public ResponseEntity<Void> deleteProjectPost(@PathVariable("postId") Long postId) {
+        postService.deletePost(postId);
+        return ResponseEntity.noContent().build();
     }
 }

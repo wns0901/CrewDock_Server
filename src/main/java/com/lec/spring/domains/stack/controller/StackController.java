@@ -1,5 +1,6 @@
 package com.lec.spring.domains.stack.controller;
 
+import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.service.StackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,16 @@ public class StackController {
     private final StackService stackService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<String>> getAllStacks() {
+    public ResponseEntity<List<String>> getAllStackNames() {
         List<String> stackNames = stackService.getAllStackNames();
         return ResponseEntity.ok(stackNames);
     }
 
+
+
+    @GetMapping
+    public ResponseEntity<List<Stack>> getAllStacks() {
+        List<Stack> stacks = stackService.getAllStacks();
+        return ResponseEntity.ok(stacks);
+    }
 }

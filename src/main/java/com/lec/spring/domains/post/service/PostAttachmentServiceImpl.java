@@ -56,6 +56,6 @@ public class PostAttachmentServiceImpl implements PostAttachmentService {
 
     @Override
     public void deletePostAttachment(Long attachmentId) {
-        postAttachmentRepository.deleteByAttachmentId(attachmentId);
+        postAttachmentRepository.deleteById(attachmentId);
     }
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.*;
 import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,8 +20,10 @@ public class RecruitmentScrap extends BaseEntity {
     private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "recuritment_id", nullable = false)
     private RecruitmentPost recruitment;
 }

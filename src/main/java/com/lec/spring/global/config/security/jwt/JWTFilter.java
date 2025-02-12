@@ -59,27 +59,27 @@ public class JWTFilter extends OncePerRequestFilter {
         List<ProjectMember> projectMembers = new ArrayList<>();
 
         Arrays.stream(role.split(",")).toList().forEach(roleName -> {
-            if (roleName.startsWith("ROLE_")) {
-                Auth auth = authRepository.findByName(roleName);
-                userAuths.add(UserAuth.builder()
-                        .userId(id)
-                        .auth(auth)
-                        .build());
-            }
+           if (roleName.startsWith("ROLE_")) {
+               Auth auth = authRepository.findByName(roleName);
+               userAuths.add(UserAuth.builder()
+                       .userId(id)
+                       .auth(auth)
+                       .build());
+           }
 
-            if (roleName.startsWith("PROJECT_")) {
-                Long projectId = Long.parseLong(roleName.split("_")[1]);
-                String authName = roleName.split("_")[2];
-                Project project = projectRepository.findById(projectId).orElse(null);
+           if (roleName.startsWith("PROJECT_")) {
+               Long projectId = Long.parseLong(roleName.split("_")[1]);
+               String authName = roleName.split("_")[2];
+               Project project = projectRepository.findById(projectId).orElse(null);
 
-                User user = userRepository.findById(id).orElse(null);
+               User user = userRepository.findById(id).orElse(null);
 
-                projectMembers.add(ProjectMember.builder()
-                        .userId(id)
-                        .project(project)
-                        .authority(ProjectMemberAuthirity.valueOf(authName))
-                        .build());
-            }
+               projectMembers.add(ProjectMember.builder()
+                       .userId(id)
+                       .project(project)
+                       .authority(ProjectMemberAuthirity.valueOf(authName))
+                       .build());
+           }
 
 
         });

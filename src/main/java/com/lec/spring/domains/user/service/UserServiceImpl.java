@@ -1,5 +1,6 @@
 package com.lec.spring.domains.user.service;
 
+import com.lec.spring.domains.post.entity.Post;
 import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
 import com.lec.spring.domains.user.dto.ModifyDTO;
@@ -23,6 +24,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Random;
