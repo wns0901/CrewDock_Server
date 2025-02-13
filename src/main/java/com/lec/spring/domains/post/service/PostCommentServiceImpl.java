@@ -54,22 +54,22 @@ public class PostCommentServiceImpl implements PostCommentService {
         List<PostComment> commentList = postCommentRepository.findCommentsByPostId(postId);
         long count = postCommentRepository.countCommentsByPostId(postId);
 
-        List<Map<String, Object>> commentsList = new ArrayList<>();
+        List<PostCommentDTO> commentsList = new ArrayList<>();
 
         for (PostComment comment : commentList) {
-            Map<String, Object> commentData = new HashMap<>();
-            commentData.put("createdAt", comment.getCreatedAt());
-            commentData.put("id", comment.getId());
-            commentData.put("postId", comment.getPostId());
-            commentData.put("userId", comment.getUser().getId());
-            commentData.put("userNickname", comment.getUser().getNickname());
-            commentData.put("parentComment", comment.getParentComment());
-            commentData.put("content", comment.getContent());
-            commentData.put("deleted", comment.getDeleted());
-            commentData.put("fixed", comment.getFixed() != null ? comment.getFixed() : false);
+            PostCommentDTO commentDTO = new PostCommentDTO();
+            commentDTO.setId(comment.getId());
+            commentDTO.setPostId(comment.getPostId());
+            commentDTO.setUserId(comment.getUser().getId());
+            commentDTO.setUserNickname(comment.getUser().getNickname());
+            commentDTO.setContent(comment.getContent());
+            commentDTO.setDeleted(comment.getDeleted());
+            commentDTO.setFixed(comment.getFixed() != null ? comment.getFixed() : false);
+            commentDTO.setCreatedAt(comment.getCreatedAt());
 
+            commentDTO.setParentsId(comment.getParentComment() != null ? comment.getParentComment().getId() : null);
 
-            commentsList.add(commentData);
+            commentsList.add(commentDTO);
         }
 
         Map<String, Object> commentsWrapper = new HashMap<>();
