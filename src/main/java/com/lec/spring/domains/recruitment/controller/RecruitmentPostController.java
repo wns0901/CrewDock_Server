@@ -1,11 +1,13 @@
 package com.lec.spring.domains.recruitment.controller;
 
 import com.lec.spring.domains.project.entity.Project;
+import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.project.service.ProjectService;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostService;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostServiceImpl;
+import com.lec.spring.domains.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,9 +24,8 @@ import java.util.Map;
 public class RecruitmentPostController {
 
     private final RecruitmentPostService recruitmentPostService;
-    private final ProjectService projectService;
     private final RecruitmentPostServiceImpl recruitmentPostServiceImpl;
-
+    private final ProjectRepository projectRepository;
 
     // 모집글 전체 조회
     @GetMapping("/recruitments")
@@ -99,12 +99,12 @@ public class RecruitmentPostController {
         return ResponseEntity.ok("프로젝트 신청이 완료되었습니다.");
     }
 
-    // 캡틴의 모든 프로젝트 목록 조회
-    @GetMapping("/projects/{userId}")
-    public ResponseEntity<List<Project>> getCaptainProjects(@RequestParam Long userId) {
-        return ResponseEntity.ok(projectService.getCaptainProjects(userId));
+    // 캡틴 권한이 있는 프로젝트만 조회
+    @GetMapping("/projects/{userId}/captain")
+    public ResponseEntity<List<Project>> getCaptainProjects(@PathVariable Long userId) {
+        List<Project> captainProjects = projectRepository.findAllByCaptainUser(userId);
+        return ResponseEntity.ok(captainProjects);
     }
-//
 
 }
 

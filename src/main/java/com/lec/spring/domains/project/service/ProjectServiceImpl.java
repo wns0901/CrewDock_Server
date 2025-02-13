@@ -71,19 +71,12 @@ public class ProjectServiceImpl implements ProjectService {
                     })
                     .collect(Collectors.toList());
 
-// 새로운 스택을 ProjectStacks에 저장
+            // 새로운 스택을 ProjectStacks에 저장
             projectStacksRepository.saveAll(newProjectStacks);
             System.out.println("새로운 스택: " + newProjectStacks);
 
         }
 
 
-    }
-
-    public List<Project> getCaptainProjects(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
-
-        return projectRepository.findAllByCaptainUser(user);
     }
 }

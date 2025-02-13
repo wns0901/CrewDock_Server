@@ -17,41 +17,57 @@ public class RecruitmentPostDTO {
     private int recruitedNumber;
     private String region;
     private String proceedMethod;
-    private int userId;
-    private String userName; // 유저 아이디
-    private String nickName; // 유저 닉네임
-    private int projectId;
-    private String projectName;
-    private List<String> stackList; //스택 리스트 추가
+    private UserDTO user;
+    private ProjectDTO project;
+
+    @Data
+    public static class UserDTO {
+        private Long userId;  
+        private String userName;
+        private String nickName;
+    }
+
+    @Data
+    public static class ProjectDTO {
+        private Long projectId;
+        private String projectName;
+        private List<String> stackList;
+    }
 
     public static RecruitmentPostDTO fromEntity(RecruitmentPost post) {
         RecruitmentPostDTO dto = new RecruitmentPostDTO();
         dto.setId(post.getId());
         dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
-        dto.setRecruitedField(post.getRecruitedField());
         dto.setDeadline(post.getDeadline().toString());
+        dto.setRecruitedField(post.getRecruitedField());
         dto.setRecruitedNumber(post.getRecruitedNumber());
         dto.setRegion(post.getRegion().name());
         dto.setProceedMethod(post.getProceedMethod().name());
 
-        // 유저와 프로젝트가 존재할 경우만 DTO에 값 할당
+        // user 객체 설정
         if (post.getUser() != null) {
-            dto.setId(post.getUser().getId());
-            dto.setUserName(post.getUser().getUsername());
-            dto.setNickName(post.getUser().getNickname());
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserId(post.getUser().getId());
+            userDTO.setUserName(post.getUser().getUsername());
+            userDTO.setNickName(post.getUser().getNickname());
+            dto.setUser(userDTO);
         }
-        if (post.getProject() != null) {
-            dto.setId(post.getProject().getId());
-            dto.setProjectName(post.getProject().getName());
 
-            //프로젝트에 연결된 스택 리스트 가져오기
+        // project 객체 설정
+        if (post.getProject() != null) {
+            ProjectDTO projectDTO = new ProjectDTO();
+            projectDTO.setProjectId(post.getProject().getId());
+            projectDTO.setProjectName(post.getProject().getName());
+
+            // 프로젝트에 연결된 스택 리스트 가져오기
             List<String> stackNames = post.getProject().getStacks().stream()
-                    .map(ProjectStacks::getStack) // ProjectStacks에서 Stack 가져오기
-                    .map(stack -> stack.getName()) // Stack에서 이름 가져오기
+                    .map(ProjectStacks::getStack)
+                    .map(stack -> stack.getName())
                     .collect(Collectors.toList());
 
-            dto.setStackList(stackNames);
+            projectDTO.setStackList(stackNames);
+            dto.setProject(projectDTO);
         }
 
         return dto;
