@@ -114,6 +114,7 @@ public class DummyDataInsertTest {
                         .nickname("닉네임" + i)
                         .password(passwordEncoder.encode("qwer1234"))
                         .phoneNumber("010-1234-567" + i)
+                        .hopePosition(positions[i % 4])
                         .build())
         ).toList();
 
@@ -127,7 +128,7 @@ public class DummyDataInsertTest {
         });
 
         User admin = userRepository.save(User.builder()
-                .username("admin" + 1 + "@example.com")
+                .username("admin" + 1 + "@q.q")
                 .name("관리자1")
                 .nickname("관리자 닉네임")
                 .password(passwordEncoder.encode("qwer1234"))
@@ -149,7 +150,7 @@ public class DummyDataInsertTest {
         for (int j = 0; j < 8; j++) {
             int finalJ = j;
             userStacks.addAll(IntStream.range(0, users.size())
-                    .mapToObj(i ->UserStacks.builder()
+                    .mapToObj(i -> UserStacks.builder()
                             .user(users.get(finalJ))
                             .stack(stackEntities.get(i))
                             .build())
@@ -168,7 +169,7 @@ public class DummyDataInsertTest {
                 .introduction("프로젝트 A 소개글입니다.")
                 .build());
 
-        List<ProjectStacks> projectStacks = IntStream.range(0,7)
+        List<ProjectStacks> projectStacks = IntStream.range(0, 7)
                 .mapToObj(i -> ProjectStacks.builder()
                         .projectId(project1.getId())
                         .stack(stackEntities.get(i))
@@ -311,8 +312,8 @@ public class DummyDataInsertTest {
                 .user(users.get(0))
                 .project(project1)
                 .contnet("프로젝트 A 시작 일정")
-                .startTime(LocalTime.of(10,0,0))
-                .endTime(LocalTime.of(18,0,0))
+                .startTime(LocalTime.of(10, 0, 0))
+                .endTime(LocalTime.of(18, 0, 0))
                 .startDate(LocalDate.of(2025, 1, 1))
                 .endDate(LocalDate.of(2025, 1, 31))
                 .build());
@@ -321,8 +322,8 @@ public class DummyDataInsertTest {
                 .user(users.get(1))
                 .project(project2)
                 .contnet("프로젝트 B 중간 일정")
-                .startTime(LocalTime.of(9,0,0))
-                .endTime(LocalTime.of(17,0,0))
+                .startTime(LocalTime.of(9, 0, 0))
+                .endTime(LocalTime.of(17, 0, 0))
                 .startDate(LocalDate.of(2025, 2, 1))
                 .endDate(LocalDate.of(2025, 2, 28))
                 .build());
