@@ -24,7 +24,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Override
-    public PostComment saveComment(PostComment postComment) {
+    public PostCommentDTO saveComment(PostComment postComment) {
         if (postComment.getParentComment() != null) {
             PostComment parentComment = postCommentRepository.findById(postComment.getParentComment().getId())
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
@@ -35,7 +35,20 @@ public class PostCommentServiceImpl implements PostCommentService {
             postComment.setParentComment(parentComment);
         }
 
-        return postCommentRepository.save(postComment);
+        PostComment savedComment = postCommentRepository.save(postComment);
+
+        PostCommentDTO commentDTO = new PostCommentDTO();
+        commentDTO.setId(savedComment.getId());
+        commentDTO.setFixed(savedComment.getFixed());
+        commentDTO.setDeleted(savedComment.getDeleted());
+        commentDTO.setParentsId(savedComment.getParentComment().getId());
+        commentDTO.setContent(savedComment.getContent());
+        commentDTO.setPostId(savedComment.getPostId());
+        commentDTO.setUserId(savedComment.getUser().getId());
+        commentDTO.setUserNickname(savedComment.getUser().getNickname());
+        commentDTO.setCreatedAt(savedComment.getCreatedAt());
+
+        return commentDTO;
     }
 
     @Override

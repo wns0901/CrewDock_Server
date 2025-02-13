@@ -11,4 +11,5 @@ import lombok.*;
 public class PostCommentDTO extends PostComment {
     private Long userId;
     private String userNickname;
+    private Long parentsId;
 }
