@@ -80,13 +80,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
-            sudo /usr/local/bin/docker-compose --version
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            if sudo /usr/local/bin/docker-compose ps | grep -q "Up"; then
-              sudo /usr/local/bin/docker-compose down
-            fi
-            cd /home/ubuntu
+            sudo docker stop $(sudo docker ps -aq) 2>/dev/null || true
+            sudo docker rm $(sudo docker ps -aq) 2>/dev/null || true
             sudo /usr/local/bin/docker-compose pull
             sudo /usr/local/bin/docker-compose up -d
