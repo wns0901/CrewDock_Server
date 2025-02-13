@@ -47,6 +47,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         response.addCookie(createCookie("accessToken", token));
 
+        response.addCookie(createCookie("githubUrl", oauth2User.getUser().getGithubUrl()));
+
         getRedirectStrategy().sendRedirect(request, response, oauth2RedirectUri);
     }
 

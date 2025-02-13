@@ -38,6 +38,8 @@ public class UserValidator implements Validator {
             errors.rejectValue("nickname", "이미 존재하는 닉네임 입니다");
         }
 
+        System.out.println(user);
+
         if(!user.getPassword().equals(user.getRePassword())) {
             errors.rejectValue("rePassword", "비밀번호와 비밀번호 확인이 일치하지 않습니다");
         }

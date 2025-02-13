@@ -1,5 +1,6 @@
 package com.lec.spring.domains.recruitment.service;
 
+import com.lec.spring.domains.recruitment.dto.RecruitmentPostCommentsDTO;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public interface RecruitmentPostService {
     List<RecruitmentPost> myRecruitmentPost(Long userId);
 
     // 특정 모집글 상세 조회
-    RecruitmentPost detailRecruitmentPost(Long id);
+    RecruitmentPostDTO detailRecruitmentPost(Long id);
 
     // 모집글 등록
     RecruitmentPost writeRecruitmentPost(RecruitmentPost recruitmentPost);
@@ -32,4 +33,11 @@ public interface RecruitmentPostService {
 
     // 모집글 삭제
     void deleteRecruitmentPost(Long id);
+
+    // 특정 유저의 모집글 조회 (전체)
+    List<RecruitmentPostCommentsDTO> getUserRecruitmentPosts(Long userId);
+
+    // 특정 유저의 모집글 조회 (row 개수 제한)
+    List<RecruitmentPostCommentsDTO> getUserRecruitmentPostsWithLimit(Long userId, int row);
+
 }

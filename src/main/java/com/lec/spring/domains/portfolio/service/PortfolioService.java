@@ -26,4 +26,5 @@ public interface PortfolioService {
     // 포트폴리오 생성 메소드
     void createPortfolioForProject(Project project, Long userId, List<Stack> stacks);
 
+    PortfolioDto getPortfolioById(Long portfolioId);
 }

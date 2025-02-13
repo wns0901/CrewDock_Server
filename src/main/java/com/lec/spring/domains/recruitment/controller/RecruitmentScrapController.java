@@ -19,14 +19,18 @@ public class RecruitmentScrapController {
 
     // 모집글 스크랩 추가
     @PostMapping("/{recruitmentsId}/scrap")
-    public ResponseEntity<Void> scrapPost(@PathVariable Long recruitmentsId, @RequestParam Long userId) {
-        scrapService.scrapPost(recruitmentsId, userId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ScrappedPostDTO> scrapPost(
+            @PathVariable Long recruitmentsId,
+            @RequestParam Long userId) {
+        ScrappedPostDTO scrappedPostDTO = scrapService.scrapPost(recruitmentsId, userId);
+        return ResponseEntity.ok(scrappedPostDTO);
     }
 
     // 모집글 스크랩 취소
     @DeleteMapping("/{recruitmentsId}/scrap")
-    public ResponseEntity<Void> unScrapPost(@PathVariable Long recruitmentsId, @RequestParam Long userId) {
+    public ResponseEntity<Void> unScrapPost(
+            @PathVariable Long recruitmentsId,
+            @RequestParam Long userId) {
         scrapService.unScrapPost(recruitmentsId, userId);
         return ResponseEntity.ok().build();
     }

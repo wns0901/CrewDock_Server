@@ -11,5 +11,6 @@ import java.util.List;
 public interface RecruitmentCommentRepository extends JpaRepository<RecruitmentComment, Long> {
 
     List<RecruitmentComment> findByPostAndCommentIsNullOrderByCreatedAtAsc(RecruitmentPost post);
-    //
+
+    Long countByPostId(Long postId);
 }

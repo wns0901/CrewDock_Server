@@ -17,7 +17,7 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     // 개인 일정 + 팀 일정 + 공휴일 조회
-// /calendars?[userId] (userId와 프로젝트 ID를 전달)
+    // /calendars?[userId] (userId와 프로젝트 ID를 전달)
     @GetMapping
     public ResponseEntity<List<CalendarDTO>> getUserCalendar(@RequestParam Long userId, @RequestParam List<Long> projectIds) {
         List<CalendarDTO> userCalendar = calendarService.getUserCalendar(userId, projectIds);
@@ -25,7 +25,7 @@ public class CalendarController {
     }
 
     // 팀 프로젝트 일정 + 공휴일 조회
-// /calendars/project?[projectId]
+    // /calendars/project?[projectId]
     @GetMapping("/project")
     public ResponseEntity<List<CalendarDTO>> getProjectCalendar(@RequestParam Long projectId) {
         List<CalendarDTO> projectCalendar = calendarService.getProjectCalendar(projectId);

@@ -32,7 +32,7 @@ public class QProjectIssueRepositoryImpl implements QProjectIssueRepository {
                         projectIssue.priority, // priority
                         projectIssue.deadline, // deadline
                         projectIssue.startline, // startline
-                        projectIssue.createAt, // createAt
+                        projectIssue.createdAt.as("createAt"),
                         projectIssue.writer.id.as("writerId"), // writerId
                         projectIssue.writer.nickname.as("writerName"), // writerName
                         projectIssue.manager.id.as("managerId"), // managerId

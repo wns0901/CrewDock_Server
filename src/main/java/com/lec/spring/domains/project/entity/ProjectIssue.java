@@ -55,7 +55,6 @@ public class ProjectIssue extends BaseEntity {
     @Column(nullable = false)
     private LocalDate startline;
 
-    @Column
-    private LocalDateTime createAt;
+
 
 }
