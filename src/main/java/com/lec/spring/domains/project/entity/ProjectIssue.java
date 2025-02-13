@@ -1,5 +1,6 @@
 package com.lec.spring.domains.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lec.spring.domains.user.entity.User;
 import com.lec.spring.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -23,16 +24,18 @@ public class ProjectIssue extends BaseEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "writer_id", nullable = false)
+    @JsonIgnore
     private User writer;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "manager_id", nullable = false)
+    @JsonIgnore
     private User manager;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
-    @JsonIgnore
     @ToString.Exclude
+    @JsonIgnore
     private Project project;
 
     @Column(nullable = false)
