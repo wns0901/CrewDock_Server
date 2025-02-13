@@ -66,17 +66,13 @@ public class PostCommentServiceImpl implements PostCommentService {
             commentDTO.setDeleted(comment.getDeleted());
             commentDTO.setFixed(comment.getFixed() != null ? comment.getFixed() : false);
             commentDTO.setCreatedAt(comment.getCreatedAt());
-
             commentDTO.setParentsId(comment.getParentComment() != null ? comment.getParentComment().getId() : null);
 
             commentsList.add(commentDTO);
         }
 
-        Map<String, Object> commentsWrapper = new HashMap<>();
-        commentsWrapper.put("comment", commentsList);
-
         Map<String, Object> result = new HashMap<>();
-        result.put("comments", commentsWrapper);
+        result.put("comments", commentsList);
         result.put("count", count);
 
         return result;
