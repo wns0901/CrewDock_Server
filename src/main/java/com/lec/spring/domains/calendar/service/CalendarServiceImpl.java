@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.lec.spring.domains.project.entity.QProject.project;
-import static com.lec.spring.domains.user.entity.QUser.user;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -219,7 +216,11 @@ public class CalendarServiceImpl implements CalendarService {
 
     // 팀 일정 페이지에서 팀 일정 수정 -> 팀 멤버라면 누구든 가능
     @Override
-    public CalendarDTO updateProjectEvent(Long calendarId, CalendarDTO calendarDTO) {
+    public CalendarDTO updateProjectEvent(Long projectId, Long calendarId, CalendarDTO calendarDTO) {
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트가 존재하지 않습니다."));
+
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일정이 존재하지 않습니다. ID: " + calendarId));
 

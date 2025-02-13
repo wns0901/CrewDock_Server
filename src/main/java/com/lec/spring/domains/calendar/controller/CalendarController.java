@@ -88,7 +88,7 @@ public class CalendarController {
     public ResponseEntity<CalendarDTO> updateProjectEvent(@PathVariable Long projectId,
                                                           @PathVariable Long calendarId,
                                                           @RequestBody CalendarDTO calendarDTO) {
-        CalendarDTO updatedCalendar = calendarService.updateProjectEvent(calendarId, calendarDTO);
+        CalendarDTO updatedCalendar = calendarService.updateProjectEvent(projectId, calendarId, calendarDTO);
         return ResponseEntity.ok(updatedCalendar);
     }
 
