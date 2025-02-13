@@ -25,7 +25,13 @@ public class PostAttachmentServiceImpl implements PostAttachmentService {
 
     @Override
     public PostAttachment uploadPostAttachment(MultipartFile file, Long postId, Long projectId) {
-        String fileUrl = s3ServiceImpl.uploadImgFile(file, BucketDirectory.POST);
+        String fileUrl;
+
+        if(file.getContentType() != null && file.getContentType().startsWith("image")) {
+            fileUrl = s3ServiceImpl.uploadImgFile(file, BucketDirectory.POST);
+        } else {
+            fileUrl = s3ServiceImpl.uploadFile(file, BucketDirectory.POST);
+        }
 
         PostAttachment postAttachment = PostAttachment.builder()
                 .postId(postId)

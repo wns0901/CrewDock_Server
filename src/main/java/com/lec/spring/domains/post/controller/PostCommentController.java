@@ -40,6 +40,6 @@ public class PostCommentController {
             "/projects/{projectId}/posts/{postId}/comments/{commentId}"})
     public ResponseEntity<Void> deletePostComment(@PathVariable Long postId, @PathVariable Long commentId) {
         postCommentService.deleteCommentById(postId, commentId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

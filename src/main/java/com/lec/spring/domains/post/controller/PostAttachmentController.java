@@ -27,6 +27,10 @@ public class PostAttachmentController {
             @PathVariable Long postId,
             @PathVariable(required = false) Long projectId)
     {
+        System.out.println("Received file: " + file.getOriginalFilename());
+        System.out.println("File size: " + file.getSize() + " bytes");
+        System.out.println("Content Type: " + file.getContentType());
+
         return postAttachmentService.uploadPostAttachment(file, postId, projectId);
     }
 
