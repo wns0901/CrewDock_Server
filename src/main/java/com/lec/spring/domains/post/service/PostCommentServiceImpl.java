@@ -16,23 +16,21 @@ import java.util.Map;
 @Service
 public class PostCommentServiceImpl implements PostCommentService {
     private final PostCommentRepository postCommentRepository;
-    private final UserRepository userRepository;
 
-    public PostCommentServiceImpl(PostCommentRepository postCommentRepository, UserRepository userRepository) {
+    public PostCommentServiceImpl(PostCommentRepository postCommentRepository) {
         this.postCommentRepository = postCommentRepository;
-        this.userRepository = userRepository;
     }
 
     @Override
+    @Transactional
     public PostCommentDTO saveComment(PostComment postComment) {
-        if (postComment.getParentComment() != null) {
+        if (postComment.getParentComment() != null && postComment.getParentComment().getId() != null) {
             PostComment parentComment = postCommentRepository.findById(postComment.getParentComment().getId())
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
 
-            if (parentComment.getParentComment() != null) {
-                throw new RuntimeException("대댓글의 대댓글은 작성할 수 없습니다.");
-            }
             postComment.setParentComment(parentComment);
+        } else {
+            postComment.setParentComment(null);
         }
 
         PostComment savedComment = postCommentRepository.save(postComment);
@@ -41,7 +39,7 @@ public class PostCommentServiceImpl implements PostCommentService {
         commentDTO.setId(savedComment.getId());
         commentDTO.setFixed(savedComment.getFixed());
         commentDTO.setDeleted(savedComment.getDeleted());
-        commentDTO.setParentsId(savedComment.getParentComment().getId());
+        commentDTO.setParentsId(savedComment.getParentComment() != null ? savedComment.getParentComment().getId() : null);
         commentDTO.setContent(savedComment.getContent());
         commentDTO.setPostId(savedComment.getPostId());
         commentDTO.setUserId(savedComment.getUser().getId());
