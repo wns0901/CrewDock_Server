@@ -93,7 +93,7 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
     }
 
     @Override
-    public List<CalendarDTO> findProjectCalendar(Long userId, Long projectId) {
+    public List<CalendarDTO> findProjectCalendar(Long projectId) {
         QCalendar calendar = QCalendar.calendar;
 
         // 공휴일 데이터 조회 (API 호출)
@@ -137,7 +137,7 @@ public class QCalendarRepositoryImpl implements QCalendarRepository {
             if (isHoliday || holiday.isHoliday(LocalDate.now())) {
                 CalendarDTO holidayCalendar = new CalendarDTO(
                         null, // ID는 null, 공휴일 데이터에는 없으므로
-                        userId, // 팀 일정이므로 userId 포함
+                        null,
                         projectId, // 프로젝트 ID 사용
                         holiday.getDateName(), // 공휴일 이름
                         holiday.getLocdate(), // 시작일 = 공휴일 날짜
