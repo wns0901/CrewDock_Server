@@ -2,8 +2,8 @@ package com.lec.spring.domains.calendar.controller;
 
 import com.lec.spring.domains.calendar.dto.CalendarDTO;
 import com.lec.spring.domains.calendar.service.CalendarService;
-import com.lec.spring.domains.project.entity.Project;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +17,15 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     // 개인 일정 + 팀 일정 + 공휴일 조회
-    // /calendars?[userId]
+// /calendars?[userId] (userId와 프로젝트 ID를 전달)
     @GetMapping
-    public ResponseEntity<List<CalendarDTO>> getUserCalendar(@RequestParam Long userId) {
-        List<CalendarDTO> userCalendar = calendarService.getUserCalendar(userId);
+    public ResponseEntity<List<CalendarDTO>> getUserCalendar(@RequestParam Long userId, @RequestParam List<Long> projectIds) {
+        List<CalendarDTO> userCalendar = calendarService.getUserCalendar(userId, projectIds);
         return ResponseEntity.ok(userCalendar);
     }
 
     // 팀 프로젝트 일정 + 공휴일 조회
-    // /calendars/project?[projectId]
+// /calendars/project?[projectId]
     @GetMapping("/project")
     public ResponseEntity<List<CalendarDTO>> getProjectCalendar(@RequestParam Long projectId) {
         List<CalendarDTO> projectCalendar = calendarService.getProjectCalendar(projectId);
@@ -67,8 +67,10 @@ public class CalendarController {
     // 팀 일정 추가
     // /calendars/project?[projectId]
     @PostMapping("/project")
-    public ResponseEntity<CalendarDTO> addProjectEvent(@RequestParam Long projectId, @RequestBody CalendarDTO calendarDTO) {
-        CalendarDTO createdCalendar = calendarService.addProjectEvent(projectId, calendarDTO);
+    public ResponseEntity<CalendarDTO> addProjectEvent(@RequestParam Long projectId,
+                                                       @RequestParam Long userId,
+                                                       @RequestBody CalendarDTO calendarDTO) {
+        CalendarDTO createdCalendar = calendarService.addProjectEvent(projectId, userId, calendarDTO);
         return ResponseEntity.ok(createdCalendar);
     }
 
@@ -83,21 +85,28 @@ public class CalendarController {
 
 
     // 팀 일정 수정
-    // /calendars/project/{projectId}&{calendarId}
+    // /calendars/project/{projectId}/{calendarId}
     @PatchMapping("/project/{projectId}/{calendarId}")
     public ResponseEntity<CalendarDTO> updateProjectEvent(@PathVariable Long projectId,
+                                                          Long userId,
                                                           @PathVariable Long calendarId,
                                                           @RequestBody CalendarDTO calendarDTO) {
-        CalendarDTO updatedCalendar = calendarService.updateProjectEvent(projectId, calendarId, calendarDTO);
+        CalendarDTO updatedCalendar = calendarService.updateProjectEvent(projectId, userId, calendarId, calendarDTO);
         return ResponseEntity.ok(updatedCalendar);
     }
 
     // 팀 일정 삭제
-    // /calendars/project?{projectId}&{calendarId}
-    @DeleteMapping("/project")
-    public ResponseEntity<Void> deleteProjectEvent(@RequestParam Long projectId, @RequestParam Long calendarId) {
-        calendarService.deleteProjectEvent(projectId, calendarId);
-        return ResponseEntity.noContent().build();
+    // /calendars/project/{calendarId}
+    @DeleteMapping("/project/{projectId}/{calendarId}")
+    public ResponseEntity<Void> deleteProjectEvent(@PathVariable Long projectId,
+                                                   Long userId,
+                                                   @PathVariable Long calendarId) {
+        int result = calendarService.deleteProjectEvent(projectId, userId, calendarId);
+        if (result == 1) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
 }

@@ -29,28 +29,16 @@ public class CalendarServiceImpl implements CalendarService {
     private final ProjectRepository projectRepository;
 
     // 개인 일정 페이지에서 개인 일정 + 공휴일 + 본인이 소속된 모든 팀 일정 보여주기
-    // 팀은 여러개 가능. 하지만 팀 일정 해당 페이지에서 수정 및 삭제 불가
+    // 팀은 여러 개 가능. 하지만 팀 일정은 해당 페이지에서 수정 및 삭제 불가
     @Override
     @Transactional(readOnly = true)
-    public List<CalendarDTO> getUserCalendar(Long userId) {
-        // 일반 일정 조회
-        List<CalendarDTO> userCalendar = calendarRepository.findUserCalendar(userId).stream()
-                .map(calendar -> new CalendarDTO(
-                        calendar.getId(),
-                        calendar.getUserId(),
-                        calendar.getProjectId(),
-                        calendar.getContent(),
-                        calendar.getStartDate(),
-                        calendar.getEndDate(),
-                        calendar.getStartTime(),
-                        calendar.getEndTime(),
-                        true
-                ))
-                .collect(Collectors.toList());
+    public List<CalendarDTO> getUserCalendar(Long userId, List<Long> projectIds) {
+        // 본인 개인 일정 + 본인이 속한 모든 팀 일정 조회 (QueryDSL 적용)
+        List<CalendarDTO> userCalendar = calendarRepository.findUserCalendar(userId, projectIds);
 
         // 공휴일 추가
         List<CalendarDTO> holidays = convertHolidaysToCalendarDTOs(holidaysService.getHolidaysForCurrentMonth());
-        userCalendar.addAll(holidays); // 공휴일 추가
+        userCalendar.addAll(holidays);
 
         return userCalendar;
     }
@@ -61,23 +49,11 @@ public class CalendarServiceImpl implements CalendarService {
     @Transactional(readOnly = true)
     public List<CalendarDTO> getProjectCalendar(Long projectId) {
         // 프로젝트 일정 조회
-        List<CalendarDTO> projectCalendar = calendarRepository.findProjectCalendar(projectId).stream()
-                .map(calendar -> new CalendarDTO(
-                        calendar.getId(),
-                        calendar.getUserId(),
-                        calendar.getProjectId(),
-                        calendar.getContent(),
-                        calendar.getStartDate(),
-                        calendar.getEndDate(),
-                        calendar.getStartTime(),
-                        calendar.getEndTime(),
-                        false // 공휴일 여부는 기본 false로 설정
-                ))
-                .collect(Collectors.toList());
+        List<CalendarDTO> projectCalendar = calendarRepository.findProjectCalendar(projectId);
 
         // 공휴일 추가
         List<CalendarDTO> holidays = convertHolidaysToCalendarDTOs(holidaysService.getHolidaysForCurrentMonth());
-        projectCalendar.addAll(holidays); // 공휴일 추가
+        projectCalendar.addAll(holidays);
 
         return projectCalendar;
     }
@@ -160,12 +136,12 @@ public class CalendarServiceImpl implements CalendarService {
 
     // 팀 일정 페이지에서 팀 일정 추가 -> 팀 멤버라면 누구든 가능
     @Override
-    public CalendarDTO addProjectEvent(Long projectId, CalendarDTO calendarDTO) {
+    public CalendarDTO addProjectEvent(Long projectId, Long userId, CalendarDTO calendarDTO) {
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트가 존재하지 않습니다."));
 
-        User user = userRepository.findById(calendarDTO.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
         Calendar calendar = Calendar.builder()
@@ -203,7 +179,7 @@ public class CalendarServiceImpl implements CalendarService {
 
         return new CalendarDTO(
                 calendar.getId(),
-                calendar.getUser().getId(),
+                calendar.getUser() != null ? calendar.getUser().getId() : null,
                 calendar.getProject().getId(),
                 calendar.getContent(),
                 calendar.getStartDate(),
@@ -216,7 +192,7 @@ public class CalendarServiceImpl implements CalendarService {
 
     // 팀 일정 페이지에서 팀 일정 수정 -> 팀 멤버라면 누구든 가능
     @Override
-    public CalendarDTO updateProjectEvent(Long projectId, Long calendarId, CalendarDTO calendarDTO) {
+    public CalendarDTO updateProjectEvent(Long projectId, Long userId, Long calendarId, CalendarDTO calendarDTO) {
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트가 존재하지 않습니다."));
@@ -249,14 +225,12 @@ public class CalendarServiceImpl implements CalendarService {
 
     // 팀 일정 페이지에서 팀 일정 삭제 -> 팀 멤버라면 누구든 가능
     @Override
-    public int deleteProjectEvent(Long projectId, Long calendarId) {
+    public int deleteProjectEvent(Long projectId, Long userId, Long calendarId) {
         Optional<Calendar> calendarOpt = calendarRepository.findById(calendarId);
 
         if (calendarOpt.isPresent()) {
             Calendar calendar = calendarOpt.get();
-            if (!calendar.getProject().getId().equals(projectId)) {
-                throw new IllegalArgumentException("해당 팀의 일정만 삭제할 수 있습니다.");
-            }
+
             calendarRepository.delete(calendar);
             return 1;
         }
