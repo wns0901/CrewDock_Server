@@ -90,7 +90,7 @@ public class SecurityConfig {
                     config.setAllowedMethods(List.of("*"));
                     config.setAllowCredentials(true);
                     config.setAllowedHeaders(List.of("*"));
-                    config.setExposedHeaders(List.of("Authorization"));
+                    config.setExposedHeaders(List.of("*"));
                     return config;
                 }));
 

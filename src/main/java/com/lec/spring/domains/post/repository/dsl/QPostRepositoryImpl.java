@@ -94,9 +94,6 @@ public class QPostRepositoryImpl implements QPostRepository {
     public Page<PostDTO> findPosts(PostDTO postDTO, Pageable pageable) {
         BooleanExpression condition;
 
-        if (postDTO.getCategory() == null) postDTO.setCategory(Category.NONE);
-        if (postDTO.getDirection() == null) postDTO.setDirection(Direction.NONE);
-
         if (postDTO.getProjectId() == null) {
             condition = qPost.category.eq(postDTO.getCategory())
                     .and(qPost.project.id.isNull());

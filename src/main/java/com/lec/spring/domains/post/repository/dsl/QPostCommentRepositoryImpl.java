@@ -39,6 +39,14 @@ public class QPostCommentRepositoryImpl implements QPostCommentRepository {
     }
 
     @Override
+    public List<PostComment> findByParentCommentId(Long parentCommentId) {
+        return queryFactory
+                .selectFrom(qPostComment)
+                .where(qPostComment.parentComment.id.eq(parentCommentId))
+                .fetch();
+    }
+
+    @Override
     public void updateFixedStatus(Long commentId, boolean isFixed) {
         queryFactory
                 .update(qPostComment)

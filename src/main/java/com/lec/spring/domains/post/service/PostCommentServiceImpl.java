@@ -1,7 +1,10 @@
 package com.lec.spring.domains.post.service;
 
+import com.lec.spring.domains.post.dto.PostCommentDTO;
 import com.lec.spring.domains.post.entity.PostComment;
 import com.lec.spring.domains.post.repository.PostCommentRepository;
+import com.lec.spring.domains.user.entity.User;
+import com.lec.spring.domains.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +16,11 @@ import java.util.Map;
 @Service
 public class PostCommentServiceImpl implements PostCommentService {
     private final PostCommentRepository postCommentRepository;
+    private final UserRepository userRepository;
 
-    public PostCommentServiceImpl(PostCommentRepository postCommentRepository) {
+    public PostCommentServiceImpl(PostCommentRepository postCommentRepository, UserRepository userRepository) {
         this.postCommentRepository = postCommentRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -29,6 +34,7 @@ public class PostCommentServiceImpl implements PostCommentService {
             }
             postComment.setParentComment(parentComment);
         }
+
         return postCommentRepository.save(postComment);
     }
 
@@ -67,11 +73,22 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public PostComment updateFixedStatus(Long commentId, Boolean isFixed) {
-        Boolean fixed = (isFixed == null || isFixed == false) ? true : false;
-        postCommentRepository.updateFixedStatus(commentId, fixed);
-        return postCommentRepository.findById(commentId)
+    public PostCommentDTO updateFixedStatus(Long commentId, Boolean isFixed) {
+        PostComment fixedComment =  postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        PostCommentDTO commentDTO = new PostCommentDTO();
+        commentDTO.setId(fixedComment.getId());
+        commentDTO.setFixed(isFixed);
+        commentDTO.setDeleted(fixedComment.getDeleted());
+        commentDTO.setParentComment(fixedComment.getParentComment());
+        commentDTO.setContent(fixedComment.getContent());
+        commentDTO.setPostId(fixedComment.getPostId());
+        commentDTO.setUserId(fixedComment.getUser().getId());
+        commentDTO.setUserNickname(fixedComment.getUser().getNickname());
+        commentDTO.setCreatedAt(fixedComment.getCreatedAt());
+
+        return commentDTO;
     }
 
     @Override
@@ -80,13 +97,13 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment comment = postCommentRepository.findById(commentId)
                 .orElse(null);
 
-        if(comment.getParentComment() != null) {
-            Long parentsId = comment.getParentComment().getId();
-            if (parentsId.equals(commentId)) {
-                postCommentRepository.softDeleteParentComment(parentsId, true, "삭제된 댓글입니다.");
-            } else {
-                postCommentRepository.softDeleteComment(commentId, true);
-            }
+        List<PostComment> childComments = postCommentRepository.findByParentCommentId(commentId);
+        for (PostComment childComment : childComments) {
+            postCommentRepository.softDeleteComment(childComment.getId(), true);
+        }
+
+        if (comment.getParentComment() != null) {
+            postCommentRepository.softDeleteParentComment(commentId, true, "삭제된 댓글입니다.");
         } else {
             postCommentRepository.softDeleteComment(commentId, true);
         }
