@@ -39,23 +39,25 @@ jobs:
 
       - name: .env 파일 생성
         run: |
-          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_MYSQL_URL }}" > .env
-          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_MYSQL_USERNAME }}" >> .env
-          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_MYSQL_PASSWORD }}" >> .env
-          echo "SPRING_DATA_MONGODB_URI=${{ secrets.SPRING_MONGODB_URI }}" >> .env
-          echo "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID=${{ secrets.SPRING_GOOGLE_CLIENT_ID }}" >> .env
-          echo "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_GOOGLE_CLIENT_SECRET }}" >> .env
-          echo "SPRING_MAIL_USERNAME=${{ secrets.SPRING_GOOGLE_MAIL_USERNAME }}" >> .env
-          echo "SPRING_MAIL_PASSWORD=${{ secrets.SPRING_GOOGLE_MAIL_PASSWORD }}" >> .env
-          echo "JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}" >> .env
-          echo "CORS_ALLOWED_ORIGINS=${{ secrets.SPRING_CORS_ALLOWED_ORIGINS }}" >> .env
-          echo "APP_OAUTH2_PASSWORD=${{ secrets.SPRING_OAUTH2_PASSWORD }}" >> .env
-          echo "APP_OAUTH2_AUTH_REDIRECT_URI=${{ secrets.SPRING_OAUTH2_REDIRECT_URI }}" >> .env
-          echo "CLOUD_AWS_S3_BUCKET=${{ secrets.SPRING_S3_BUCKET }}" >> .env
-          echo "CLOUD_AWS_REGION_STATIC=${{ secrets.SPRING_S3_REGION }}" >> .env
-          echo "CLOUD_AWS_CREDENTIALS_ACCESS_KEY=${{ secrets.SPRING_S3_ACCESS_KEY }}" >> .env
-          echo "CLOUD_AWS_CREDENTIALS_SECRET_KEY=${{ secrets.SPRING_S3_SECRET_KEY }}" >> .env
-          echo "GITHUB_TOKEN=${{ secrets.SPRING_GITHUB_TOKEN }}" >> .env
+          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" > .env
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+          echo "SPRING_DATA_MONGODB_URI=${{ secrets.SPRING_DATA_MONGODB_URI }}" >> .env
+          echo "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}" >> .env
+          echo "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_ID=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_ID }}" >> .env
+          echo "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_SECRET=${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENT_SECRET }}" >> .env
+          echo "SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}" >> .env
+          echo "SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}" >> .env
+          echo "APP_OAUTH2_PASSWORD=${{ secrets.APP_OAUTH2_PASSWORD }}" >> .env
+          echo "APP_OAUTH2_AUTH_REDIRECT_URI=${{ secrets.APP_OAUTH2_AUTH_REDIRECT_URI }}" >> .env
+          echo "CLOUD_AWS_S3_BUCKET=${{ secrets.CLOUD_AWS_S3_BUCKET }}" >> .env
+          echo "CLOUD_AWS_REGION_STATIC=${{ secrets.CLOUD_AWS_REGION_STATIC }}" >> .env
+          echo "CLOUD_AWS_CREDENTIALS_ACCESS_KEY=${{ secrets.CLOUD_AWS_CREDENTIALS_ACCESS_KEY }}" >> .env
+          echo "CLOUD_AWS_CREDENTIALS_SECRET_KEY=${{ secrets.CLOUD_AWS_CREDENTIALS_SECRET_KEY }}" >> .env
+          echo "GITHUB_TOKEN=${{ secrets.APP_GITHUB_TOKEN }}" >> .env
 
       - name: EC2 에 파일 업로드
         uses: appleboy/scp-action@master
