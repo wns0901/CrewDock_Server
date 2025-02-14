@@ -5,6 +5,7 @@ import com.lec.spring.domains.recruitment.entity.RecruitmentComment;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,10 +18,12 @@ public class RecruitmentPostCommentsDTO {
     private String recruitedField;
     private int recruitedNumber;
     private LocalDateTime createdAt;
+    private LocalDate deadline;
     private String region;
     private String proceedMethod;
     private String userName;
     private String projectName;
+    private Long projectId;
     private List<RecruitmentCommentDTO> comments;
 
     // ✅ 댓글 리스트를 포함한 DTO 변환 메서드
@@ -32,6 +35,7 @@ public class RecruitmentPostCommentsDTO {
         dto.setContent(post.getContent());
         dto.setRecruitedField(post.getRecruitedField());
         dto.setRecruitedNumber(post.getRecruitedNumber());
+        dto.setDeadline(post.getDeadline());
         dto.setRegion(post.getRegion().name());
         dto.setProceedMethod(post.getProceedMethod().name());
 
@@ -41,6 +45,7 @@ public class RecruitmentPostCommentsDTO {
 
         if (post.getProject() != null) {
             dto.setProjectName(post.getProject().getName());
+            dto.setProjectId(post.getProject().getId());
         }
 
         // ✅ 댓글 DTO 변환

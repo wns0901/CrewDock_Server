@@ -20,7 +20,7 @@ public class RecruitmentPostDTO {
     private int userId;
     private String userName; // 유저 아이디
     private String nickName; // 유저 닉네임
-    private int projectId;
+    private Long projectId;
     private String projectName;
     private List<String> stackList; //스택 리스트 추가
 
@@ -42,8 +42,9 @@ public class RecruitmentPostDTO {
             dto.setNickName(post.getUser().getNickname());
         }
         if (post.getProject() != null) {
-            dto.setId(post.getProject().getId());
+
             dto.setProjectName(post.getProject().getName());
+            dto.setProjectId(post.getProject().getId());
 
             //프로젝트에 연결된 스택 리스트 가져오기
             List<String> stackNames = post.getProject().getStacks().stream()
