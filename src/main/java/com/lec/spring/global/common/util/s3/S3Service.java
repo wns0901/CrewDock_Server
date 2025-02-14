@@ -8,5 +8,7 @@ public interface S3Service {
 
     String uploadImgFile(MultipartFile file, BucketDirectory bucketDirectory);
 
+    String getFileName(String url);
+
     void deleteFile(String url);
 }
