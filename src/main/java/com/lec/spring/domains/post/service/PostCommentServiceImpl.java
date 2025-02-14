@@ -84,9 +84,12 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment fixedComment =  postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
+        fixedComment.setFixed(isFixed);
+        postCommentRepository.save(fixedComment);
+
         PostCommentDTO commentDTO = new PostCommentDTO();
         commentDTO.setId(fixedComment.getId());
-        commentDTO.setFixed(isFixed);
+        commentDTO.setFixed(fixedComment.getFixed());
         commentDTO.setDeleted(fixedComment.getDeleted());
         commentDTO.setParentComment(fixedComment.getParentComment());
         commentDTO.setContent(fixedComment.getContent());
