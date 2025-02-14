@@ -128,7 +128,7 @@ public class DummyDataInsertTest {
         });
 
         User admin = userRepository.save(User.builder()
-                .username("admin" + 1 + "@example.com")
+                .username("admin" + 1 + "@q.q")
                 .name("관리자1")
                 .nickname("관리자 닉네임")
                 .password(passwordEncoder.encode("qwer1234"))
