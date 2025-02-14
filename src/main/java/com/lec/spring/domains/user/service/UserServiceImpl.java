@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> isExistsByUsername(String username) {
         if(!validateEmailFormat(username)) {
-            return new ResponseEntity<>("이메일 형식이 아닙니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("이메일 형식이 틀렸습니다.", HttpStatus.BAD_REQUEST);
         }
 
         boolean exists = userRepository.existsByUsername(username);
@@ -76,6 +76,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> sendAuthNum(String email) {
+        ResponseEntity<?> emailCheck = isExistsByUsername(email);
+
+        if (emailCheck.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            return emailCheck;
+        }
+
         String authCode = createCode();
 
         try {
@@ -91,7 +97,7 @@ public class UserServiceImpl implements UserService {
 
             redisUtil.setData(email, authCode, 180 * 1000L);
         } catch (Exception e) {
-            return new ResponseEntity<>("이메일 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("이메일 코드 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return ResponseEntity.ok().build();
@@ -124,9 +130,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResponseEntity<?> SocialRegister(RegisterDTO registerDTO) {
+        try {
+            User user = userRepository.findById(registerDTO.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+            user.setNickname(registerDTO.getNickname());
+            user.setGithubUrl(registerDTO.getGithubUrl());
+            user.setNotionUrl(registerDTO.getNotionUrl());
+            user.setBlogUrl(registerDTO.getBlogUrl());
+            user.setPhoneNumber(registerDTO.getPhoneNumber());
+            user.setHopePosition(registerDTO.getHopePosition());
+
+            userRepository.save(user);
+
+            Auth auth = authRepository.findByName("ROLE_MEMBER");
+
+            userAuthRepository.save(UserAuth.builder().userId(user.getId()).auth(auth).build());
+
+            List<Stack> stacks = stackRepository.findAllById(registerDTO.getStackIds());
+
+            List<UserStacks> userStacks = stacks.stream().map(stack -> UserStacks.builder().user(user).stack(stack).build()).toList();
+
+            userStacksRepository.saveAll(userStacks);
+
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Override
     public ResponseEntity<?> checkAuthNum(String authNum, String email) {
         redisUtil.getData(email);
         if (authNum.equals(redisUtil.getData(email))) {
+            redisUtil.deleteData(email);
             return ResponseEntity.ok().body("인증 성공");
         }
 

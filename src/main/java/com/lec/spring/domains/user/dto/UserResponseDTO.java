@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class UserResponseDTO {
     private Long id;
     private String username;
+    private String name;
     private String nickname;
     private String profileImgUrl;
     private String phoneNumber;
@@ -27,6 +28,7 @@ public class UserResponseDTO {
         return UserResponseDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .name(user.getName())
                 .nickname(user.getNickname())
                 .profileImgUrl(user.getProfileImgUrl())
                 .phoneNumber(user.getPhoneNumber())

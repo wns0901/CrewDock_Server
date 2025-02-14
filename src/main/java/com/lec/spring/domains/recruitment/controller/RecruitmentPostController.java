@@ -2,6 +2,7 @@ package com.lec.spring.domains.recruitment.controller;
 
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.service.ProjectService;
+import com.lec.spring.domains.recruitment.dto.RecruitmentPostCommentsDTO;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostService;
@@ -25,6 +26,23 @@ public class RecruitmentPostController {
     private final RecruitmentPostService recruitmentPostService;
     private final ProjectService projectService;
     private final RecruitmentPostServiceImpl recruitmentPostServiceImpl;
+
+    // 특정 유저가 작성한 모집글 조회
+    @GetMapping("/recruitments/user/{userId}")
+    public ResponseEntity<List<RecruitmentPostCommentsDTO>> getUserRecruitmentPosts(
+            @PathVariable("userId") Long userId,
+            @RequestParam(value = "row", required = false, defaultValue = "0") int row) {
+
+        List<RecruitmentPostCommentsDTO> posts;
+
+        if (row > 0) {
+            posts = recruitmentPostService.getUserRecruitmentPostsWithLimit(userId, row);
+        } else {
+            posts = recruitmentPostService.getUserRecruitmentPosts(userId);
+        }
+
+        return ResponseEntity.ok(posts);
+    }
 
 
     // 모집글 전체 조회
@@ -57,32 +75,11 @@ public class RecruitmentPostController {
 
     // 모집글 상세 조회 (특정 JSON 구조로 반환)
     @GetMapping("/recruitments/{recruitmentsId}")
-    public Map<String, Object> detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
-        RecruitmentPost post = recruitmentPostService.detailRecruitmentPost(id);
-
-        // JSON 구조 변환
-        Map<String, Object> response = new HashMap<>();
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("id", post.getUser().getId());
-
-        Map<String, Object> projectMap = new HashMap<>();
-        projectMap.put("id", post.getProject().getId());
-
-        response.put("user", userMap);
-        response.put("project", projectMap);
-        response.put("title", post.getTitle());
-        response.put("content", post.getContent());
-        response.put("deadline", post.getDeadline());
-        response.put("region", post.getRegion().name());
-        response.put("proceedMethod", post.getProceedMethod().name());
-        response.put("recruitedNumber", post.getRecruitedNumber());
-        response.put("recruitedField", post.getRecruitedField());
-        response.put("createAt", post.getCreatedAt()); // BaseEntity에 있는 생성일자
-
-        return response;
+    public RecruitmentPostDTO detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
+        return recruitmentPostService.detailRecruitmentPost(id);
     }
 
-// 모집글 등록
+    // 모집글 등록
     @PostMapping("/recruitments")
     public void writeRecruitmentPost(@RequestBody RecruitmentPost recruitmentPost) {
         System.out.println("받은 데이터: " + recruitmentPost); // 로그 확인용

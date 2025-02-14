@@ -64,8 +64,7 @@ public class ProjectIssueDTO{
                 .startline(this.startline)
                 .writer(writer)
                 .manager(manager)
-                .project(project)
-                .createAt(LocalDateTime.now())  // 생성 시간 설정
+                .project(project)// 생성 시간 설정
                 .build();
     }
 
@@ -80,7 +79,6 @@ public class ProjectIssueDTO{
                 .writerId(projectIssue.getWriter().getId())
                 .managerId(projectIssue.getManager().getId())
                 .projectId(projectIssue.getProject().getId())
-                .createAt(projectIssue.getCreateAt())
                 .build();
     }
 

@@ -2,6 +2,8 @@ package com.lec.spring.domains.recruitment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,4 +14,5 @@ public class ScrappedPostDTO {
     private String title;            // 모집글 제목
     private LocalDateTime createdAt; // 모집글 작성 시간
     private long commentCount;       // 댓글 개수
+    private LocalDate deadline;
 }

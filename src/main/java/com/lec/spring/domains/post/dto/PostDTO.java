@@ -3,6 +3,9 @@ package com.lec.spring.domains.post.dto;
 import com.lec.spring.domains.post.entity.Post;
 import lombok.*;
 
+import java.util.List;
+import java.util.Map;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -11,6 +14,7 @@ import lombok.*;
 public class PostDTO extends Post {
     private Long userId;
     private Long projectId;
+<<<<<<< HEAD
     private String userNickname;
 
     public PostDTO(Post post) {
@@ -25,4 +29,8 @@ public class PostDTO extends Post {
         this.setDirection(post.getDirection());
     }
 
+=======
+
+    private List<Map<String, Object>> filteredComments;
+>>>>>>> bfb0834f0719f095da23d0ee03832dbb93ce83cc
 }
