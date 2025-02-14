@@ -34,23 +34,22 @@ public class UserController {
         return authentication;
     }
 
-    @PostMapping("/check-username")
-
+    @GetMapping("/check/username")
     public ResponseEntity<?> checkUsername(@RequestParam("username") String username) {
         return userService.isExistsByUsername(username);
     }
 
-    @PostMapping("/check-nickname")
+    @GetMapping("/check/nickname")
     public ResponseEntity<?> checkNickname(@RequestParam("nickname") String nickname) {
         return userService.isExistsByNickname(nickname);
     }
 
-    @PostMapping("/check-email")
+    @GetMapping("/check/email")
     public ResponseEntity<?> checkEmail(@RequestParam("email") String email) {
         return userService.sendAuthNum(email);
     }
 
-    @PostMapping("/check-authNum")
+    @GetMapping("/check/authNum")
     public ResponseEntity<?> checkAuthNum(
             @RequestParam("authNum") String authNum,
             @RequestParam("email") String email){
@@ -63,11 +62,17 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid RegisterDTO userDto, BindingResult bindingResult) {
+    public ResponseEntity<?> register(@RequestBody RegisterDTO userDto, BindingResult bindingResult) {
+        System.out.println(userDto);
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getCode).toList());
         }
         return userService.register(userDto);
+    }
+
+    @PostMapping("/register/social")
+    public ResponseEntity<?> socialRegister(@RequestBody RegisterDTO userDto) {
+        return userService.SocialRegister(userDto);
     }
 
     @PatchMapping("/{id}")
