@@ -9,7 +9,7 @@ import java.util.Map;
 public interface PostAttachmentService {
     PostAttachment findById(Long attachmentId);
 
-    PostAttachment uploadPostAttachment(MultipartFile file, Long postId, Long projectId);
+    List<PostAttachment> uploadPostAttachment(List<MultipartFile> files, Long postId, Long projectId);
 
     List<PostAttachment> getPostAttachmentByPostId(Long postId);
 

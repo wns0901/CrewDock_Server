@@ -22,12 +22,12 @@ public class PostAttachmentController {
 
     @PostMapping({"/posts/{postId}/attachments",
             "/projects/{projectId}/posts/{postId}/attachments"})
-    public PostAttachment registerProjectPostAttachment(
-            @RequestParam("file")MultipartFile file,
+    public List<PostAttachment> registerProjectPostAttachment(
+            @RequestParam("file") List<MultipartFile> files,
             @PathVariable Long postId,
             @PathVariable(required = false) Long projectId)
     {
-        return postAttachmentService.uploadPostAttachment(file, postId, projectId);
+        return postAttachmentService.uploadPostAttachment(files, postId, projectId);
     }
 
     @DeleteMapping({"/posts/{postId}/attachments/{attachmentId}",

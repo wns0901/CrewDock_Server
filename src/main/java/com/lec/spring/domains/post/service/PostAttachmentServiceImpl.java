@@ -6,6 +6,8 @@ import com.lec.spring.global.common.util.BucketDirectory;
 import com.lec.spring.global.common.util.s3.S3ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,15 +26,20 @@ public class PostAttachmentServiceImpl implements PostAttachmentService {
     }
 
     @Override
-    public PostAttachment uploadPostAttachment(MultipartFile file, Long postId, Long projectId) {
-        String fileUrl = s3ServiceImpl.uploadFile(file, BucketDirectory.POST);
+    public List<PostAttachment> uploadPostAttachment(List<MultipartFile> files, Long postId, Long projectId) {
+        List<PostAttachment> postAttachments = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String fileUrl = s3ServiceImpl.uploadFile(file, BucketDirectory.POST);
 
-        PostAttachment postAttachment = PostAttachment.builder()
-                .postId(postId)
-                .url(fileUrl)
-                .build();
+            PostAttachment postAttachment = PostAttachment.builder()
+                    .postId(postId)
+                    .url(fileUrl)
+                    .build();
 
-        return postAttachmentRepository.save(postAttachment);
+            postAttachments.add(postAttachment);
+        }
+
+        return postAttachmentRepository.saveAll(postAttachments);
     }
 
     @Override
