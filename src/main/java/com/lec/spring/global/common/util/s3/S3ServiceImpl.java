@@ -55,6 +55,19 @@ public class S3ServiceImpl implements S3Service {
         throw new IllegalArgumentException("이미지 파일이 아닙니다.");
     }
 
+    @Override
+    public String getFileName(String url) {
+        String fileName = url.substring(54);
+        try {
+            String decodedFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+
+            return decodedFileName.substring(decodedFileName.indexOf("/") + 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("파일 이름을 디코딩하는데 실패했습니다.");
+        }
+    }
+
     private String addTimestampToFilename(String filename) {
         String timestamp = String.valueOf(System.currentTimeMillis());
         int lastDotIndex = filename.lastIndexOf(".");
