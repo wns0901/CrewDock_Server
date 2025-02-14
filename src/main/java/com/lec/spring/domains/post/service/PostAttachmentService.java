@@ -1,5 +1,6 @@
 package com.lec.spring.domains.post.service;
 
+import com.lec.spring.domains.post.dto.PostAttachmentDTO;
 import com.lec.spring.domains.post.entity.PostAttachment;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +12,7 @@ public interface PostAttachmentService {
 
     List<PostAttachment> uploadPostAttachment(List<MultipartFile> files, Long postId, Long projectId);
 
-    List<PostAttachment> getPostAttachmentByPostId(Long postId);
+    List<PostAttachmentDTO> getPostAttachmentByPostId(Long postId);
 
     PostAttachment updatePostAttachment(PostAttachment postAttachment, Long postId);
 

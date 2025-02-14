@@ -1,5 +1,6 @@
 package com.lec.spring.domains.post.controller;
 
+import com.lec.spring.domains.post.dto.PostAttachmentDTO;
 import com.lec.spring.domains.post.entity.PostAttachment;
 import com.lec.spring.domains.post.service.PostAttachmentService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class PostAttachmentController {
 
     @GetMapping({"/posts/{postId}/attachments",
             "/projects/{projectId}/posts/{postId}/attachments"})
-    public List<PostAttachment> getPostAttachments(@PathVariable Long postId) {
+    public List<PostAttachmentDTO> getPostAttachments(@PathVariable Long postId) {
         return postAttachmentService.getPostAttachmentByPostId(postId);
     }
 

@@ -14,7 +14,6 @@ import java.util.Map;
 public class PostDTO extends Post {
     private Long userId;
     private Long projectId;
-<<<<<<< HEAD
     private String userNickname;
 
     public PostDTO(Post post) {
@@ -29,8 +28,6 @@ public class PostDTO extends Post {
         this.setDirection(post.getDirection());
     }
 
-=======
 
     private List<Map<String, Object>> filteredComments;
->>>>>>> bfb0834f0719f095da23d0ee03832dbb93ce83cc
 }
