@@ -9,29 +9,23 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 // 공휴일 api 호출에 필요한 DTO
 public class HolidaysDTO {
-    private String dateKind;    // 공휴일 종류
-    private String dateName;    // 공휴일 이름 (예: 설날, 크리스마스)
-    private LocalDate locdate;  // YYYYMMDD 형식의 날짜
+    private String dateName;  // 공휴일 이름 (예: 설날, 크리스마스)
+    private LocalDate locdate; // YYYY-MM-DD 형식의 날짜
 
-    // Integer 타입의 YYYYMMDD 값을 LocalDate로 변환하는 생성자 추가
-    public HolidaysDTO(String dateName, Integer locdate) {
+    // String 타입의 YYYYMMDD 값을 LocalDate로 변환하는 생성자
+    public HolidaysDTO(String dateName, String locdate) {
         this.dateName = dateName;
-        this.locdate = (locdate != null) ?
-                LocalDate.parse(locdate.toString(), DateTimeFormatter.ofPattern("yyyyMMdd"))
-                : null;
+        this.locdate = (locdate != null && !locdate.isEmpty()) ?
+                LocalDate.parse(locdate, DateTimeFormatter.ofPattern("yyyyMMdd")) : null;
     }
 
-    // 특정 날짜가 공휴일인지 확인하는 메소드 추가
+    // 특정 날짜가 공휴일인지 확인하는 메서드
     public boolean isHoliday(LocalDate date) {
         return this.locdate != null && this.locdate.equals(date);
-    }
-
-    // 공휴일 여부를 나타내는 필드 추가 (선택 사항)
-    public boolean isHoliday() {
-        return this.dateKind != null && !this.dateKind.isEmpty();
     }
 
 }
