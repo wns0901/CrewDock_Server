@@ -49,13 +49,14 @@ public class ProjectServiceImpl implements ProjectService {
         if (updatedProject.getDesignUrl() != null) project.setDesignUrl(updatedProject.getDesignUrl());
 
         if(updatedProject.getFile() != null) {
-            s3Service.deleteFile(project.getImgUrl());
+            if(project.getImgUrl() != null) s3Service.deleteFile(project.getImgUrl());
             String imgUrl = s3Service.uploadImgFile(updatedProject.getFile(), BucketDirectory.PROJECTPROFILE);
             project.setImgUrl(imgUrl);
         }
 
 
         if (updatedProject.getIntroduction() != null) project.setIntroduction(updatedProject.getIntroduction());
+
 
 
         projectStacksRepository.deleteByProjectIdWithQuery(projectId);
