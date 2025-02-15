@@ -1,21 +1,21 @@
 package com.lec.spring.domains.recruitment.controller;
 
 import com.lec.spring.domains.project.entity.Project;
-import com.lec.spring.domains.project.service.ProjectService;
-import com.lec.spring.domains.recruitment.dto.RecruitmentPostCommentsDTO;
+import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostService;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,35 +24,16 @@ import java.util.Map;
 public class RecruitmentPostController {
 
     private final RecruitmentPostService recruitmentPostService;
-    private final ProjectService projectService;
-    private final RecruitmentPostServiceImpl recruitmentPostServiceImpl;
+    private final ProjectRepository projectRepository;
 
-    // 특정 유저가 작성한 모집글 조회
-    @GetMapping("/recruitments/user/{userId}")
-    public ResponseEntity<List<RecruitmentPostCommentsDTO>> getUserRecruitmentPosts(
-            @PathVariable("userId") Long userId,
-            @RequestParam(value = "row", required = false, defaultValue = "0") int row) {
-
-        List<RecruitmentPostCommentsDTO> posts;
-
-        if (row > 0) {
-            posts = recruitmentPostService.getUserRecruitmentPostsWithLimit(userId, row);
-        } else {
-            posts = recruitmentPostService.getUserRecruitmentPosts(userId);
-        }
-
-        return ResponseEntity.ok(posts);
-    }
-
-
-    // 모집글 전체 조회
+    // 모집글 전체 조회 (페이지네이션)
     @GetMapping("/recruitments")
     public ResponseEntity<Page<RecruitmentPostDTO>> recruitmentsPage(
             @RequestParam(value = "page", defaultValue = "1") int page) {
         return ResponseEntity.ok(recruitmentPostService.findAll(page));
     }
 
-    // 모집글 필터 조회
+    // 모집글 필터 조회 (QueryDSL 적용)
     @GetMapping("/recruitments/filter")
     public ResponseEntity<Page<RecruitmentPostDTO>> recruitmentsFilter(
             @RequestParam(required = false) String stack,
@@ -73,50 +54,89 @@ public class RecruitmentPostController {
         return ResponseEntity.ok(recruitmentPostService.findClosingRecruitments(page));
     }
 
-    // 모집글 상세 조회 (특정 JSON 구조로 반환)
+    // 모집글 상세 조회 (DTO 반환)
     @GetMapping("/recruitments/{recruitmentsId}")
-    public RecruitmentPostDTO detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
-        return recruitmentPostService.detailRecruitmentPost(id);
+    public ResponseEntity<RecruitmentPostDTO> detailRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
+        try {
+            RecruitmentPostDTO dto = recruitmentPostService.detailRecruitmentPost(id);
+            return ResponseEntity.ok(dto);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
-    // 모집글 등록
+    // 모집글 등록 (예외 처리 추가)
     @PostMapping("/recruitments")
-    public void writeRecruitmentPost(@RequestBody RecruitmentPost recruitmentPost) {
-        System.out.println("받은 데이터: " + recruitmentPost); // 로그 확인용
-        recruitmentPostService.writeRecruitmentPost(recruitmentPost);
+    public ResponseEntity<String> writeRecruitmentPost(@RequestBody RecruitmentPostDTO recruitmentPostDTO) {
+        try {
+            recruitmentPostService.writeRecruitmentPost(recruitmentPostDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("모집글이 성공적으로 등록되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청: " + e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 유저 또는 프로젝트를 찾을 수 없습니다.");
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 내용 출력해볼려고
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
     }
 
-
-    // 모집글 수정
+    // 모집글 수정 (DTO 반환)
     @PatchMapping("/recruitments/{id}")
-    public ResponseEntity<RecruitmentPost> updateRecruitmentPost(
-            @PathVariable Long id,
-            @RequestBody RecruitmentPost post) {
-
-        RecruitmentPost updatedPost = recruitmentPostService.updateRecruitmentPost(id, post);
-        return ResponseEntity.ok(updatedPost);
+    public ResponseEntity<?> updateRecruitmentPost(@PathVariable Long id, @RequestBody RecruitmentPostDTO post) {
+        try {
+            RecruitmentPostDTO updatedPost = RecruitmentPostDTO.fromEntity(
+                    recruitmentPostService.updateRecruitmentPost(id, post)
+            );
+            return ResponseEntity.ok(updatedPost);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 모집글이 존재하지 않습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
     }
 
-
-    // 모집글 삭제
+    // 모집글 삭제 (상태 코드 반환)
     @DeleteMapping("/recruitments/{recruitmentsId}")
-    public void deleteRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
-        recruitmentPostService.deleteRecruitmentPost(id);
+    public ResponseEntity<Void> deleteRecruitmentPost(@PathVariable("recruitmentsId") Long id) {
+        try {
+            recruitmentPostService.deleteRecruitmentPost(id);
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    // 프로젝트 신청 (json body)
+    // 프로젝트 신청 (JSON Body 요청)
     @PostMapping("/projects/{projectId}/members")
     public ResponseEntity<String> applyToProject(
             @PathVariable Long projectId,
             @RequestBody Map<String, Object> request) {
+        try {
+            if (!request.containsKey("userId")) {
+                throw new IllegalArgumentException("userId 값이 필요합니다.");
+            }
 
-        Long userId = Long.parseLong(request.get("userId").toString());
+            Long userId = Long.parseLong(request.get("userId").toString());
+            recruitmentPostService.applyToProject(projectId, userId);
 
-        recruitmentPostServiceImpl.applyToProject(projectId, userId); // 프로젝트 ID 먼저 받도록 변경
-
-        return ResponseEntity.ok("프로젝트 신청이 완료되었습니다.");
+            return ResponseEntity.ok("프로젝트 신청이 완료되었습니다.");
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("userId 값이 올바르지 않습니다.");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 프로젝트 또는 유저가 존재하지 않습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
     }
 
-
+    // 캡틴 권한이 있는 프로젝트 조회
+    @GetMapping("/projects/{userId}/captain")
+    public ResponseEntity<List<Project>> getCaptainProjects(@PathVariable Long userId) {
+        List<Project> captainProjects = projectRepository.findAllByCaptainUser(userId);
+        return ResponseEntity.ok(captainProjects);
+    }
 }
 

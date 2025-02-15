@@ -23,7 +23,7 @@ public class RecruitmentAttachmentController {
         return ResponseEntity.ok(attachments);
     }
 
-    // 특정 모집글에 첨부파일 추가
+    // 특정 모집글에 첨부파일 추가 (S3 업로드 방식)
     @PostMapping
     public ResponseEntity<RecruitmentAttachment> uploadAttachment(
             @PathVariable Long recruitmentsId,
@@ -33,7 +33,7 @@ public class RecruitmentAttachmentController {
         return ResponseEntity.ok(savedAttachment);
     }
 
-    // 특정 첨부파일 삭제
+    // 특정 첨부파일 삭제 (S3에서도 삭제)
     @DeleteMapping("/{attachmentId}")
     public ResponseEntity<Void> deleteAttachment(@PathVariable Long attachmentId) {
         attachmentService.delete(attachmentId);
