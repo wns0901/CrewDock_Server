@@ -19,7 +19,7 @@ public class RecruitmentAttachmentServiceImpl implements RecruitmentAttachmentSe
 
     private final RecruitmentAttachmentRepository attachmentRepository;
     private final RecruitmentPostRepository postRepository;
-    private final S3Service s3Service; // ✅ 기존 S3Service 활용
+    private final S3Service s3Service; // 기존 S3Service 활용
 
     // 특정 모집글의 모든 첨부파일 조회
     @Override
