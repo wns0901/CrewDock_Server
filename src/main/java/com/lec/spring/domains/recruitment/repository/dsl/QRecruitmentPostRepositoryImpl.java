@@ -1,6 +1,7 @@
 package com.lec.spring.domains.recruitment.repository.dsl;
 
 import com.lec.spring.domains.project.entity.QProject;
+import com.lec.spring.domains.recruitment.dto.RecruitmentPostCommentsDTO;
 import com.lec.spring.domains.recruitment.entity.*;
 import com.lec.spring.domains.project.service.ProjectStacksServiceImpl;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
@@ -116,6 +117,42 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
                 .collect(Collectors.toList());
 
         return new PageImpl<>(dtoList, pageable, total);
+    }
+
+    @Override
+    public List<RecruitmentPostCommentsDTO> findAllByUserId2(Long userId) {
+        return queryFactory
+                .selectFrom(post)
+                .where(post.user.id.eq(userId))
+                .fetch()
+                .stream()
+                .map(p -> {
+                    List<RecruitmentComment> comments = queryFactory
+                            .selectFrom(comment)
+                            .where(comment.post.isNotNull().and(comment.post.id.eq(p.getId())))  // ✅ 수정된 부분
+                            .fetch();
+                    return RecruitmentPostCommentsDTO.fromEntity(p, comments);
+                })
+                .collect(Collectors.toList());
+    }
+    // ✅ 특정 유저가 작성한 모집글 + 댓글 (row 제한)
+    @Override
+    public List<RecruitmentPostCommentsDTO> findByUserIdWithLimit(Long userId, Pageable pageable) {
+        return queryFactory
+                .selectFrom(recruitmentPost)
+                .where(recruitmentPost.user.id.eq(userId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch()
+                .stream()
+                .map(p -> {
+                    List<RecruitmentComment> comments = queryFactory
+                            .selectFrom(comment)
+                            .where(comment.post.isNotNull().and(comment.post.id.eq(p.getId())))  // ✅ 수정된 부분
+                            .fetch();
+                    return RecruitmentPostCommentsDTO.fromEntity(p, comments);
+                })
+                .collect(Collectors.toList());
     }
 
 

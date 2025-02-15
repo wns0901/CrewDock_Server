@@ -238,4 +238,9 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     }
+
+    @Override
+    public List<Project> getCaptainProjects(Long userId) {
+        return List.of();
+    }
 }
