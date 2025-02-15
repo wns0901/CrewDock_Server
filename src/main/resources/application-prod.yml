@@ -85,3 +85,9 @@ github:
 redis:
   host: localhost
   port: 6379
+
+# 공휴일 api
+holiday:
+  api:
+    url: ${HOLIDAY_API_URL}
+    key: ${HOLIDAY_API_KEY}
