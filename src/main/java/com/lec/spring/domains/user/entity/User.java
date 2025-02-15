@@ -38,10 +38,10 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String nickname;
 
-    @Column(nullable = false, length = 15)
+    @Column(length = 15)
     private String phoneNumber;
 
     @Column()

@@ -121,4 +121,13 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         System.out.println("✅ 자동 생성된 포트폴리오 ID: " + savedPortfolio.getId());
     }
+
+    // TODO
+    @Override
+    public PortfolioDto getPortfolioById(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new RuntimeException("포트폴리오를 찾을 수 없음: " + portfolioId));
+
+        return new PortfolioDto(portfolio);
+    }
 }

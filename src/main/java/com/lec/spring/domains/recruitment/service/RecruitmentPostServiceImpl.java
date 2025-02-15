@@ -7,6 +7,7 @@ import com.lec.spring.domains.project.entity.ProjectMemberStatus;
 import com.lec.spring.domains.project.repository.ProjectMemberRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.project.service.ProjectStacksService;
+import com.lec.spring.domains.recruitment.dto.RecruitmentPostCommentsDTO;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.ProceedMethod;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
@@ -28,6 +29,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.lec.spring.domains.post.entity.QPost.post;
+import static com.lec.spring.domains.stack.entity.QStack.stack;
+import static com.lec.spring.domains.user.entity.QUser.user;
 
 @Service
 @RequiredArgsConstructor
@@ -176,6 +181,18 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다"));
         postRepository.delete(post);
     }
+
+    @Override
+    public List<RecruitmentPostCommentsDTO> getUserRecruitmentPosts(Long userId) {
+        return qRecruitmentPostRepository.findAllByUserId2(userId);
+    }
+
+    @Override
+    public List<RecruitmentPostCommentsDTO> getUserRecruitmentPostsWithLimit(Long userId, int row) {
+        Pageable pageable = PageRequest.of(0, row, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return qRecruitmentPostRepository.findByUserIdWithLimit(userId, pageable);
+    }
+
 
     // 모집 지원
     @Transactional

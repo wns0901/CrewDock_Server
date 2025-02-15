@@ -15,10 +15,8 @@ import com.lec.spring.domains.project.repository.ProjectMemberRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.project.repository.ProjectStacksRepository;
 import com.lec.spring.domains.recruitment.entity.ProceedMethod;
-import com.lec.spring.domains.recruitment.entity.RecruitmentComment;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.Region;
-import com.lec.spring.domains.recruitment.repository.RecruitmentCommentRepository;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
@@ -93,9 +91,6 @@ public class DummyDataInsertTest {
     @Autowired
     private PostCommentRepository postCommentRepository;
 
-    @Autowired
-    private RecruitmentCommentRepository recruitmentCommentRepository;
-
     @Test
     public void insertDummyData() {
         // 1. 권한 삽입
@@ -113,7 +108,7 @@ public class DummyDataInsertTest {
                 .toList();
 
         // 3. 유저 생성
-        Position[] positions = {BACK, FRONT, Position.FULLSTACK, DESIGNER};
+        Position[] positions = {BACK, FRONT, FULLSTACK, Position.DESIGNER};
         List<User> users = IntStream.range(1, 9).mapToObj(i ->
                 userRepository.save(User.builder()
                         .username("user" + i + "@q.q")
@@ -121,6 +116,7 @@ public class DummyDataInsertTest {
                         .nickname("닉네임" + i)
                         .password(passwordEncoder.encode("qwer1234"))
                         .phoneNumber("010-1234-567" + i)
+                        .hopePosition(positions[i % 4])
                         .build())
         ).toList();
 
@@ -134,7 +130,7 @@ public class DummyDataInsertTest {
         });
 
         User admin = userRepository.save(User.builder()
-                .username("admin" + 1 + "@example.com")
+                .username("admin" + 1 + "@q.q")
                 .name("관리자1")
                 .nickname("관리자 닉네임")
                 .password(passwordEncoder.encode("qwer1234"))
@@ -175,7 +171,7 @@ public class DummyDataInsertTest {
                 .introduction("프로젝트 A 소개글입니다.")
                 .build());
 
-        List<ProjectStacks> projectStacks = IntStream.range(0, 7)
+        List<ProjectStacks> projectStacks = IntStream.range(0,7)
                 .mapToObj(i -> ProjectStacks.builder()
                         .projectId(project1.getId())
                         .stack(stackEntities.get(i))
@@ -233,7 +229,7 @@ public class DummyDataInsertTest {
                 .project(project1)
                 .authority(ProjectMemberAuthirity.CREW)
                 .status(ProjectMemberStatus.WITHDRAW)
-                .position(DESIGNER)
+                .position(Position.DESIGNER)
                 .build());
 
         // 6. 프로젝트 모집글 생성
@@ -317,7 +313,7 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(0))
                 .project(project1)
-                .contnet("프로젝트 A 시작 일정")
+                .content("프로젝트 A 시작 일정")
                 .startTime(LocalTime.of(10, 0, 0))
                 .endTime(LocalTime.of(18, 0, 0))
                 .startDate(LocalDate.of(2025, 1, 1))
@@ -327,7 +323,7 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(1))
                 .project(project2)
-                .contnet("프로젝트 B 중간 일정")
+                .content("프로젝트 B 중간 일정")
                 .startTime(LocalTime.of(9, 0, 0))
                 .endTime(LocalTime.of(17, 0, 0))
                 .startDate(LocalDate.of(2025, 2, 1))
@@ -356,7 +352,7 @@ public class DummyDataInsertTest {
                 .region(Region.GANGWON)
                 .proceedMethod(ProceedMethod.OFFLINE)
                 .recruitedNumber(1)
-                .recruitedField(DESIGNER.toString())
+                .recruitedField(Position.DESIGNER.toString())
                 .build());
 
         Post targetPost = post1; // 특정 게시글을 지정

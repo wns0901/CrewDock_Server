@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class StackServiceImpl implements StackService {
   @Autowired
@@ -14,5 +16,13 @@ public class StackServiceImpl implements StackService {
     @Override
     public List<Stack> getAllStacks() {
         return stackRepository.findAll();
+    }
+
+    @Override
+    public List<String> getAllStackNames() {
+        return stackRepository.findAll()
+                .stream()
+                .map(stack -> stack.getName()) // 스택의 name만 리스트로 변환
+                .collect(Collectors.toList());
     }
 }

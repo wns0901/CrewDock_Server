@@ -1,5 +1,6 @@
 package com.lec.spring.domains.recruitment.entity.DTO;
 
+import com.lec.spring.domains.project.entity.ProjectStacks;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import lombok.Data;
 

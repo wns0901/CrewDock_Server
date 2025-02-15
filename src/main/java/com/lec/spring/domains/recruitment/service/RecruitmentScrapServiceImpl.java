@@ -60,10 +60,10 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
                 post.getId(),         // 모집글 ID
                 post.getTitle(),      // 모집글 제목
                 post.getCreatedAt(),  // 모집글 작성 시간
-                commentCount          // 댓글 개수
+                commentCount,// 댓글 개수
+                post.getDeadline()
         );
     }
-
 
     // 스크랩 취소
     @Transactional
@@ -80,7 +80,6 @@ public class RecruitmentScrapServiceImpl implements RecruitmentScrapService {
 
         recruitmentScrapRepository.deleteByUserAndRecruitment(user, post);
     }
-
 
 
     @Override

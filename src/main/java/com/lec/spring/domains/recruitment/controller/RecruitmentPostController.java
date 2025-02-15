@@ -3,6 +3,7 @@ package com.lec.spring.domains.recruitment.controller;
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
+import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostService;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
@@ -44,6 +45,7 @@ public class RecruitmentPostController {
         Pageable pageable = PageRequest.of(page - 1, 16, Sort.by(Sort.Direction.DESC, "createdAt"));
         return ResponseEntity.ok(recruitmentPostService.findByFilters(stack, position, proceedMethod, region, pageable));
     }
+
 
     // 모집 마감 임박 프로젝트 조회
     @GetMapping("/recruitments/closing")
@@ -137,3 +139,4 @@ public class RecruitmentPostController {
         return ResponseEntity.ok(captainProjects);
     }
 }
+
