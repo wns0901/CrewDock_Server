@@ -378,30 +378,5 @@ public class DummyDataInsertTest {
                             .build())
             );
         });
-        // 🔹 모집글 리스트 가져오기 (기존에 생성된 더미 데이터 활용)
-        List<RecruitmentPost> recruitmentPosts = recruitmentPostRepository.findAll();
-
-        // 🔹 모집글 댓글 더미 데이터 삽입
-        IntStream.range(1, 5).forEach(i -> {
-            RecruitmentComment comment = recruitmentCommentRepository.save(
-                    RecruitmentComment.builder()
-                            .user(users.get(i % users.size())) // 랜덤 사용자
-                            .post(recruitmentPosts.get(i % recruitmentPosts.size())) // 랜덤 모집글
-                            .content("모집글 댓글 " + i)
-                            .build()
-            );
-
-            // 🔹 대댓글 추가 (각 댓글에 2개의 대댓글 생성)
-            IntStream.range(1, 3).forEach(k ->
-                    recruitmentCommentRepository.save(
-                            RecruitmentComment.builder()
-                                    .user(users.get((i + k) % users.size())) // 다른 사용자
-                                    .post(recruitmentPosts.get(i % recruitmentPosts.size())) // 동일한 모집글
-                                    .content("모집글 대댓글 " + i + "-" + k)
-                                    .comment(comment) // 부모 댓글 설정
-                                    .build()
-                    )
-            );
-        });
     }
 }
