@@ -2,6 +2,7 @@ package com.lec.spring.domains.recruitment.controller;
 
 import com.lec.spring.domains.project.entity.Project;
 import com.lec.spring.domains.project.repository.ProjectRepository;
+import com.lec.spring.domains.recruitment.dto.RecruitmentPostCommentsDTO;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.service.RecruitmentPostService;
@@ -137,6 +138,23 @@ public class RecruitmentPostController {
     public ResponseEntity<List<Project>> getCaptainProjects(@PathVariable Long userId) {
         List<Project> captainProjects = projectRepository.findAllByCaptainUser(userId);
         return ResponseEntity.ok(captainProjects);
+    }
+
+    // 특정 유저가 작성한 모집글 조회
+    @GetMapping("/recruitments/user/{userId}")
+    public ResponseEntity<List<RecruitmentPostCommentsDTO>> getUserRecruitmentPosts(
+            @PathVariable("userId") Long userId,
+            @RequestParam(value = "row", required = false, defaultValue = "0") int row) {
+
+        List<RecruitmentPostCommentsDTO> posts;
+
+        if (row > 0) {
+            posts = recruitmentPostService.getUserRecruitmentPostsWithLimit(userId, row);
+        } else {
+            posts = recruitmentPostService.getUserRecruitmentPosts(userId);
+        }
+
+        return ResponseEntity.ok(posts);
     }
 }
 
