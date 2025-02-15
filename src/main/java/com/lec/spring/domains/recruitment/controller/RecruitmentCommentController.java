@@ -27,15 +27,24 @@ public class RecruitmentCommentController {
     @PostMapping
     public ResponseEntity<RecruitmentCommentDTO> createComment(
             @PathVariable Long recruitmentsId,
-            @RequestBody RecruitmentComment recruitmentComment,
+            @RequestBody RecruitmentCommentDTO commentDTO, // ✅ DTO로 받기
             @RequestParam(required = false) Long parentCommentId) {
+
+        // ✅ userId가 null이면 예외 처리
+        if (commentDTO.getUserId() == null) {
+            throw new IllegalArgumentException("유저 ID가 필요합니다.");
+        }
+
         RecruitmentCommentDTO newComment = commentService.createRecruitmentComment(
                 recruitmentsId,
-                recruitmentComment.getUser().getId(),
-                recruitmentComment.getContent(),
-                parentCommentId);
+                commentDTO.getUserId(), // ✅ userId 사용
+                commentDTO.getContent(),
+                parentCommentId
+        );
+
         return ResponseEntity.ok(newComment);
     }
+
 
     //  모집글 내 댓글 개수 조회
     @GetMapping("/count")
