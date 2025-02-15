@@ -41,6 +41,7 @@ public class RecruitmentCommentServiceImpl implements RecruitmentCommentService 
     }
 
     //  댓글 작성 (부모 댓글이 있을 경우 대댓글로 저장)
+    //TODO: 부모댓글 구현이 안돼요....
     @Override
     public RecruitmentCommentDTO createRecruitmentComment(Long postId, Long userId, String content, Long parentCommentId) {
         RecruitmentPost post = recruitmentPostRepository.findById(postId)
@@ -50,9 +51,9 @@ public class RecruitmentCommentServiceImpl implements RecruitmentCommentService 
 
         RecruitmentComment parentComment = null;
         if (parentCommentId != null) {
-            System.out.println("🔍 저장하려는 부모 댓글 ID: " + parentCommentId);
+            System.out.println(" 저장하려는 부모 댓글 ID: " + parentCommentId);
             parentComment = recruitmentCommentRepository.findById(parentCommentId)
-                    .orElseThrow(() -> new IllegalArgumentException("❌ 부모 댓글을 찾을 수 없습니다!")); // 부모 댓글 체크
+                    .orElseThrow(() -> new IllegalArgumentException(" 부모 댓글을 찾을 수 없습니다!")); // 부모 댓글 체크
         }
 
         RecruitmentComment newComment = RecruitmentComment.builder()
