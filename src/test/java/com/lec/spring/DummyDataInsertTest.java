@@ -150,7 +150,7 @@ public class DummyDataInsertTest {
         for (int j = 0; j < 8; j++) {
             int finalJ = j;
             userStacks.addAll(IntStream.range(0, users.size())
-                    .mapToObj(i -> UserStacks.builder()
+                    .mapToObj(i ->UserStacks.builder()
                             .user(users.get(finalJ))
                             .stack(stackEntities.get(i))
                             .build())
@@ -311,7 +311,7 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(0))
                 .project(project1)
-                .contnet("프로젝트 A 시작 일정")
+                .content("프로젝트 A 시작 일정")
                 .startTime(LocalTime.of(10, 0, 0))
                 .endTime(LocalTime.of(18, 0, 0))
                 .startDate(LocalDate.of(2025, 1, 1))
@@ -321,7 +321,7 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(1))
                 .project(project2)
-                .contnet("프로젝트 B 중간 일정")
+                .content("프로젝트 B 중간 일정")
                 .startTime(LocalTime.of(9, 0, 0))
                 .endTime(LocalTime.of(17, 0, 0))
                 .startDate(LocalDate.of(2025, 2, 1))
