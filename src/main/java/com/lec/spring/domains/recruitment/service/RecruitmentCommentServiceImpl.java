@@ -88,14 +88,22 @@ public class RecruitmentCommentServiceImpl implements RecruitmentCommentService 
         RecruitmentComment comment = recruitmentCommentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
 
-        List<RecruitmentComment> replies = qRecruitmentCommentRepository.findRepliesByParentComment(comment);
+        List<RecruitmentComment> replies = recruitmentCommentRepository.findByComment(comment);
 
         if (!replies.isEmpty()) {
             comment.setContent("삭제된 댓글입니다.");
             comment.setDeleted(true);
             recruitmentCommentRepository.save(comment);
         } else {
+
             recruitmentCommentRepository.delete(comment);
+
+            if (comment.getComment() != null) {
+                List<RecruitmentComment> parentReplies = recruitmentCommentRepository.findByComment(comment.getComment());
+                if(parentReplies.isEmpty()){
+                    recruitmentCommentRepository.delete(comment.getComment());
+                }
+            }
         }
 
         return 1;
