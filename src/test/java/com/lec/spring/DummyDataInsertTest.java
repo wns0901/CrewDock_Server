@@ -15,8 +15,10 @@ import com.lec.spring.domains.project.repository.ProjectMemberRepository;
 import com.lec.spring.domains.project.repository.ProjectRepository;
 import com.lec.spring.domains.project.repository.ProjectStacksRepository;
 import com.lec.spring.domains.recruitment.entity.ProceedMethod;
+import com.lec.spring.domains.recruitment.entity.RecruitmentComment;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.Region;
+import com.lec.spring.domains.recruitment.repository.RecruitmentCommentRepository;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.stack.entity.Stack;
 import com.lec.spring.domains.stack.repository.StackRepository;
@@ -41,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import static com.lec.spring.global.common.entity.Position.*;
 
 @SpringBootTest
 public class DummyDataInsertTest {
@@ -89,6 +93,9 @@ public class DummyDataInsertTest {
     @Autowired
     private PostCommentRepository postCommentRepository;
 
+    @Autowired
+    private RecruitmentCommentRepository recruitmentCommentRepository;
+
     @Test
     public void insertDummyData() {
         // 1. 권한 삽입
@@ -106,7 +113,7 @@ public class DummyDataInsertTest {
                 .toList();
 
         // 3. 유저 생성
-        Position[] positions = {Position.BACK, Position.FRONT, Position.FULLSTACK, Position.DESIGNER};
+        Position[] positions = {BACK, FRONT, Position.FULLSTACK, DESIGNER};
         List<User> users = IntStream.range(1, 9).mapToObj(i ->
                 userRepository.save(User.builder()
                         .username("user" + i + "@q.q")
@@ -149,7 +156,7 @@ public class DummyDataInsertTest {
         for (int j = 0; j < 8; j++) {
             int finalJ = j;
             userStacks.addAll(IntStream.range(0, users.size())
-                    .mapToObj(i ->UserStacks.builder()
+                    .mapToObj(i -> UserStacks.builder()
                             .user(users.get(finalJ))
                             .stack(stackEntities.get(i))
                             .build())
@@ -168,7 +175,7 @@ public class DummyDataInsertTest {
                 .introduction("프로젝트 A 소개글입니다.")
                 .build());
 
-        List<ProjectStacks> projectStacks = IntStream.range(0,7)
+        List<ProjectStacks> projectStacks = IntStream.range(0, 7)
                 .mapToObj(i -> ProjectStacks.builder()
                         .projectId(project1.getId())
                         .stack(stackEntities.get(i))
@@ -200,7 +207,7 @@ public class DummyDataInsertTest {
                 .userId(users.get(0).getId())
                 .project(project1)
                 .authority(ProjectMemberAuthirity.CAPTAIN)
-                .position(Position.BACK)
+                .position(BACK)
                 .build());
 
         IntStream.range(1, 5).forEach(i ->
@@ -218,7 +225,7 @@ public class DummyDataInsertTest {
                 .project(project1)
                 .authority(ProjectMemberAuthirity.WAITING)
                 .status(ProjectMemberStatus.REQUEST)
-                .position(Position.FRONT)
+                .position(FRONT)
                 .build());
 
         projectMemberRepository.save(ProjectMember.builder()
@@ -226,7 +233,7 @@ public class DummyDataInsertTest {
                 .project(project1)
                 .authority(ProjectMemberAuthirity.CREW)
                 .status(ProjectMemberStatus.WITHDRAW)
-                .position(Position.DESIGNER)
+                .position(DESIGNER)
                 .build());
 
         // 6. 프로젝트 모집글 생성
@@ -240,7 +247,7 @@ public class DummyDataInsertTest {
                         .region(Region.SEOUL)
                         .proceedMethod(ProceedMethod.OFFLINE)
                         .recruitedNumber(3)
-                        .recruitedField("백엔드,프론트엔드,디자이너")
+                        .recruitedField(String.join(",", BACK.toString(), FRONT.toString(), FULLSTACK.toString())) // 변경된 부분
                         .build())
         );
 
@@ -311,8 +318,8 @@ public class DummyDataInsertTest {
                 .user(users.get(0))
                 .project(project1)
                 .contnet("프로젝트 A 시작 일정")
-                .startTime(LocalTime.of(10,0,0))
-                .endTime(LocalTime.of(18,0,0))
+                .startTime(LocalTime.of(10, 0, 0))
+                .endTime(LocalTime.of(18, 0, 0))
                 .startDate(LocalDate.of(2025, 1, 1))
                 .endDate(LocalDate.of(2025, 1, 31))
                 .build());
@@ -321,8 +328,8 @@ public class DummyDataInsertTest {
                 .user(users.get(1))
                 .project(project2)
                 .contnet("프로젝트 B 중간 일정")
-                .startTime(LocalTime.of(9,0,0))
-                .endTime(LocalTime.of(17,0,0))
+                .startTime(LocalTime.of(9, 0, 0))
+                .endTime(LocalTime.of(17, 0, 0))
                 .startDate(LocalDate.of(2025, 2, 1))
                 .endDate(LocalDate.of(2025, 2, 28))
                 .build());
@@ -337,7 +344,7 @@ public class DummyDataInsertTest {
                 .region(Region.SEOUL)
                 .proceedMethod(ProceedMethod.REMOTE)
                 .recruitedNumber(1)
-                .recruitedField(Position.BACK.toString())
+                .recruitedField(BACK.toString())
                 .build());
 
         recruitmentPostRepository.save(RecruitmentPost.builder()
@@ -349,7 +356,7 @@ public class DummyDataInsertTest {
                 .region(Region.GANGWON)
                 .proceedMethod(ProceedMethod.OFFLINE)
                 .recruitedNumber(1)
-                .recruitedField(Position.DESIGNER.toString())
+                .recruitedField(DESIGNER.toString())
                 .build());
 
         Post targetPost = post1; // 특정 게시글을 지정
@@ -371,7 +378,30 @@ public class DummyDataInsertTest {
                             .build())
             );
         });
+        // 🔹 모집글 리스트 가져오기 (기존에 생성된 더미 데이터 활용)
+        List<RecruitmentPost> recruitmentPosts = recruitmentPostRepository.findAll();
 
+        // 🔹 모집글 댓글 더미 데이터 삽입
+        IntStream.range(1, 5).forEach(i -> {
+            RecruitmentComment comment = recruitmentCommentRepository.save(
+                    RecruitmentComment.builder()
+                            .user(users.get(i % users.size())) // 랜덤 사용자
+                            .post(recruitmentPosts.get(i % recruitmentPosts.size())) // 랜덤 모집글
+                            .content("모집글 댓글 " + i)
+                            .build()
+            );
+
+            // 🔹 대댓글 추가 (각 댓글에 2개의 대댓글 생성)
+            IntStream.range(1, 3).forEach(k ->
+                    recruitmentCommentRepository.save(
+                            RecruitmentComment.builder()
+                                    .user(users.get((i + k) % users.size())) // 다른 사용자
+                                    .post(recruitmentPosts.get(i % recruitmentPosts.size())) // 동일한 모집글
+                                    .content("모집글 대댓글 " + i + "-" + k)
+                                    .comment(comment) // 부모 댓글 설정
+                                    .build()
+                    )
+            );
+        });
     }
-
 }

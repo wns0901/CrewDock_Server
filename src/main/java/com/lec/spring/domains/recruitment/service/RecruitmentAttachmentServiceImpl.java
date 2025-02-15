@@ -39,14 +39,14 @@ public class RecruitmentAttachmentServiceImpl implements RecruitmentAttachmentSe
         RecruitmentPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
 
-        // ✅ S3에 파일 업로드 후 URL 반환
+        // S3에 파일 업로드 후 URL 반환
         String fileUrl = s3Service.uploadFile(file, BucketDirectory.RECRUITMENT);
 
         if (fileUrl == null || fileUrl.isEmpty()) {
             throw new RuntimeException("S3 업로드 실패: 파일을 저장할 수 없습니다.");
         }
 
-        // ✅ DB에 저장
+        // DB에 저장
         RecruitmentAttachment attachment = RecruitmentAttachment.builder()
                 .post(post)
                 .url(fileUrl)
@@ -61,7 +61,7 @@ public class RecruitmentAttachmentServiceImpl implements RecruitmentAttachmentSe
         RecruitmentAttachment attachment = attachmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("첨부파일을 찾을 수 없습니다."));
 
-        // ✅ S3에서도 삭제
+        // S3에서도 삭제
         s3Service.deleteFile(attachment.getUrl());
 
         attachmentRepository.delete(attachment);
