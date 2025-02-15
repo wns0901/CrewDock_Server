@@ -244,11 +244,15 @@ public class CalendarServiceImpl implements CalendarService {
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new IllegalArgumentException("일정을 찾을 수 없습니다."));
 
+        // 프로젝트 ID가 존재하면 가져오고, 없으면 null 반환
+        Long projectId = (calendar.getProject() != null) ? calendar.getProject().getId() : null;
+
+
         // 필요한 정보만을 CalendarDTO로 변환하여 반환
         return new CalendarDTO(
                 calendar.getId(),
                 calendar.getUser().getId(),
-                null,
+                projectId,
                 calendar.getContent(),
                 calendar.getStartDate(),
                 calendar.getEndDate(),
