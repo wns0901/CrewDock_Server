@@ -69,6 +69,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
             chatMessageRepository.save(firstMessage);
 
+            messagingTemplate.convertAndSend("/sub/user/" + userId, firstMessage);
+
+            messagingTemplate.convertAndSend("/sub/room/" + chatRoom.getId(), firstMessage);
+
+
             if (chatRoomUser.getId() == null) throw new IllegalArgumentException("Chat room user not created");
 
             return chatRoom;

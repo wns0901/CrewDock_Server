@@ -83,7 +83,7 @@ github:
   token: ${GITHUB_TOKEN}
 
 redis:
-  host: localhost
+  host: redis
   port: 6379
 
 # 공휴일 api

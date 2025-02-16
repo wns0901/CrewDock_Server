@@ -1,5 +1,6 @@
 package com.lec.spring.domains.project.service;
 
+import com.lec.spring.domains.chat.service.ChatRoomService;
 import com.lec.spring.domains.project.dto.ProjectMemberDTO;
 import com.lec.spring.domains.project.entity.*;
 import com.lec.spring.domains.user.entity.QUser;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class ProjectMemberServiceImpl {
     private final JPAQueryFactory queryFactory;
     private final UserRepository userRepository;
+    private final ChatRoomService chatRoomService;
 
     /**
      * 프로젝트 ID를 기반으로 팀원 목록 조회 (DTO 변환)
@@ -81,10 +83,13 @@ public class ProjectMemberServiceImpl {
         if (existingMember == null) {
             throw new EntityNotFoundException("존재하지 않는 멤버입니다.");
         }
-
         // 전달된 값이 있으면 업데이트, 없으면 기존 값 유지
         ProjectMemberAuthirity updatedAuthority = (newAuthority != null) ? newAuthority : existingMember.getAuthority();
         ProjectMemberStatus updatedStatus = (newStatus != null) ? newStatus : existingMember.getStatus();
+
+        if(existingMember.getStatus() == ProjectMemberStatus.REQUEST && newStatus == ProjectMemberStatus.APPROVE) {
+            chatRoomService.inviteUser(existingMember.getProject(), userRepository.findById(userId).orElse(null));
+        }
 
         long updateSuccess = queryFactory.update(projectMember)
                 .set(projectMember.authority, updatedAuthority)
