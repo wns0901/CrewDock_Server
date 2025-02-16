@@ -1,17 +1,25 @@
 package com.lec.spring.domains.post.service;
 
+import com.lec.spring.domains.post.dto.PostAttachmentDTO;
 import com.lec.spring.domains.post.entity.PostAttachment;
 import com.lec.spring.domains.post.repository.PostAttachmentRepository;
+import com.lec.spring.global.common.util.BucketDirectory;
+import com.lec.spring.global.common.util.s3.S3ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostAttachmentServiceImpl implements PostAttachmentService {
     private final PostAttachmentRepository postAttachmentRepository;
+    private final S3ServiceImpl s3ServiceImpl;
 
-    public PostAttachmentServiceImpl(PostAttachmentRepository postAttachmentRepository) {
+    public PostAttachmentServiceImpl(PostAttachmentRepository postAttachmentRepository, S3ServiceImpl s3ServiceImpl) {
         this.postAttachmentRepository = postAttachmentRepository;
+        this.s3ServiceImpl = s3ServiceImpl;
     }
 
     @Override
@@ -20,32 +28,43 @@ public class PostAttachmentServiceImpl implements PostAttachmentService {
     }
 
     @Override
-    public PostAttachment uploadPostAttachment(MultipartFile file, Long postId, Long projectId) {
-        String fileUrl = saveFileToStorage(file, postId, projectId);
+    public List<PostAttachment> uploadPostAttachment(List<MultipartFile> files, Long postId, Long projectId) {
+        List<PostAttachment> postAttachments = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String fileUrl = s3ServiceImpl.uploadFile(file, BucketDirectory.POST);
+            String fileName = s3ServiceImpl.getFileName(fileUrl);
 
-        PostAttachment postAttachment = PostAttachment.builder()
-                .postId(postId)
-                .url(fileUrl)
-                .build();
+            PostAttachmentDTO postAttachmentDTO = new PostAttachmentDTO();
+            postAttachmentDTO.setPostId(postId);
+            postAttachmentDTO.setUrl(fileUrl);
+            postAttachmentDTO.setFileName(fileName);
 
-        return postAttachmentRepository.save(postAttachment);
-    }
+            PostAttachment postAttachment = PostAttachment.builder()
+                    .postId(postAttachmentDTO.getPostId())
+                    .url(postAttachmentDTO.getUrl())
+                    .build();
 
-    public String saveFileToStorage(MultipartFile file, Long postId, Long projectId) {
-        String directoryPath;
-
-        if(projectId != null) {
-            directoryPath = String.format("/projects/%d/posts/%d/attachments", projectId, postId);
-        } else {
-            directoryPath = String.format("/posts/%d/attachments", postId);
+            postAttachments.add(postAttachment);
         }
 
-        return directoryPath;
+        return postAttachmentRepository.saveAll(postAttachments);
     }
 
     @Override
-    public List<PostAttachment> getPostAttachmentByPostId(Long postId) {
-        return postAttachmentRepository.findByPostId(postId);
+    public List<PostAttachmentDTO> getPostAttachmentByPostId(Long postId) {
+        List<PostAttachment> postAttachments = postAttachmentRepository.findByPostId(postId);
+
+        List<PostAttachmentDTO> postAttachmentDTOS = new ArrayList<>();
+        for (PostAttachment postAttachment : postAttachments) {
+            String fileName = s3ServiceImpl.getFileName(postAttachment.getUrl());
+            PostAttachmentDTO postAttachmentDTO = new PostAttachmentDTO();
+            postAttachmentDTO.setPostId(postAttachment.getPostId());
+            postAttachmentDTO.setUrl(postAttachment.getUrl());
+            postAttachmentDTO.setFileName(fileName);
+            postAttachmentDTOS.add(postAttachmentDTO);
+        }
+
+        return postAttachmentDTOS;
     }
 
     @Override

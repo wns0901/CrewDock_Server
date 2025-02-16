@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/posts")
@@ -37,12 +38,11 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PostDTO>> getPosts(
+    public ResponseEntity<Map<String, Object>> getPosts(
             @ModelAttribute PostDTO postDTO,
             @PageableDefault(page = 1, size = 10) Pageable pageable
     ) {
-        Page<PostDTO> postPages = postService.getPosts(postDTO, pageable);
-        return ResponseEntity.ok(postPages);
+        return ResponseEntity.ok(postService.getPosts(postDTO, pageable));
     }
 
     @GetMapping("/{postId}")
@@ -57,14 +57,14 @@ public class PostController {
     }
 
     @PatchMapping
-    public ResponseEntity<Post> updatePost(@RequestBody Post post) {
-        Post updatedPost = postService.updatePost(post);
+    public ResponseEntity<Post> updatePost(@RequestBody PostDTO postDTO) {
+        Post updatedPost = postService.updatePost(postDTO);
         return ResponseEntity.ok(updatedPost);
     }
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
