@@ -1,18 +1,19 @@
 package com.lec.spring.domains.recruitment.service;
 
 import com.lec.spring.domains.recruitment.dto.ScrappedPostDTO;
+import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import com.lec.spring.domains.recruitment.entity.RecruitmentScrap;
+import com.lec.spring.domains.user.entity.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface RecruitmentScrapService {
 
-    // 모집글 스크랩
-    ScrappedPostDTO scrapPost(Long postId, Long userId);
+     void addScrap(Long userId, Long recruitmentId);
 
-    // 모집글 스크랩 취소
-    void unScrapPost(Long postId, Long userId);
+     void removeScrap(Long userId, Long recruitmentId);
 
     // 내가 스크랩한 모집글 목록 조회
     List<ScrappedPostDTO> getScrappedPosts(Long userId, int row);
