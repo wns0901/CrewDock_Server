@@ -132,9 +132,9 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     // 모집글 수정
     @Override
     @Transactional
-    public RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPostDTO postDTO) {
-        RecruitmentPost existingPost = postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다: " + id));
+    public RecruitmentPost updateRecruitmentPost(Long recruitmentId, RecruitmentPostDTO postDTO) {
+        RecruitmentPost existingPost = postRepository.findById(recruitmentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다: " + recruitmentId));
 
         if (postDTO.getTitle() != null) existingPost.setTitle(postDTO.getTitle());
         if (postDTO.getContent() != null) existingPost.setContent(postDTO.getContent());

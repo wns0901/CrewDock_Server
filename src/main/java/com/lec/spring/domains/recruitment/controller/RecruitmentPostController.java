@@ -84,11 +84,11 @@ public class RecruitmentPostController {
     }
 
     // 모집글 수정 (DTO 반환)
-    @PatchMapping("/recruitments/{id}")
-    public ResponseEntity<?> updateRecruitmentPost(@PathVariable Long id, @RequestBody RecruitmentPostDTO post) {
+    @PatchMapping("/recruitments/{recruitmentId}")
+    public ResponseEntity<?> updateRecruitmentPost(@PathVariable Long recruitmentId, @RequestBody RecruitmentPostDTO post) {
         try {
             RecruitmentPostDTO updatedPost = RecruitmentPostDTO.fromEntity(
-                    recruitmentPostService.updateRecruitmentPost(id, post)
+                    recruitmentPostService.updateRecruitmentPost(recruitmentId, post)
             );
             return ResponseEntity.ok(updatedPost);
         } catch (EntityNotFoundException e) {
