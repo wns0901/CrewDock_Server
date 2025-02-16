@@ -1,5 +1,6 @@
 package com.lec.spring.domains.post.controller;
 
+import com.lec.spring.domains.post.dto.PostCommentDTO;
 import com.lec.spring.domains.post.entity.PostComment;
 import com.lec.spring.domains.post.service.PostCommentService;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,8 @@ public class PostCommentController {
 
     @PatchMapping({"/posts/{postId}/comments",
             "/projects/{projectId}/posts/{postId}/comments"})
-    public ResponseEntity<PostComment> updateFixStatus(@RequestBody PostComment postComment) {
-        PostComment updateStatus = postCommentService.updateFixedStatus(postComment.getId(), postComment.getFixed());
+    public ResponseEntity<PostCommentDTO> updateFixStatus(@RequestBody PostComment postComment) {
+        PostCommentDTO updateStatus = postCommentService.updateFixedStatus(postComment.getId(), postComment.getFixed());
         return ResponseEntity.ok(updateStatus);
     }
 
@@ -40,6 +41,6 @@ public class PostCommentController {
             "/projects/{projectId}/posts/{postId}/comments/{commentId}"})
     public ResponseEntity<Void> deletePostComment(@PathVariable Long postId, @PathVariable Long commentId) {
         postCommentService.deleteCommentById(postId, commentId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,7 +1,10 @@
 package com.lec.spring.domains.post.service;
 
+import com.lec.spring.domains.post.dto.PostCommentDTO;
 import com.lec.spring.domains.post.entity.PostComment;
 import com.lec.spring.domains.post.repository.PostCommentRepository;
+import com.lec.spring.domains.user.entity.User;
+import com.lec.spring.domains.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +22,31 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Override
-    public PostComment saveComment(PostComment postComment) {
-        if (postComment.getParentComment() != null) {
+    @Transactional
+    public PostCommentDTO saveComment(PostComment postComment) {
+        if (postComment.getParentComment() != null && postComment.getParentComment().getId() != null) {
             PostComment parentComment = postCommentRepository.findById(postComment.getParentComment().getId())
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
 
-            if (parentComment.getParentComment() != null) {
-                throw new RuntimeException("대댓글의 대댓글은 작성할 수 없습니다.");
-            }
             postComment.setParentComment(parentComment);
+        } else {
+            postComment.setParentComment(null);
         }
-        return postCommentRepository.save(postComment);
+
+        PostComment savedComment = postCommentRepository.save(postComment);
+
+        PostCommentDTO commentDTO = new PostCommentDTO();
+        commentDTO.setId(savedComment.getId());
+        commentDTO.setFixed(savedComment.getFixed());
+        commentDTO.setDeleted(savedComment.getDeleted());
+        commentDTO.setParentsId(savedComment.getParentComment() != null ? savedComment.getParentComment().getId() : null);
+        commentDTO.setContent(savedComment.getContent());
+        commentDTO.setPostId(savedComment.getPostId());
+        commentDTO.setUserId(savedComment.getUser().getId());
+        commentDTO.setUserNickname(savedComment.getUser().getNickname());
+        commentDTO.setCreatedAt(savedComment.getCreatedAt());
+
+        return commentDTO;
     }
 
     @Override
@@ -37,28 +54,25 @@ public class PostCommentServiceImpl implements PostCommentService {
         List<PostComment> commentList = postCommentRepository.findCommentsByPostId(postId);
         long count = postCommentRepository.countCommentsByPostId(postId);
 
-        List<Map<String, Object>> commentsList = new ArrayList<>();
+        List<PostCommentDTO> commentsList = new ArrayList<>();
 
         for (PostComment comment : commentList) {
-            Map<String, Object> commentData = new HashMap<>();
-            commentData.put("createdAt", comment.getCreatedAt());
-            commentData.put("id", comment.getId());
-            commentData.put("postId", comment.getPostId());
-            commentData.put("userId", comment.getUser().getId());
-            commentData.put("userNickname", comment.getUser().getNickname());
-            commentData.put("parentComment", comment.getParentComment());
-            commentData.put("content", comment.getContent());
-            commentData.put("deleted", comment.getDeleted());
-            commentData.put("fixed", comment.getFixed());
+            PostCommentDTO commentDTO = new PostCommentDTO();
+            commentDTO.setId(comment.getId());
+            commentDTO.setPostId(comment.getPostId());
+            commentDTO.setUserId(comment.getUser().getId());
+            commentDTO.setUserNickname(comment.getUser().getNickname());
+            commentDTO.setContent(comment.getContent());
+            commentDTO.setDeleted(comment.getDeleted());
+            commentDTO.setFixed(comment.getFixed() != null ? comment.getFixed() : false);
+            commentDTO.setCreatedAt(comment.getCreatedAt());
+            commentDTO.setParentsId(comment.getParentComment() != null ? comment.getParentComment().getId() : null);
 
-            commentsList.add(commentData);
+            commentsList.add(commentDTO);
         }
 
-        Map<String, Object> commentsWrapper = new HashMap<>();
-        commentsWrapper.put("comment", commentsList);
-
         Map<String, Object> result = new HashMap<>();
-        result.put("comments", commentsWrapper);
+        result.put("comments", commentsList);
         result.put("count", count);
 
         return result;
@@ -66,11 +80,25 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     @Transactional
-    public PostComment updateFixedStatus(Long commentId, Boolean isFixed) {
-        Boolean fixed = (isFixed == null || isFixed == false) ? true : false;
-        postCommentRepository.updateFixedStatus(commentId, fixed);
-        return postCommentRepository.findById(commentId)
+    public PostCommentDTO updateFixedStatus(Long commentId, Boolean isFixed) {
+        PostComment fixedComment =  postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        fixedComment.setFixed(isFixed);
+        postCommentRepository.save(fixedComment);
+
+        PostCommentDTO commentDTO = new PostCommentDTO();
+        commentDTO.setId(fixedComment.getId());
+        commentDTO.setFixed(fixedComment.getFixed());
+        commentDTO.setDeleted(fixedComment.getDeleted());
+        commentDTO.setParentComment(fixedComment.getParentComment());
+        commentDTO.setContent(fixedComment.getContent());
+        commentDTO.setPostId(fixedComment.getPostId());
+        commentDTO.setUserId(fixedComment.getUser().getId());
+        commentDTO.setUserNickname(fixedComment.getUser().getNickname());
+        commentDTO.setCreatedAt(fixedComment.getCreatedAt());
+
+        return commentDTO;
     }
 
     @Override
@@ -79,13 +107,13 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment comment = postCommentRepository.findById(commentId)
                 .orElse(null);
 
-        if(comment.getParentComment() != null) {
-            Long parentsId = comment.getParentComment().getId();
-            if (parentsId.equals(commentId)) {
-                postCommentRepository.softDeleteParentComment(parentsId, true, "삭제된 댓글입니다.");
-            } else {
-                postCommentRepository.softDeleteComment(commentId, true);
-            }
+        List<PostComment> childComments = postCommentRepository.findByParentCommentId(commentId);
+        for (PostComment childComment : childComments) {
+            postCommentRepository.softDeleteComment(childComment.getId(), true);
+        }
+
+        if (comment.getParentComment() != null) {
+            postCommentRepository.softDeleteParentComment(commentId, true, "삭제된 댓글입니다.");
         } else {
             postCommentRepository.softDeleteComment(commentId, true);
         }

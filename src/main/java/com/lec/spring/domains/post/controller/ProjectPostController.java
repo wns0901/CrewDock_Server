@@ -10,6 +10,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/projects/{projectId}/posts")
 @RequiredArgsConstructor
@@ -17,17 +19,16 @@ public class ProjectPostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<Page<PostDTO>> getProjectPosts(
+    public ResponseEntity<Map<String, Object>> getProjectPosts(
             @ModelAttribute PostDTO postDTO,
             @PageableDefault(page = 1, size = 10) Pageable pageable)
     {
-       Page<PostDTO> projectPostDTOPages = postService.getPosts(postDTO, pageable);
-       return ResponseEntity.ok(projectPostDTOPages);
+        return ResponseEntity.ok(postService.getPosts(postDTO, pageable));
     }
 
     @GetMapping("/{postId}")
     public Post getProjectPostDetail(@PathVariable("projectId") Long projectId, @PathVariable("postId") Long postId) {
-        return postService.getProjectPostDetail(projectId, postId);
+        return postService.getPostDetail(postId);
     }
 
     @PostMapping
@@ -37,14 +38,14 @@ public class ProjectPostController {
     }
 
     @PatchMapping
-    public ResponseEntity<Post> updateProjectPost(@RequestBody Post post) {
-        Post updatedPost = postService.updatePost(post);
+    public ResponseEntity<Post> updateProjectPost(@RequestBody PostDTO postDTO) {
+        Post updatedPost = postService.updatePost(postDTO);
         return ResponseEntity.ok(updatedPost);
     }
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deleteProjectPost(@PathVariable("postId") Long postId) {
         postService.deletePost(postId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

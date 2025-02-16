@@ -9,6 +9,8 @@ public interface QPostCommentRepository {
 
     List<PostComment> findCommentsByPostId(Long postId);
 
+    List<PostComment> findByParentCommentId(Long parentCommentId);
+
     void updateFixedStatus(Long commentId, boolean isFixed);
 
     void softDeleteParentComment(Long parentsId, boolean isDeleted, String newContent);
