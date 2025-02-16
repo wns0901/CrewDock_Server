@@ -42,6 +42,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.lec.spring.global.common.entity.Position.*;
+
 @SpringBootTest
 public class DummyDataInsertTest {
 
@@ -106,7 +108,7 @@ public class DummyDataInsertTest {
                 .toList();
 
         // 3. 유저 생성
-        Position[] positions = {Position.BACK, Position.FRONT, Position.FULLSTACK, Position.DESIGNER};
+        Position[] positions = {BACK, FRONT, FULLSTACK, Position.DESIGNER};
         List<User> users = IntStream.range(1, 9).mapToObj(i ->
                 userRepository.save(User.builder()
                         .username("user" + i + "@q.q")
@@ -169,7 +171,7 @@ public class DummyDataInsertTest {
                 .introduction("프로젝트 A 소개글입니다.")
                 .build());
 
-        List<ProjectStacks> projectStacks = IntStream.range(0, 7)
+        List<ProjectStacks> projectStacks = IntStream.range(0,7)
                 .mapToObj(i -> ProjectStacks.builder()
                         .projectId(project1.getId())
                         .stack(stackEntities.get(i))
@@ -201,7 +203,7 @@ public class DummyDataInsertTest {
                 .userId(users.get(0).getId())
                 .project(project1)
                 .authority(ProjectMemberAuthirity.CAPTAIN)
-                .position(Position.BACK)
+                .position(BACK)
                 .build());
 
         IntStream.range(1, 5).forEach(i ->
@@ -219,7 +221,7 @@ public class DummyDataInsertTest {
                 .project(project1)
                 .authority(ProjectMemberAuthirity.WAITING)
                 .status(ProjectMemberStatus.REQUEST)
-                .position(Position.FRONT)
+                .position(FRONT)
                 .build());
 
         projectMemberRepository.save(ProjectMember.builder()
@@ -241,7 +243,7 @@ public class DummyDataInsertTest {
                         .region(Region.SEOUL)
                         .proceedMethod(ProceedMethod.OFFLINE)
                         .recruitedNumber(3)
-                        .recruitedField("백엔드,프론트엔드,디자이너")
+                        .recruitedField(String.join(",", BACK.toString(), FRONT.toString(), FULLSTACK.toString())) // 변경된 부분
                         .build())
         );
 
@@ -311,7 +313,7 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(0))
                 .project(project1)
-                .contnet("프로젝트 A 시작 일정")
+                .content("프로젝트 A 시작 일정")
                 .startTime(LocalTime.of(10, 0, 0))
                 .endTime(LocalTime.of(18, 0, 0))
                 .startDate(LocalDate.of(2025, 1, 1))
@@ -321,7 +323,7 @@ public class DummyDataInsertTest {
         calendarRepository.save(Calendar.builder()
                 .user(users.get(1))
                 .project(project2)
-                .contnet("프로젝트 B 중간 일정")
+                .content("프로젝트 B 중간 일정")
                 .startTime(LocalTime.of(9, 0, 0))
                 .endTime(LocalTime.of(17, 0, 0))
                 .startDate(LocalDate.of(2025, 2, 1))
@@ -338,7 +340,7 @@ public class DummyDataInsertTest {
                 .region(Region.SEOUL)
                 .proceedMethod(ProceedMethod.REMOTE)
                 .recruitedNumber(1)
-                .recruitedField(Position.BACK.toString())
+                .recruitedField(BACK.toString())
                 .build());
 
         recruitmentPostRepository.save(RecruitmentPost.builder()
@@ -372,7 +374,5 @@ public class DummyDataInsertTest {
                             .build())
             );
         });
-
     }
-
 }

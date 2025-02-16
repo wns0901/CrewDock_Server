@@ -22,6 +22,7 @@ public class RecruitmentScrapController {
     public ResponseEntity<ScrappedPostDTO> scrapPost(
             @PathVariable Long recruitmentsId,
             @RequestParam Long userId) {
+
         ScrappedPostDTO scrappedPostDTO = scrapService.scrapPost(recruitmentsId, userId);
         return ResponseEntity.ok(scrappedPostDTO);
     }
@@ -31,10 +32,13 @@ public class RecruitmentScrapController {
     public ResponseEntity<Void> unScrapPost(
             @PathVariable Long recruitmentsId,
             @RequestParam Long userId) {
+
         scrapService.unScrapPost(recruitmentsId, userId);
         return ResponseEntity.ok().build();
     }
 
+
+    // 출력
     @GetMapping("/scraps")
     public ResponseEntity<List<ScrappedPostDTO>> getScrappedPosts(
             @RequestParam Long userId,
