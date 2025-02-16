@@ -16,5 +16,17 @@
         <property name="allowPublicKeyRetrieval" value="TRUE" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="crew_dock_db@database-1.cjyyuq0g047f.ap-northeast-2.rds.amazonaws.com" uuid="b070d95c-866f-49c2-af45-797800479242">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://database-1.cjyyuq0g047f.ap-northeast-2.rds.amazonaws.com:3306/crew_dock_db</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
