@@ -58,6 +58,8 @@ jobs:
           echo "CLOUD_AWS_CREDENTIALS_ACCESS_KEY=${{ secrets.CLOUD_AWS_CREDENTIALS_ACCESS_KEY }}" >> .env
           echo "CLOUD_AWS_CREDENTIALS_SECRET_KEY=${{ secrets.CLOUD_AWS_CREDENTIALS_SECRET_KEY }}" >> .env
           echo "GITHUB_TOKEN=${{ secrets.APP_GITHUB_TOKEN }}" >> .env
+          echo "HOLIDAY_API_URL=${{ secrets.HOLIDAY_API_URL }}" >> .env
+            echo "HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }}" >> .env
 
       - name: EC2 에 파일 업로드
         uses: appleboy/scp-action@master

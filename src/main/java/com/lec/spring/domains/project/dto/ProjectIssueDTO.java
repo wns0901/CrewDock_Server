@@ -71,14 +71,18 @@ public class ProjectIssueDTO{
     // entity -> DTO 로 변경
     public static ProjectIssueDTO fromEntity(ProjectIssue projectIssue) {
         return ProjectIssueDTO.builder()
+                .id(projectIssue.getId())
                 .issueName(projectIssue.getIssueName())
                 .status(projectIssue.getStatus())
                 .priority(projectIssue.getPriority())
                 .deadline(projectIssue.getDeadline())
                 .startline(projectIssue.getStartline())
                 .writerId(projectIssue.getWriter().getId())
+                .writerName(projectIssue.getWriter().getNickname())
                 .managerId(projectIssue.getManager().getId())
+                .managerName(projectIssue.getManager().getNickname())
                 .projectId(projectIssue.getProject().getId())
+                .createAt(projectIssue.getCreatedAt())
                 .build();
     }
 
