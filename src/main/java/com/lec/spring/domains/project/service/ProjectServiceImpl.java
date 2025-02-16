@@ -1,5 +1,6 @@
 package com.lec.spring.domains.project.service;
 
+import com.lec.spring.domains.chat.service.ChatRoomService;
 import com.lec.spring.domains.portfolio.service.PortfolioService;
 import com.lec.spring.domains.project.dto.ProjectCreatDTO;
 import com.lec.spring.domains.project.dto.ProjectDTO;
@@ -41,6 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectStacksRepository projectStacksRepository;
     private final PortfolioService portfolioService;
     private final S3Service s3Service;
+    private final ChatRoomService chatRoomService;
 
 
     @Override
@@ -177,6 +179,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectMemberRepository.save(projectMember);
 
+        chatRoomService.createChatRoom(userId, savedProject.getName());
 
         portfolioService.createPortfolioForProject(savedProject, userId, stacks);
 

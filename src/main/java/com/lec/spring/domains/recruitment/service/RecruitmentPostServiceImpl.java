@@ -28,11 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.lec.spring.domains.post.entity.QPost.post;
-import static com.lec.spring.domains.stack.entity.QStack.stack;
-import static com.lec.spring.domains.user.entity.QUser.user;
 
 @Service
 @RequiredArgsConstructor
@@ -202,7 +197,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        if (projectMemberRepository.existsByProjectAndUserId(project, user)) {
+        if (projectMemberRepository.existsByProjectAndUserId(project, userId)) {
             throw new IllegalStateException("이미 지원한 프로젝트입니다.");
         }
 
