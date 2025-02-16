@@ -202,6 +202,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
+        //
         if (projectMemberRepository.existsByProjectAndUserId(project, user)) {
             throw new IllegalStateException("이미 지원한 프로젝트입니다.");
         }

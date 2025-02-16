@@ -163,13 +163,13 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
             return null;
         }
 
-        List<Long> projectIds = projectStacksService.findProjectsByStack(stack); // ✅ 특정 스택을 가진 프로젝트 ID 조회
+        List<Long> projectIds = projectStacksService.findProjectsByStack(stack); // 특정 스택을 가진 프로젝트 ID 조회
 
         if (projectIds.isEmpty()) {
-            return Expressions.FALSE; // ✅ 해당 스택을 가진 프로젝트가 없으면 false 반환 (모집글 없음)
+            return Expressions.FALSE; // 해당 스택을 가진 프로젝트가 없으면 false 반환 (모집글 없음)
         }
 
-        return QRecruitmentPost.recruitmentPost.project.id.in(projectIds); // ✅ 프로젝트 ID 리스트를 기반으로 필터링
+        return QRecruitmentPost.recruitmentPost.project.id.in(projectIds); // 프로젝트 ID 리스트를 기반으로 필터링
     }
 
 

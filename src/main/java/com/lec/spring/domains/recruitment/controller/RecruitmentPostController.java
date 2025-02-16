@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -67,10 +68,15 @@ public class RecruitmentPostController {
 
     // 모집글 등록 (예외 처리 추가)
     @PostMapping("/recruitments")
-    public ResponseEntity<String> writeRecruitmentPost(@RequestBody RecruitmentPostDTO recruitmentPostDTO) {
+    public ResponseEntity<?> writeRecruitmentPost(@RequestBody RecruitmentPostDTO recruitmentPostDTO) {
         try {
-            recruitmentPostService.writeRecruitmentPost(recruitmentPostDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("모집글이 성공적으로 등록되었습니다.");
+            // 모집글 저장
+            RecruitmentPost savedPost = recruitmentPostService.writeRecruitmentPost(recruitmentPostDTO);
+
+            // 저장된 모집글을 DTO로 변환하여 응답
+            RecruitmentPostDTO responseDTO = RecruitmentPostDTO.fromEntity(savedPost);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청: " + e.getMessage());
         } catch (EntityNotFoundException e) {
