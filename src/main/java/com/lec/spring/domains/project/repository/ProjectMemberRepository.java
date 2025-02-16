@@ -13,6 +13,6 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
 
     ProjectMember findByProjectAndUserId(Project project, Long loggedInUserId);
 
-    boolean existsByProjectAndUserId(Project project, User userId);
+    boolean existsByProjectAndUserId(Project project, Long userId);
     //모집글 포스트 서비스에 사용됩니다
 }
