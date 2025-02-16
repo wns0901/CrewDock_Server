@@ -68,10 +68,11 @@ public class RecruitmentPostController {
 
     // 모집글 등록 (예외 처리 추가)
     @PostMapping("/recruitments")
-    public ResponseEntity<String> writeRecruitmentPost(@RequestBody RecruitmentPostDTO recruitmentPostDTO) {
+    public ResponseEntity<?> writeRecruitmentPost(@RequestBody RecruitmentPostDTO recruitmentPostDTO) {
         try {
-            recruitmentPostService.writeRecruitmentPost(recruitmentPostDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("모집글이 성공적으로 등록되었습니다.");
+            RecruitmentPost savedPost = recruitmentPostService.writeRecruitmentPost(recruitmentPostDTO);
+            RecruitmentPostDTO responseDTO = RecruitmentPostDTO.fromEntity(savedPost);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청: " + e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -83,11 +84,11 @@ public class RecruitmentPostController {
     }
 
     // 모집글 수정 (DTO 반환)
-    @PatchMapping("/recruitments/{id}")
-    public ResponseEntity<?> updateRecruitmentPost(@PathVariable Long id, @RequestBody RecruitmentPostDTO post) {
+    @PatchMapping("/recruitments/{recruitmentId}")
+    public ResponseEntity<?> updateRecruitmentPost(@PathVariable Long recruitmentId, @RequestBody RecruitmentPostDTO post) {
         try {
             RecruitmentPostDTO updatedPost = RecruitmentPostDTO.fromEntity(
-                    recruitmentPostService.updateRecruitmentPost(id, post)
+                    recruitmentPostService.updateRecruitmentPost(recruitmentId, post)
             );
             return ResponseEntity.ok(updatedPost);
         } catch (EntityNotFoundException e) {

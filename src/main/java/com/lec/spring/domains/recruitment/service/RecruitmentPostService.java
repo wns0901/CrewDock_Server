@@ -29,7 +29,7 @@ public interface RecruitmentPostService {
     RecruitmentPost writeRecruitmentPost(RecruitmentPostDTO recruitmentPostDTO);
 
     // 모집글 수정
-    RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPostDTO recruitmentPostDTO);
+    RecruitmentPost updateRecruitmentPost(Long recruitmentId, RecruitmentPostDTO recruitmentPostDTO);
 
     // 모집글 삭제
     void deleteRecruitmentPost(Long id);
