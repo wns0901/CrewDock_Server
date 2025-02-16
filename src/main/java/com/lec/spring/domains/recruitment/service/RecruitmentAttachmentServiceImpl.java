@@ -28,8 +28,19 @@ public class RecruitmentAttachmentServiceImpl implements RecruitmentAttachmentSe
 
     // 특정 모집글의 모든 첨부파일 조회
     @Override
-    public List<RecruitmentAttachment> findAllByPostId(Long postId) {
-        return attachmentRepository.findAllByPostId(postId);
+    public List<RecruitmentAttachmentDTO> findAllByRecruitmentId(Long recruitmentId) {
+        RecruitmentPost post = RecruitmentPost.builder().id(recruitmentId).build();
+        List<RecruitmentAttachment> recruitmentAttachments = attachmentRepository.findByPost(post);
+
+        List<RecruitmentAttachmentDTO> recruitmentAttachmentDTOS = new ArrayList<>();
+        for (RecruitmentAttachment recruitmentAttachment : recruitmentAttachments) {
+            System.out.println("recruitmentAttachment:" + recruitmentAttachment);
+            String fileName = s3ServiceImpl.getFileName(recruitmentAttachment.getUrl());
+
+            recruitmentAttachmentDTOS.add(RecruitmentAttachmentDTO.of(recruitmentAttachment, fileName));
+        }
+
+        return recruitmentAttachmentDTOS;
     }
 
     @Override
@@ -44,16 +55,11 @@ public class RecruitmentAttachmentServiceImpl implements RecruitmentAttachmentSe
         List<RecruitmentAttachment> postAttachments = new ArrayList<>();
         for (MultipartFile file : files) {
             String fileUrl = s3ServiceImpl.uploadFile(file, BucketDirectory.POST);
-            String fileName = s3ServiceImpl.getFileName(fileUrl);
-
-            RecruitmentAttachmentDTO recruitmentAttachmentDTO = new RecruitmentAttachmentDTO();
-            recruitmentAttachmentDTO.setId(recruitmentId);
-            recruitmentAttachmentDTO.setUrl(fileUrl);
-            recruitmentAttachmentDTO.setFileName(fileName);
+            RecruitmentPost post = RecruitmentPost.builder().id(recruitmentId).build();
 
             RecruitmentAttachment recruitmentAttachment = RecruitmentAttachment.builder()
-                    .id(recruitmentAttachmentDTO.getId())
-                    .url(recruitmentAttachmentDTO.getUrl())
+                    .url(fileUrl)
+                    .post(post)
                     .build();
 
             postAttachments.add(recruitmentAttachment);
