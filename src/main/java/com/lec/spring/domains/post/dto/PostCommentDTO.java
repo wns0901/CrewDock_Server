@@ -13,3 +13,4 @@ public class PostCommentDTO extends PostComment {
     private String userNickname;
     private Long parentsId;
 }
+
