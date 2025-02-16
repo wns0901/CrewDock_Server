@@ -13,7 +13,7 @@ public interface RecruitmentAttachmentService {
     RecruitmentAttachment findById(Long id);
 
     // 특정 모집글에 첨부파일 추가 (파일 업로드)
-    RecruitmentAttachment save(Long postId, MultipartFile file);
+    List<RecruitmentAttachment> saveAttachment(List<MultipartFile> files, Long recruitmentId) ;
 
     // 특정 첨부파일 삭제
     void delete(Long id);

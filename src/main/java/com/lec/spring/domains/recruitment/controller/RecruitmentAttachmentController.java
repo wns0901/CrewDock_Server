@@ -25,12 +25,11 @@ public class RecruitmentAttachmentController {
 
     // 특정 모집글에 첨부파일 추가 (S3 업로드 방식)
     @PostMapping
-    public ResponseEntity<RecruitmentAttachment> uploadAttachment(
+    public List<RecruitmentAttachment> uploadAttachment(
             @PathVariable Long recruitmentsId,
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam("file") List<MultipartFile> files) {
 
-        RecruitmentAttachment savedAttachment = attachmentService.save(recruitmentsId, file);
-        return ResponseEntity.ok(savedAttachment);
+        return attachmentService.saveAttachment(files, recruitmentsId);
     }
 
     // 특정 첨부파일 삭제 (S3에서도 삭제)
