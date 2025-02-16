@@ -56,12 +56,20 @@ public class PostServiceImpl implements PostService {
                 .project(project)
                 .build();
 
-        return postRepository.save(post);
+        return new PostDTO(postRepository.save(post));
     }
 
     @Override
-    public Post updatePost(Post post) {
-        return postRepository.updatePost(post);
+    public Post updatePost(PostDTO postDTO) {
+        Post existingPost = postRepository.findById(postDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Post Not Found"));
+
+        existingPost.setTitle(postDTO.getTitle());
+        existingPost.setContent(postDTO.getContent());
+        existingPost.setCategory(postDTO.getCategory());
+        existingPost.setDirection(postDTO.getDirection());
+
+        return new PostDTO(postRepository.save(existingPost));
     }
 
     @Transactional
@@ -83,13 +91,42 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostDTO> getPosts(PostDTO postDTO, Pageable pageable) {
-        return postRepository.findPosts(postDTO, pageable);
+    public Map<String, Object> getPosts(PostDTO postDTO, Pageable pageable) {
+        Page<PostDTO> postPages = postRepository.findPosts(postDTO, pageable);
+        List<Map<String, Object>> postsList = new ArrayList<>();
+
+        for (PostDTO post : postPages.getContent()) {
+            Map<String, Object> postData = new HashMap<>();
+            postData.put("createdAt", post.getCreatedAt());
+            postData.put("id", post.getId());
+            postData.put("userId", post.getUserId());
+            postData.put("projectId", post.getProjectId());
+            postData.put("userNickname", post.getUserNickname());
+            postData.put("category", post.getCategory());
+            postData.put("direction", post.getDirection());
+            postData.put("title", post.getTitle());
+            postData.put("content", post.getContent());
+
+            postsList.add(postData);
+        }
+
+        Map<String, Object> postsWrapper = new HashMap<>();
+        postsWrapper.put("post", postsList);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("posts", postsWrapper);
+        response.put("totalPages", postPages.getTotalPages());
+        response.put("currentPage", postPages.getNumber() + 1);
+        response.put("pageSize", postPages.getSize());
+
+        return response;
     }
 
     @Override
     public Post getProjectPostDetail(Long postId, Long projectId) {
-        return postRepository.findProjectPostById(postId, projectId);
+        Post projectPostById = postRepository.findProjectPostById(postId, projectId);
+        if (projectPostById == null) return null;
+        return new PostDTO(projectPostById);
     }
 
     @Override

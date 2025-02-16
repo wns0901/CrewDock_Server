@@ -26,10 +26,10 @@ public interface RecruitmentPostService {
     RecruitmentPostDTO detailRecruitmentPost(Long id);
 
     // 모집글 등록
-    RecruitmentPost writeRecruitmentPost(RecruitmentPost recruitmentPost);
+    RecruitmentPost writeRecruitmentPost(RecruitmentPostDTO recruitmentPostDTO);
 
     // 모집글 수정
-    RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPost recruitmentPost);
+    RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPostDTO recruitmentPostDTO);
 
     // 모집글 삭제
     void deleteRecruitmentPost(Long id);
@@ -40,4 +40,6 @@ public interface RecruitmentPostService {
     // 특정 유저의 모집글 조회 (row 개수 제한)
     List<RecruitmentPostCommentsDTO> getUserRecruitmentPostsWithLimit(Long userId, int row);
 
+
+    void applyToProject(Long projectId, Long userId);
 }

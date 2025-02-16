@@ -3,12 +3,14 @@ package com.lec.spring.domains.recruitment.repository.dsl;
 import com.lec.spring.domains.project.entity.QProject;
 import com.lec.spring.domains.recruitment.dto.RecruitmentPostCommentsDTO;
 import com.lec.spring.domains.recruitment.entity.*;
+import com.lec.spring.domains.project.service.ProjectStacksServiceImpl;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentPostDTO;
 import com.lec.spring.domains.recruitment.repository.RecruitmentPostRepository;
 import com.lec.spring.domains.user.entity.QUser;
 import com.lec.spring.domains.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -26,9 +28,14 @@ import static com.lec.spring.domains.user.entity.QUser.user;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Repository("qrecruitmentPostRepository")
-@RequiredArgsConstructor
 public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepository {
     private final JPAQueryFactory queryFactory;
+    private final ProjectStacksServiceImpl projectStacksService;
+
+    public QRecruitmentPostRepositoryImpl(JPAQueryFactory queryFactory, ProjectStacksServiceImpl projectStacksService) {
+        this.queryFactory = queryFactory;
+        this.projectStacksService = projectStacksService;
+    }
     private final QRecruitmentPost post = recruitmentPost;  // ✅ Q클래스 사용
     private final QRecruitmentComment comment = recruitmentComment;
 
@@ -128,8 +135,6 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
                 })
                 .collect(Collectors.toList());
     }
-
-
     // ✅ 특정 유저가 작성한 모집글 + 댓글 (row 제한)
     @Override
     public List<RecruitmentPostCommentsDTO> findByUserIdWithLimit(Long userId, Pageable pageable) {
@@ -151,12 +156,22 @@ public class QRecruitmentPostRepositoryImpl implements QRecruitmentPostRepositor
     }
 
 
-
     // 필터 메서드들
+    // stack 필터
     private BooleanExpression stackFilter(String stack) {
-        return (stack == null || stack.isEmpty()) ? null :
-                recruitmentPost.recruitedField.containsIgnoreCase(stack);
+        if (stack == null || stack.isEmpty()) {
+            return null;
+        }
+
+        List<Long> projectIds = projectStacksService.findProjectsByStack(stack); // ✅ 특정 스택을 가진 프로젝트 ID 조회
+
+        if (projectIds.isEmpty()) {
+            return Expressions.FALSE; // ✅ 해당 스택을 가진 프로젝트가 없으면 false 반환 (모집글 없음)
+        }
+
+        return QRecruitmentPost.recruitmentPost.project.id.in(projectIds); // ✅ 프로젝트 ID 리스트를 기반으로 필터링
     }
+
 
     private BooleanExpression positionFilter(String position) {
         return (position == null || position.isEmpty()) ? null :
