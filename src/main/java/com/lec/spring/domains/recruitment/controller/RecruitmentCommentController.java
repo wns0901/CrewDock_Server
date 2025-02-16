@@ -27,8 +27,7 @@ public class RecruitmentCommentController {
     @PostMapping
     public ResponseEntity<RecruitmentCommentDTO> createComment(
             @PathVariable Long recruitmentsId,
-            @RequestBody RecruitmentCommentDTO commentDTO, // DTO로 받기
-            @RequestParam(required = false) Long parentCommentId) {
+            @RequestBody RecruitmentCommentDTO commentDTO) {
 
         // userId가 null이면 예외 처리
         if (commentDTO.getUserId() == null) {
@@ -39,7 +38,7 @@ public class RecruitmentCommentController {
                 recruitmentsId,
                 commentDTO.getUserId(), // userId 사용
                 commentDTO.getContent(),
-                parentCommentId
+                commentDTO.getParentCommentId()
         );
 
         return ResponseEntity.ok(newComment);
