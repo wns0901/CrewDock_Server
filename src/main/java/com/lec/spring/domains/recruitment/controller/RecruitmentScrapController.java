@@ -17,24 +17,18 @@ public class RecruitmentScrapController {
 
     private final RecruitmentScrapService scrapService;
 
-    // 모집글 스크랩 추가
-    @PostMapping("/{recruitmentsId}/scrap")
-    public ResponseEntity<ScrappedPostDTO> scrapPost(
-            @PathVariable Long recruitmentsId,
-            @RequestParam Long userId) {
-
-        ScrappedPostDTO scrappedPostDTO = scrapService.scrapPost(recruitmentsId, userId);
-        return ResponseEntity.ok(scrappedPostDTO);
+    // 스크랩 추가
+    @PostMapping("/{recruitmentId}/scrap")
+    public ResponseEntity<String> addScrap(@PathVariable Long recruitmentId, @RequestParam Long userId) {
+        scrapService.addScrap(userId, recruitmentId);
+        return ResponseEntity.ok("Scrap added successfully.");
     }
 
-    // 모집글 스크랩 취소
-    @DeleteMapping("/{recruitmentsId}/scrap")
-    public ResponseEntity<Void> unScrapPost(
-            @PathVariable Long recruitmentsId,
-            @RequestParam Long userId) {
-
-        scrapService.unScrapPost(recruitmentsId, userId);
-        return ResponseEntity.ok().build();
+    // 스크랩 삭제
+    @DeleteMapping("/{recruitmentId}/scrap")
+    public ResponseEntity<String> removeScrap(@PathVariable Long recruitmentId, @RequestParam Long userId) {
+        scrapService.removeScrap(userId, recruitmentId);
+        return ResponseEntity.ok("Scrap removed successfully.");
     }
 
 

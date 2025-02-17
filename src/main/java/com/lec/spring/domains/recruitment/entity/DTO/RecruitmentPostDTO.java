@@ -18,6 +18,7 @@ public class RecruitmentPostDTO {
     private UserDTO user;  // UserDTO 포함
     private Long projectId;
     private String projectName;
+    private Integer commentCnt;
 
     // 내부 클래스로 UserDTO 추가
     @Data
