@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -118,26 +119,50 @@ public class RecruitmentPostController {
 
     // 프로젝트 신청 (JSON Body 요청)
     @PostMapping("/projects/{projectId}/members")
-    public ResponseEntity<String> applyToProject(
+    public ResponseEntity<Map<String, Object>> applyToProject(
             @PathVariable Long projectId,
             @RequestBody Map<String, Object> request) {
         try {
+            System.out.println("📌 [DEBUG] 프로젝트 ID: " + projectId);
+            System.out.println("📌 [DEBUG] 요청 데이터: " + request);
+
             if (!request.containsKey("userId")) {
+                System.out.println("[ERROR] userId 값이 요청에 없음");
                 throw new IllegalArgumentException("userId 값이 필요합니다.");
             }
 
             Long userId = Long.parseLong(request.get("userId").toString());
+            System.out.println("[DEBUG] userId: " + userId);
+
             recruitmentPostService.applyToProject(projectId, userId);
 
-            return ResponseEntity.ok("프로젝트 신청이 완료되었습니다.");
+            System.out.println("[SUCCESS] 프로젝트 신청 완료");
+
+            // JSON 형식으로 응답 반환
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "프로젝트 신청이 완료되었습니다.");
+            response.put("projectId", projectId);
+            response.put("userId", userId);
+            response.put("status", "WAITING"); // 대기 상태 추가 가능
+
+            return ResponseEntity.ok(response);
+
         } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("userId 값이 올바르지 않습니다.");
+            System.out.println("[ERROR] userId 값이 올바르지 않음: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "userId 값이 올바르지 않습니다."));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 프로젝트 또는 유저가 존재하지 않습니다.");
+            System.out.println("[ERROR] 해당 프로젝트 또는 유저가 존재하지 않음: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "해당 프로젝트 또는 유저가 존재하지 않습니다."));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+            System.out.println("[ERROR] 서버 오류 발생: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "서버 오류 발생"));
         }
     }
+
 
     // 캡틴 권한이 있는 프로젝트 조회
     @GetMapping("/projects/{userId}/captain")
