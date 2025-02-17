@@ -24,6 +24,6 @@ public class PostDTO extends Post {
         this.setName(post.getUser().getName());
         this.setCategory(post.getCategory());
         this.setDirection(post.getDirection());
-        this.setProjectId(post.getProject().getId());
+
     }
 }

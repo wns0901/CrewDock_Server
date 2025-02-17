@@ -1,5 +1,6 @@
 package com.lec.spring.domains.post.controller;
 
+import com.lec.spring.domains.post.dto.AllPostCommentDTO;
 import com.lec.spring.domains.post.dto.PostCommentDTO;
 import com.lec.spring.domains.post.entity.PostComment;
 import com.lec.spring.domains.post.service.PostCommentService;
@@ -18,14 +19,14 @@ public class PostCommentController {
 
     @GetMapping({"/posts/{postId}/comments",
             "/projects/{projectId}/posts/{postId}/comments"})
-    public ResponseEntity<Map<String, Object>> getPostCommentsWithCount(@PathVariable Long postId) {
-        Map<String, Object> result = postCommentService.getCommentsByPostId(postId);
+    public ResponseEntity<AllPostCommentDTO> getPostCommentsWithCount(@PathVariable Long postId) {
+        AllPostCommentDTO result = postCommentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping({"/posts/{postId}/comments",
             "/projects/{projectId}/posts/{postId}/comments"})
-    public PostComment createPostComment(@PathVariable Long postId, @RequestBody PostComment postComment) {
+    public PostComment createPostComment(@PathVariable Long postId, @RequestBody PostCommentDTO postComment) {
         postComment.setPostId(postId);
         return postCommentService.saveComment(postComment);
     }
@@ -39,8 +40,8 @@ public class PostCommentController {
 
     @DeleteMapping({"/posts/{postId}/comments/{commentId}",
             "/projects/{projectId}/posts/{postId}/comments/{commentId}"})
-    public ResponseEntity<Void> deletePostComment(@PathVariable Long postId, @PathVariable Long commentId) {
-        postCommentService.deleteCommentById(postId, commentId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> deletePostComment(@PathVariable Long postId, @PathVariable Long commentId) {
+        String result = postCommentService.deleteCommentById(postId, commentId);
+        return ResponseEntity.ok(result);
     }
 }
