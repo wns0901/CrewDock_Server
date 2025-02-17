@@ -247,6 +247,7 @@ public class DummyDataInsertTest {
                         .build())
         );
 
+
         // 포트폴리오 삽입
         Portfolio portfolioA = portfolioRepository.save(Portfolio.builder()
                 .user(users.get(0))
