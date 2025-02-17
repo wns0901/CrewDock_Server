@@ -168,7 +168,6 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     }
 
 
-
     // 모집글 삭제
     @Override
     public void deleteRecruitmentPost(Long id) {

@@ -3,7 +3,11 @@ package com.lec.spring.domains.recruitment.entity.DTO;
 import com.lec.spring.domains.project.entity.ProjectStacks;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.format.DateTimeFormatter;
+
+//@NoArgsConstructor
 @Data
 public class RecruitmentPostDTO {
     private Long id;
@@ -18,6 +22,7 @@ public class RecruitmentPostDTO {
     private UserDTO user;  // UserDTO 포함
     private Long projectId;
     private String projectName;
+    private String createdAt;
 
     // 내부 클래스로 UserDTO 추가
     @Data
@@ -44,6 +49,11 @@ public class RecruitmentPostDTO {
         dto.setRecruitedNumber(post.getRecruitedNumber());
         dto.setRegion(post.getRegion().name());
         dto.setProceedMethod(post.getProceedMethod().name());
+
+
+        if (post.getCreatedAt() != null) {
+            dto.setCreatedAt(post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        }
 
         // User 정보 설정
         if (post.getUser() != null) {

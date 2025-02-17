@@ -17,6 +17,7 @@ public class RecruitmentScrapController {
 
     private final RecruitmentScrapService scrapService;
 
+
     // 스크랩 추가
     @PostMapping("/{recruitmentId}/scrap")
     public ResponseEntity<String> addScrap(@PathVariable Long recruitmentId, @RequestParam Long userId) {
