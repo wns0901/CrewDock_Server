@@ -246,6 +246,7 @@ public class DummyDataInsertTest {
                         .recruitedField(String.join(",", BACK.toString(), FRONT.toString(), FULLSTACK.toString())) // 변경된 부분
                         .build())
         );
+        
 
         // 포트폴리오 삽입
         Portfolio portfolioA = portfolioRepository.save(Portfolio.builder()

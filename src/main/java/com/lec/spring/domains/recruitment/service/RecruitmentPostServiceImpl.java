@@ -127,9 +127,9 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     // 모집글 수정
     @Override
     @Transactional
-    public RecruitmentPost updateRecruitmentPost(Long id, RecruitmentPostDTO postDTO) {
-        RecruitmentPost existingPost = postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다: " + id));
+    public RecruitmentPost updateRecruitmentPost(Long recruitmentId, RecruitmentPostDTO postDTO) {
+        RecruitmentPost existingPost = postRepository.findById(recruitmentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 모집글이 없습니다: " + recruitmentId));
 
         if (postDTO.getTitle() != null) existingPost.setTitle(postDTO.getTitle());
         if (postDTO.getContent() != null) existingPost.setContent(postDTO.getContent());
@@ -168,7 +168,6 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
     }
 
 
-
     // 모집글 삭제
     @Override
     public void deleteRecruitmentPost(Long id) {
@@ -197,15 +196,24 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        if (projectMemberRepository.existsByProjectAndUserId(project, userId)) {
+        // 이미 소속된 프로젝트인지 체크
+        ProjectMember existingMember = projectMemberRepository.findByProjectAndUserId(project, userId);
+        if (existingMember != null && existingMember.getStatus() == ProjectMemberStatus.APPROVE) {
+            throw new IllegalStateException("이미 소속된 프로젝트입니다.");
+        }
+
+        // 이미 지원한 프로젝트인지 체크
+        boolean hasApplied = projectMemberRepository.existsByProjectAndUserId(project, userId);
+        if (hasApplied) {
             throw new IllegalStateException("이미 지원한 프로젝트입니다.");
         }
 
+        // 새로운 지원 생성
         ProjectMember projectMember = ProjectMember.builder()
                 .project(project)
                 .userId(user.getId())
                 .authority(ProjectMemberAuthirity.WAITING)
-                .status(ProjectMemberStatus.REQUEST)
+                .status(ProjectMemberStatus.REQUEST) // 지원 상태
                 .position(user.getHopePosition())
                 .build();
 
