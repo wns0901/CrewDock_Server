@@ -26,7 +26,7 @@ public class RecruitmentPostCommentsDTO {
     private Long projectId;
     private List<RecruitmentCommentDTO> comments;
 
-    // ✅ 댓글 리스트를 포함한 DTO 변환 메서드
+    // 댓글 리스트를 포함한 DTO 변환 메서드
     public static RecruitmentPostCommentsDTO fromEntity(RecruitmentPost post, List<RecruitmentComment> commentList) {
         RecruitmentPostCommentsDTO dto = new RecruitmentPostCommentsDTO();
         dto.setId(post.getId());
