@@ -87,6 +87,9 @@ public class ProjectMemberServiceImpl {
         ProjectMemberAuthirity updatedAuthority = (newAuthority != null) ? newAuthority : existingMember.getAuthority();
         ProjectMemberStatus updatedStatus = (newStatus != null) ? newStatus : existingMember.getStatus();
 
+        System.out.println("existingMember.getStatus() = " + existingMember.getStatus());
+        System.out.println("newStatus = " + newStatus);
+
         if(existingMember.getStatus() == ProjectMemberStatus.REQUEST && newStatus == ProjectMemberStatus.APPROVE) {
             chatRoomService.inviteUser(existingMember.getProject(), userRepository.findById(userId).orElse(null));
         }
