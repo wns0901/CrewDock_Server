@@ -20,42 +20,45 @@ public class ResignationLetterServiceImpl implements ResignationLetterService {
 
     // 작성 로직
     public ResignationLetterDTO writeResignationLetter(Long projectId, Long userId, String content) {
-        ProjectMember member = projectMemberRepository.findById(userId)  // ProjectMemberRepository 사용
-                .orElseThrow(() -> new IllegalArgumentException("멤버 id 오류"));
+        // userId를 기반으로 해당 사용자가 프로젝트 멤버인지 확인
+        ProjectMember member = projectMemberRepository.findByUserIdAndProject_Id(userId, projectId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트의 멤버가 아닙니다."));
 
-        if (!member.getProject().getId().equals(projectId)) {
-            throw new IllegalArgumentException("프로젝트에 속해있지 않음");
-        }
-
+        // 탈퇴 신청 생성
         ResignationLetter resignationLetter = ResignationLetter.builder()
-                .member(member)
+                .member(member)  // memberId가 저장됨
                 .content(content)
                 .build();
 
         ResignationLetter savedResignationLetter = resignationLetterRepository.save(resignationLetter);
 
-        // ResignationLetterDTO로 변환하여 반환
-        return ResignationLetterDTO.fromEntity(savedResignationLetter, userRepository);
+        // userId를 직접 전달하여 DTO 변환
+        return ResignationLetterDTO.fromEntity(savedResignationLetter, userId);
     }
-
     // 모든 탈퇴 신청 내역
     public List<ResignationLetterDTO> getResignationLettersByProjectId(Long projectId) {
         List<ResignationLetter> resignationLetters = resignationLetterRepository.findByMember_Project_Id(projectId);
 
         // ResignationLetterDTO 리스트로 변환하여 반환
         return resignationLetters.stream()
-                .map(resignationLetter -> ResignationLetterDTO.fromEntity(resignationLetter, userRepository))
+                .map(resignationLetter -> {
+                    Long userId = resignationLetter.getMember().getUserId();  // 직접 userId 가져오기
+                    return ResignationLetterDTO.fromEntity(resignationLetter, userId);
+                })
                 .toList();
     }
 
-    // 세부 내역
+
     public ResignationLetterDTO getResignationLetter(Long resignationId) {
         ResignationLetter resignationLetter = resignationLetterRepository.findById(resignationId)
                 .orElseThrow(() -> new IllegalArgumentException("id 오류"));
 
-        // ResignationLetterDTO로 변환하여 반환
-        return ResignationLetterDTO.fromEntity(resignationLetter, userRepository);
+        Long userId = resignationLetter.getMember().getUserId();  // 직접 userId 가져오기
+
+        return ResignationLetterDTO.fromEntity(resignationLetter, userId);
     }
+
+
 
     public void deleteResignationLetter(Long resignationId) {
         if (!resignationLetterRepository.existsById(resignationId)) {
