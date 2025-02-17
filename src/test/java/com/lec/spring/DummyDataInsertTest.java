@@ -189,6 +189,15 @@ public class DummyDataInsertTest {
                 .introduction("프로젝트 B 소개글입니다.")
                 .build());
 
+        List<ProjectStacks> projectStacks1 = IntStream.range(0,7)
+                .mapToObj(i -> ProjectStacks.builder()
+                        .projectId(project2.getId())
+                        .stack(stackEntities.get(i))
+                        .build())
+                .toList();
+
+        projectStacksRepository.saveAll(projectStacks1);
+
         Project project3 = projectRepository.save(Project.builder()
                 .name("프로젝트 C")
                 .period(0)
@@ -197,6 +206,15 @@ public class DummyDataInsertTest {
                 .githubUrl1("https://github.com/modern-agile-team/5term-main-back")
                 .introduction("프로젝트 C 소개글입니다.")
                 .build());
+
+        List<ProjectStacks> projectStacks2 = IntStream.range(0,7)
+                .mapToObj(i -> ProjectStacks.builder()
+                        .projectId(project3.getId())
+                        .stack(stackEntities.get(i))
+                        .build())
+                .toList();
+
+        projectStacksRepository.saveAll(projectStacks2);
 
         // 5. 프로젝트 멤버 구성
         projectMemberRepository.save(ProjectMember.builder()
@@ -246,7 +264,7 @@ public class DummyDataInsertTest {
                         .recruitedField(String.join(",", BACK.toString(), FRONT.toString(), FULLSTACK.toString())) // 변경된 부분
                         .build())
         );
-        
+
 
         // 포트폴리오 삽입
         Portfolio portfolioA = portfolioRepository.save(Portfolio.builder()
