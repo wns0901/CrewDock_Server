@@ -50,11 +50,6 @@ public class RecruitmentPostDTO {
         dto.setRegion(post.getRegion().name());
         dto.setProceedMethod(post.getProceedMethod().name());
 
-
-        if (post.getCreatedAt() != null) {
-            dto.setCreatedAt(post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        }
-
         // User 정보 설정
         if (post.getUser() != null) {
             dto.setUser(new UserDTO(
