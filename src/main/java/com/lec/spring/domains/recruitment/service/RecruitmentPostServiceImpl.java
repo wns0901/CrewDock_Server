@@ -110,6 +110,7 @@ public class RecruitmentPostServiceImpl implements RecruitmentPostService {
         post.setRecruitedField(postDTO.getRecruitedField());
         post.setUser(user);
         post.setProject(project);
+        post.setCreatedAt(post.getCreatedAt());
 
         // 진행 방식 관련으로 null 오류가 떠서 만듬
         if (postDTO.getProceedMethod() == null || postDTO.getProceedMethod().isEmpty()) {

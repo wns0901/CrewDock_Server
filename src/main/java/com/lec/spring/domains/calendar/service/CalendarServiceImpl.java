@@ -1,7 +1,6 @@
 package com.lec.spring.domains.calendar.service;
 
 import com.lec.spring.domains.calendar.dto.CalendarDTO;
-import com.lec.spring.domains.calendar.dto.HolidaysDTO;
 import com.lec.spring.domains.calendar.entity.Calendar;
 import com.lec.spring.domains.calendar.repository.CalendarRepository;
 import com.lec.spring.domains.project.entity.Project;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +22,6 @@ import java.util.stream.Collectors;
 public class CalendarServiceImpl implements CalendarService {
 
     private final CalendarRepository calendarRepository;
-    private final HolidaysService holidaysService;  // 공휴일 관련 Service 주입
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
 
@@ -36,10 +33,6 @@ public class CalendarServiceImpl implements CalendarService {
         // 본인 개인 일정 + 본인이 속한 모든 팀 일정 조회 (QueryDSL 적용)
         List<CalendarDTO> userCalendar = calendarRepository.findUserCalendar(userId, projectIds);
 
-        // 공휴일 추가
-        List<CalendarDTO> holidays = convertHolidaysToCalendarDTOs(holidaysService.getHolidaysForCurrentMonth());
-        userCalendar.addAll(holidays);
-
         return userCalendar;
     }
 
@@ -50,10 +43,6 @@ public class CalendarServiceImpl implements CalendarService {
     public List<CalendarDTO> getProjectCalendar(Long projectId) {
         // 프로젝트 일정 조회
         List<CalendarDTO> projectCalendar = calendarRepository.findProjectCalendar(projectId);
-
-        // 공휴일 추가
-        List<CalendarDTO> holidays = convertHolidaysToCalendarDTOs(holidaysService.getHolidaysForCurrentMonth());
-        projectCalendar.addAll(holidays);
 
         return projectCalendar;
     }
@@ -263,19 +252,19 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     // 공휴일 데이터를 CalendarDTO로 변환
-    private List<CalendarDTO> convertHolidaysToCalendarDTOs(List<HolidaysDTO> holidaysForCurrentMonth) {
-        return holidaysForCurrentMonth.stream()
-                .map(holiday -> new CalendarDTO(
-                        null,
-                        null,
-                        null,
-                        holiday.getDateName(),
-                        holiday.getLocdate(),
-                        holiday.getLocdate(),
-                        null,
-                        null,
-                        true
-                ))
-                .collect(Collectors.toList());
-    }
+//    private List<CalendarDTO> convertHolidaysToCalendarDTOs(List<HolidaysDTO> holidaysForCurrentMonth) {
+//        return holidaysForCurrentMonth.stream()
+//                .map(holiday -> new CalendarDTO(
+//                        null,
+//                        null,
+//                        null,
+//                        holiday.getDateName(),
+//                        holiday.getLocdate(),
+//                        holiday.getLocdate(),
+//                        null,
+//                        null,
+//                        true
+//                ))
+//                .collect(Collectors.toList());
+//    }
 }
