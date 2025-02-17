@@ -13,4 +13,6 @@ public interface RecruitmentCommentRepository extends JpaRepository<RecruitmentC
 
     // 특정 모집글의 댓글 개수 조회 (부모 댓글 + 대댓글 포함)
     Long countByPostId(RecruitmentPost post);
+
+    List <RecruitmentComment> findByPostId(Long postId);
 }

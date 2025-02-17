@@ -1,5 +1,7 @@
 package com.lec.spring.domains.recruitment.service;
 
+import com.lec.spring.domains.post.dto.AllPostCommentDTO;
+import com.lec.spring.domains.recruitment.dto.AllRecruitmentCommentDTO;
 import com.lec.spring.domains.recruitment.entity.DTO.RecruitmentCommentDTO;
 import com.lec.spring.domains.recruitment.entity.RecruitmentComment;
 import com.lec.spring.domains.recruitment.entity.RecruitmentPost;
@@ -24,24 +26,16 @@ public class RecruitmentCommentServiceImpl implements RecruitmentCommentService 
     private final QRecruitmentCommentRepository qRecruitmentCommentRepository;
     private final UserRepository userRepository;
 
-    // 모집글의 전체 댓글 조회 (QueryDSL 적용)
     @Override
-    public List<RecruitmentCommentDTO> findCommentList(Long postId) {
-        RecruitmentPost post = recruitmentPostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
-
-        List<RecruitmentComment> comments = qRecruitmentCommentRepository.commentListByRecruitmentPost(post);
-
-        System.out.println("조회된 댓글 개수: " + comments.size());
-        comments.forEach(c -> System.out.println("댓글 내용: " + c.getContent()));
-
-        return comments.stream()
-                .map(RecruitmentCommentDTO::fromEntity)
-                .toList();
+    public AllRecruitmentCommentDTO findCommentList(Long postId) {
+        List<RecruitmentComment> comments = recruitmentCommentRepository.findByPostId(postId);
+        Integer count = comments.size();
+        return AllRecruitmentCommentDTO.builder()
+                .count(count)
+                .comments(comments.stream().map(RecruitmentCommentDTO::fromEntity).toList())
+                .build();
     }
 
-    //  댓글 작성 (부모 댓글이 있을 경우 대댓글로 저장)
-    //TODO: 부모댓글 구현이 안돼요....
     @Override
     public RecruitmentCommentDTO createRecruitmentComment(Long postId, Long userId, String content, Long parentCommentId) {
         RecruitmentPost post = recruitmentPostRepository.findById(postId)
@@ -84,20 +78,19 @@ public class RecruitmentCommentServiceImpl implements RecruitmentCommentService 
 
     // 댓글 삭제 (대댓글 존재 시 "삭제된 댓글입니다." 처리)
     @Override
-    public int deleteRecruitmentComment(Long commentId) {
+    public String deleteRecruitmentComment(Long commentId) {
         RecruitmentComment comment = recruitmentCommentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
 
         List<RecruitmentComment> replies = qRecruitmentCommentRepository.findRepliesByParentComment(comment);
 
         if (!replies.isEmpty()) {
-            comment.setContent("삭제된 댓글입니다.");
             comment.setDeleted(true);
             recruitmentCommentRepository.save(comment);
+            return "parent";
         } else {
             recruitmentCommentRepository.delete(comment);
+            return "deleted";
         }
-
-        return 1;
     }
 }

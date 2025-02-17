@@ -10,6 +10,7 @@ public class RecruitmentCommentDTO {
     private Long userId;  // userId 추가
     private String userName; // 사용자 이름
     private Long parentCommentId; // 부모 댓글 ID
+    private Boolean isDeleted; // 삭제 여부
 
     public static RecruitmentCommentDTO fromEntity(RecruitmentComment comment) {
         RecruitmentCommentDTO dto = new RecruitmentCommentDTO();
@@ -17,6 +18,7 @@ public class RecruitmentCommentDTO {
         dto.setUserId(comment.getUser() != null ? comment.getUser().getId() : null);
         dto.setContent(comment.getContent());
         dto.setUserName(comment.getUser() != null ? comment.getUser().getNickname() : "알 수 없음");
+        dto.setIsDeleted(comment.getDeleted());
 
         Long parentId = comment.getComment() != null ? comment.getComment().getId() : null;
         dto.setParentCommentId(parentId);

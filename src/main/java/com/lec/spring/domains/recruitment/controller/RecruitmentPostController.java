@@ -16,7 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,9 +113,9 @@ public class RecruitmentPostController {
         }
     }
 
-    // 프로젝트 신청 (JSON Body 요청)
+    // 프로젝트 신청
     @PostMapping("/projects/{projectId}/members")
-    public ResponseEntity<String> applyToProject(
+    public ResponseEntity<Map<String, Object>> applyToProject(
             @PathVariable Long projectId,
             @RequestBody Map<String, Object> request) {
         try {
@@ -122,17 +124,30 @@ public class RecruitmentPostController {
             }
 
             Long userId = Long.parseLong(request.get("userId").toString());
+
             recruitmentPostService.applyToProject(projectId, userId);
 
-            return ResponseEntity.ok("프로젝트 신청이 완료되었습니다.");
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("userId 값이 올바르지 않습니다.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 프로젝트 또는 유저가 존재하지 않습니다.");
+            // 성공 메시지 반환
+            Map<String, Object> response = new HashMap<>();
+            response.put("projectId", projectId);
+            response.put("userId", userId);
+            response.put("status", "WAITING");
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalStateException e) {
+            // 📌 이미 지원한 경우 or 이미 소속된 경우 예외 메시지 반환
+            String errorMessage = e.getMessage();
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", errorMessage));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "서버 오류 발생"));
         }
     }
+
+
 
     // 캡틴 권한이 있는 프로젝트 조회
     @GetMapping("/projects/{userId}/captain")
