@@ -7,8 +7,7 @@
 2025년 1월 7일 ~ 2025년 2월 18일 (약 40일간 진행)
 
 ### 📍ERD
-<img width="592" alt="CrewDock ERD" src="https://github.com/user-attachments/assets/86b9ff77-84b7-4f8f-a2a2-e2a5b25bc248" />
-
+<img width="621" alt="Image" src="https://github.com/user-attachments/assets/3d4a2409-f6c0-4a35-acc0-131b187d5ae8" />
 
 ### 📍흐름도 - 사용자 페이지
 <img width="898" alt="스크린샷 2025-02-20 오후 3 46 13" src="https://github.com/user-attachments/assets/327f68b1-b6f9-40a9-8a76-7c5fefe05a37" />
