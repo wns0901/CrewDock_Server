@@ -10,10 +10,12 @@
 ![CrewDock](https://github.com/user-attachments/assets/a7499255-aeaa-4308-bc5f-c273074c337e)
 
 ### 📍흐름도 - 사용자 페이지
-<img width="1006" alt="스크린샷 2025-02-20 오후 3 33 30" src="https://github.com/user-attachments/assets/399a2cb0-4c6b-40cf-941c-b87fcc53b0bd" />
+<img width="898" alt="스크린샷 2025-02-20 오후 3 46 13" src="https://github.com/user-attachments/assets/327f68b1-b6f9-40a9-8a76-7c5fefe05a37" />
+
 
 ### 📍흐름도 - 관리자 페이지
-<img width="513" alt="스크린샷 2025-02-20 오후 3 33 46" src="https://github.com/user-attachments/assets/d4f3e50e-3401-4a84-aae3-8d6506f2d7d9" />
+<img width="390" alt="스크린샷 2025-02-20 오후 3 46 35" src="https://github.com/user-attachments/assets/adfc4913-9f40-4742-85f6-5cd2d359c165" />
+
 
 ### 📍각자 맡은 파트 및 주요 기능
 |구성원|맡은 파트|주요 기능|
@@ -29,6 +31,9 @@
 
 
 <hr/>
+
+### 📍클라이언트 Github 
+https://github.com/wns0901/crew-dock-client
 
 ### 📍URL 규칙
 - **RESTful**: 복수형 명사만 사용하기!
@@ -62,8 +67,5 @@
 - Chore : 빌드 업무 수정, 패키지 매니저 수정
 - Conflict: 충돌 해결
 예제 [Feat/Back]: 이슈 내용
-
-### 📍클라이언트 Github 
-https://github.com/wns0901/crew-dock-client
 
 
