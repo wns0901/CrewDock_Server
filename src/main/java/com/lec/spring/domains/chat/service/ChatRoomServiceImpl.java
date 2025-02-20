@@ -144,7 +144,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
             User Captain = userRepository.findById(projectCaptain.getUserId()).orElseThrow(() -> new IllegalArgumentException("Captain not found"));
 
-            ChatRoom chatRoom = chatRoomUserRepository.findByUser(Captain).getChatRoom();
+            List<ChatRoomUser> chatRoomUser = chatRoomUserRepository.findByUser(Captain);
+
+            ChatRoom chatRoom = chatRoomUser.stream().filter(chatRoomUser1 -> chatRoomUser1.getRoomName().equals(project.getName() + " 채팅방")).findFirst().get().getChatRoom();
 
             ChatRoomUser invitedChatRoomUser = ChatRoomUser.builder()
                     .user(receiver)

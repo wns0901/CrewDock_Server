@@ -16,24 +16,15 @@ import lombok.NoArgsConstructor;
 public class ResignationLetterDTO {
 
     private Long id;
-    private ProjectMemberDTO member;
+    private Long userId;
     private String content;
 
-    // UserRepository를 통해 User 정보를 가져옵니다.
-    public static ResignationLetterDTO fromEntity(ResignationLetter resignationLetter, UserRepository userRepository) {
-        ProjectMember member = resignationLetter.getMember();
-
-        // userId를 통해 User 엔티티를 조회
-        User user = userRepository.findById(member.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        // ProjectMemberDTO를 생성
-        ProjectMemberDTO memberDTO = ProjectMemberDTO.fromEntity(member, user);
-
+    public static ResignationLetterDTO fromEntity(ResignationLetter resignationLetter, Long userId) {
         return ResignationLetterDTO.builder()
                 .id(resignationLetter.getId())
-                .member(memberDTO)
+                .userId(userId)  // userId 직접 설정
                 .content(resignationLetter.getContent())
                 .build();
     }
+
 }
