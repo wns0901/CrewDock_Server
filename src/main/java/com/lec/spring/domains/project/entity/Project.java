@@ -3,12 +3,14 @@ package com.lec.spring.domains.project.entity;
 import com.lec.spring.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.Check;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,9 +51,10 @@ public class Project extends BaseEntity {
     @Column(columnDefinition = "LONGTEXT")
     private String introduction;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
     @Builder.Default
     @ToString.Exclude
+    @JsonIgnore
     @JoinColumn(name = "project_id")
     private List<ProjectStacks> stacks = new ArrayList<>();
 }
