@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="57d748a7-f8ba-4ab0-8e39-b343f7efefd4" name="Changes" comment="Feat(#2): security 기본 기능, 로그인, 회원가입, 이메일 인증 구현" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="CrewDock" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="CrewDock" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="JUnit5 Test Class" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="Feat-S3" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JpbToolWindowState">
+    <option name="isToolWindowVisible" value="false" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2rz1rFYX0wou1tzx7rew5ExMrQI" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build CrewDock.executor": "Run",
+    "Gradle.ChatMessageRepositoryTest.createChatRoom.executor": "Run",
+    "Gradle.ChatMessageRepositoryTest.test.executor": "Run",
+    "Gradle.ChatMessageRepositoryTest.test3.executor": "Run",
+    "Gradle.ChatRoomUserRepositoryTest.findByUser.executor": "Run",
+    "Gradle.CrewDock [clean].executor": "Run",
+    "Gradle.DummyDataInsertTest.executor": "Run",
+    "Gradle.DummyDataInsertTest.insertDummyData.executor": "Run",
+    "Gradle.DummyDataInsertTest.test2.executor": "Run",
+    "Gradle.S3ServiceImplTest.delete.executor": "Run",
+    "Gradle.UserRepositoryTest.test1.executor": "Run",
+    "Notification.DisplayName-DoNotAsk-Database detector": "Database detector",
+    "Notification.DoNotAsk-Database detector": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Shell Script.gradlew.executor": "Run",
+    "Spring Boot.CrewDockApplication.executor": "Run",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "Feat-security",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/project/gugbi/FullStack2409/Dropbox/K12/SpringWork",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "com.github.copilot.settings.ApplicationConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
+    ]
+  }
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.lec.spring.global.common.util" />
+      <recent name="com.lec.spring.domains.chat.service" />
+      <recent name="com.lec.spring.domains.chat.repository.dsl" />
+      <recent name="com.lec.spring.domains.project.repository.dsl" />
+      <recent name="com.lec.spring.domains.user.repository.dsl" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\project\gugbi\FullStack2409\Dropbox\CrewDock\src\main\resources" />
+      <recent name="E:\project\gugbi\FullStack2409\Dropbox\CrewDock\src\main\java\com\lec\spring\domains\portfolio\repository\dsl" />
+      <recent name="E:\project\gugbi\FullStack2409\Dropbox\CrewDock\src\main\java\com\lec\spring\domains\user\repository\dsl" />
+      <recent name="E:\project\gugbi\FullStack2409\Dropbox\CrewDock\src\main\java\com\lec\spring\domains\recruitment\repository\dsl" />
+      <recent name="E:\project\gugbi\FullStack2409\Dropbox\CrewDock\src\main\java\com\lec\spring\domains\project\repository\dsl" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.lec.spring.global.common.entity" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.lec.spring.global.common.util" />
+      <recent name="com.lec.spring.domains.chat.repository" />
+      <recent name="com.lec.spring.domains.user.repository" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.lec.spring.global.listener" />
+      <recent name="com.lec.spring.domains.calendar.repository.dsl" />
+      <recent name="com.lec.spring.domains.calendar.service.dsl" />
+      <recent name="com.lec.spring.domains.recruitment.repository.dsl" />
+      <recent name="com.lec.spring.domains.user.service" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.CrewDockApplication">
+    <configuration name="ChatMessageRepositoryTest.test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.lec.spring.domains.chat.repository.ChatMessageRepositoryTest.test&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="ChatMessageRepositoryTest.test3" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.lec.spring.domains.chat.repository.ChatMessageRepositoryTest.test3&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="ChatRoomUserRepositoryTest.findByUser" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.lec.spring.domains.chat.repository.ChatRoomUserRepositoryTest.findByUser&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="DummyDataInsertTest.insertDummyData" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.lec.spring.DummyDataInsertTest.insertDummyData&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="S3ServiceImplTest.delete" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.lec.spring.global.common.util.S3ServiceImplTest.delete&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="CrewDockApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="CrewDock.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.lec.spring.CrewDockApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.DummyDataInsertTest.insertDummyData" />
+        <item itemvalue="Gradle.S3ServiceImplTest.delete" />
+        <item itemvalue="Gradle.ChatRoomUserRepositoryTest.findByUser" />
+        <item itemvalue="Gradle.ChatMessageRepositoryTest.test3" />
+        <item itemvalue="Gradle.ChatMessageRepositoryTest.test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="57d748a7-f8ba-4ab0-8e39-b343f7efefd4" name="Changes" comment="" />
+      <created>1725964239991</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1725964239991</updated>
+      <workItem from="1725964307830" duration="823000" />
+      <workItem from="1737547288585" duration="5849000" />
+      <workItem from="1737553624837" duration="415000" />
+      <workItem from="1737554812232" duration="2953000" />
+      <workItem from="1737590634560" duration="1489000" />
+      <workItem from="1737596022711" duration="3911000" />
+      <workItem from="1737601590161" duration="13000" />
+      <workItem from="1737602266505" duration="112000" />
+      <workItem from="1737602390223" duration="2352000" />
+      <workItem from="1737608020023" duration="12188000" />
+      <workItem from="1737630861759" duration="94000" />
+      <workItem from="1737631404351" duration="5000" />
+      <workItem from="1737631435699" duration="983000" />
+      <workItem from="1737646325722" duration="172000" />
+      <workItem from="1737646508539" duration="2182000" />
+      <workItem from="1737677093728" duration="15395000" />
+      <workItem from="1737698028106" duration="9707000" />
+      <workItem from="1737788696183" duration="76000" />
+      <workItem from="1737788838681" duration="15000" />
+      <workItem from="1737788909931" duration="3587000" />
+      <workItem from="1737793150830" duration="639000" />
+      <workItem from="1737947899755" duration="15024000" />
+      <workItem from="1737971207960" duration="7940000" />
+      <workItem from="1737985581777" duration="9415000" />
+      <workItem from="1737995029257" duration="3114000" />
+      <workItem from="1738028959036" duration="37000" />
+      <workItem from="1738158074369" duration="762000" />
+      <workItem from="1738504370955" duration="1250000" />
+      <workItem from="1738541091483" duration="26018000" />
+      <workItem from="1738627094840" duration="13696000" />
+      <workItem from="1738644983560" duration="5116000" />
+      <workItem from="1738650192567" duration="6492000" />
+      <workItem from="1738674754161" duration="3562000" />
+      <workItem from="1738679312692" duration="669000" />
+      <workItem from="1738680020757" duration="55000" />
+      <workItem from="1738680207417" duration="303000" />
+      <workItem from="1738680587681" duration="197000" />
+      <workItem from="1738680816312" duration="537000" />
+      <workItem from="1738681485692" duration="532000" />
+      <workItem from="1738682080240" duration="94000" />
+      <workItem from="1738714352414" duration="7064000" />
+      <workItem from="1738754627512" duration="311000" />
+      <workItem from="1738800070534" duration="18818000" />
+      <workItem from="1738840445399" duration="16470000" />
+      <workItem from="1739004601532" duration="4624000" />
+      <workItem from="1739022824873" duration="1538000" />
+      <workItem from="1739024608716" duration="10059000" />
+      <workItem from="1739091156316" duration="7764000" />
+      <workItem from="1739170701867" duration="87000" />
+      <workItem from="1739170794046" duration="4653000" />
+      <workItem from="1739196340080" duration="3823000" />
+      <workItem from="1739232150309" duration="39000" />
+      <workItem from="1739232204220" duration="6584000" />
+      <workItem from="1739278854736" duration="116000" />
+      <workItem from="1739318690269" duration="21079000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.security:spring-security-core" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
+    <option featureType="dependencySupport" implementationName="java:io.projectreactor:reactor-core" />
+    <option featureType="dependencySupport" implementationName="executable:kubectl" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-websocket" />
+    <option featureType="dependencySupport" implementationName="executable:docker" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.persistence:jakarta.persistence-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-messaging" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Feat(#2): security jwt 토큰 등록 세팅" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feat(#2): security jwt 토큰 등록 세팅" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

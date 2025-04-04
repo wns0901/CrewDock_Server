@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +22,6 @@ public class PostAttachment extends BaseEntity {
     @ToString.Exclude
     private Long postId;
 
-    @Column
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String url;
 }

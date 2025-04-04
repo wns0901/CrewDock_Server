@@ -7,6 +7,7 @@ import com.lec.spring.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,6 +36,4 @@ public class RecruitmentComment extends BaseEntity {
     @Column(name = "is_deleted")
     private Boolean deleted;
 
-    @Column(name = "is_fixed")
-    private Boolean fixed;
 }

@@ -5,6 +5,7 @@ import com.lec.spring.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,11 +13,13 @@ import lombok.*;
 @Entity
 public class ChatRoomUser extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private ChatRoom chatRoom;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

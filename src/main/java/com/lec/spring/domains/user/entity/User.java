@@ -1,15 +1,21 @@
 package com.lec.spring.domains.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lec.spring.domains.project.entity.ProjectMember;
 import com.lec.spring.global.common.entity.BaseEntity;
 import com.lec.spring.global.common.entity.Position;
 import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,19 +38,21 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 15)
+    @Column(unique = true)
+    private String nickname;
+
+    @Column(length = 15)
     private String phoneNumber;
 
-    @Column(nullable = true)
+    @Column()
     private String githubUrl;
 
-    @Column(nullable = true)
+    @Column()
     private String notionUrl;
 
-    @Column(nullable = true)
+    @Column()
     private String blogUrl;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Position hopePosition;
 
@@ -56,11 +64,32 @@ public class User extends BaseEntity {
 
     private String profileImgUrl;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @JsonIgnore
     @Builder.Default
     private List<UserAuth> userAuths = new ArrayList<>();
 
-    @OneToMany
+    public void addUserAuth(UserAuth... userAuths) {
+        Collections.addAll(this.userAuths, userAuths);
+    }
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @Builder.Default
+    @ToString.Exclude
+    @JsonIgnore
+    @JoinColumn(name = "user_id")
     private List<ProjectMember> projectMembers = new ArrayList<>();
+
+    public void addProjectMember(ProjectMember... projectMembers) {
+        Collections.addAll(this.projectMembers, projectMembers);
+    }
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @Builder.Default
+    @ToString.Exclude
+    @JsonIgnore
+    @JoinColumn(name = "user_id")
+    private List<UserStacks> userStacks = new ArrayList<>();
 }
