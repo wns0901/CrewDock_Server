@@ -6,6 +6,15 @@
 ### ⏲ 개발 기간
 2025년 1월 7일 ~ 2025년 2월 18일 (약 40일간 진행)
 
+### 실행 화면
+![스크린샷 2025-04-04 130214](https://github.com/user-attachments/assets/a489cbc2-c699-4c30-ac0e-c8240b1ffe2a)
+![스크린샷 2025-04-04 130234](https://github.com/user-attachments/assets/f12b0030-6b58-42cf-83a0-45f92032d737)
+![스크린샷 2025-04-04 131209](https://github.com/user-attachments/assets/bbc7f37c-d116-47c4-a9b6-adf806c514eb)
+![스크린샷 2025-04-04 131229](https://github.com/user-attachments/assets/8ac8eed0-e8f7-4575-b1d1-337d7a3722cf)
+![스크린샷 2025-04-04 131246](https://github.com/user-attachments/assets/01ca7016-8ffe-403f-92b9-93615a96181b)
+![스크린샷 2025-04-04 131006](https://github.com/user-attachments/assets/81a66850-398e-4bf6-8f21-21bea7e036f6)
+
+
 ### 📍ERD
 <img width="621" alt="Image" src="https://github.com/user-attachments/assets/3d4a2409-f6c0-4a35-acc0-131b187d5ae8" />
 
